@@ -1,0 +1,157 @@
+import 'package:fluent_ui/fluent_ui.dart';
+
+class TagInputItem extends AutoSuggestBoxItem<String> {
+  TagInputItem({required super.value, required super.label});
+}
+
+class TagInputWidget extends StatefulWidget {
+  final List<TagInputItem> suggestions;
+  final List<TagInputItem> initialValue;
+  final bool strict;
+  final int limit;
+  final void Function(List<TagInputItem>) onChanged;
+  String noResultsMessage;
+  String placeholder;
+
+  TagInputWidget({
+    super.key,
+    required this.suggestions,
+    required this.onChanged,
+    required this.initialValue,
+    required this.strict,
+    required this.limit,
+    this.noResultsMessage = "No results found",
+    this.placeholder = "",
+  });
+
+  @override
+  _TagInputWidgetState createState() => _TagInputWidgetState();
+}
+
+class _TagInputWidgetState extends State<TagInputWidget> {
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+  late List<TagInputItem> _tags;
+  late List<TagInputItem> _filteredSuggestions;
+  final key = GlobalKey<AutoSuggestBoxState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredSuggestions = widget.suggestions;
+    _tags = widget.initialValue;
+  }
+
+  void _onTextChanged(String inputVal, _) {
+    setState(() {
+      if (inputVal.isEmpty) {
+        _filteredSuggestions = widget.suggestions;
+      } else {
+        _filteredSuggestions = widget.suggestions
+            .where((suggestion) =>
+                _tags.map((e) => e.label.toLowerCase()).contains(suggestion.label.toLowerCase()) == false)
+            .toList();
+
+        // Always add the current input value to the suggestions
+        if (widget.strict == false && _filteredSuggestions.map((e) => e.label).contains(inputVal) == false) {
+          _filteredSuggestions.insert(0, TagInputItem(value: inputVal.replaceAll(" ", "-"), label: inputVal));
+        }
+      }
+    });
+
+    // Refresh the AutoSuggestBox suggestions by slightly altering the input value
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_controller.text.isNotEmpty) {
+        _controller.text = _controller.text; // Force refresh by setting the same value
+        _controller.selection = TextSelection.fromPosition(
+          TextPosition(offset: _controller.text.length),
+        );
+        _focusNode.requestFocus(); // Ensure the text field remains focused
+      }
+    });
+  }
+
+  void _onSuggestionSelected(AutoSuggestBoxItem<String> suggestion) {
+    setState(() {
+      _tags.add(TagInputItem(value: suggestion.value, label: suggestion.label));
+      _controller.clear();
+      _filteredSuggestions = widget.suggestions;
+    });
+
+    // Force the text field to clear by updating the text field directly
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.text = '';
+      _onTextChanged('', null); // Refresh suggestions
+    });
+
+    widget.onChanged(_tags);
+  }
+
+  void _removeTag(TagInputItem tag) {
+    setState(() {
+      _tags.removeWhere((e) => e.value == tag.value);
+    });
+    widget.onChanged(_tags);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        border: _tags.isEmpty ? null : Border.all(color: const Color.fromARGB(255, 221, 221, 221)),
+        borderRadius: _tags.isEmpty ? null : BorderRadius.circular(4),
+        color: _tags.isEmpty ? null : Colors.white,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(_tags.isEmpty ? 0 : 3),
+            child: Wrap(
+              spacing: 3,
+              runSpacing: 3,
+              children: _tags.map((tag) {
+                return FilledButton(
+                  onPressed: () => _removeTag(tag),
+                  //style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.transparent)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(tag.label),
+                      const SizedBox(width: 10),
+                      const Icon(FluentIcons.clear, size: 10),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          if (widget.limit > _tags.length)
+            AutoSuggestBox<String>(
+                key: key,
+                controller: _controller,
+                focusNode: _focusNode, // Attach the FocusNode to preserve focus
+                items: _filteredSuggestions,
+                onSelected: _onSuggestionSelected,
+                onChanged: _onTextChanged,
+                placeholder: widget.placeholder,
+                noResultsFoundBuilder: (context) =>
+                    Padding(padding: const EdgeInsets.all(10), child: Text(widget.noResultsMessage)),
+                trailingIcon: GestureDetector(
+                  child: const Icon(FluentIcons.grouped_descending),
+                  onTap: () {
+                    if (key.currentState != null) {
+                      var state = key.currentState!;
+                      if (state.isOverlayVisible) {
+                        state.dismissOverlay();
+                      } else {
+                        state.showOverlay();
+                      }
+                    }
+                  },
+                ))
+        ],
+      ),
+    );
+  }
+}
