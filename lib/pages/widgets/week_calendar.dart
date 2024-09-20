@@ -1,7 +1,10 @@
 import 'dart:math';
 
-import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter/material.dart' show showTimePicker, TimeOfDay, FloatingActionButton;
+import 'package:apexo/backend/observable/observable.dart';
+import 'package:apexo/state/stores/appointments/appointment_model.dart';
+import 'package:apexo/state/stores/staff/staff_store.dart';
+import 'package:fluent_ui/fluent_ui.dart' hide Card;
+import 'package:flutter/material.dart' show showTimePicker, showDatePicker, TimeOfDay, FloatingActionButton, Card;
 import 'package:intl/intl.dart';
 import '../../backend/observable/model.dart';
 import '../../backend/utils/colors_without_yellow.dart';
@@ -12,6 +15,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 class WeekAgendaCalendar<Item extends AgendaItem> extends StatefulWidget {
   final List<Item> items;
+  final List<Widget>? actions;
   final String startDay;
   final String noAppointmentsMessage;
   final int initiallySelectedDay;
@@ -28,6 +32,7 @@ class WeekAgendaCalendar<Item extends AgendaItem> extends StatefulWidget {
     required this.onSetTime,
     required this.onSelect,
     this.noAppointmentsMessage = "No appointments for this day",
+    this.actions,
   });
 
   @override
@@ -72,11 +77,11 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
   }
 
   List<Item> _getItemsForDay(DateTime day) {
-    return widget.items.where((item) => isSameDay(day, item.date)).toList();
+    return widget.items.where((item) => isSameDay(day, item.date())).toList();
   }
 
   List<Item> _getItemsForSelectedDay() {
-    return widget.items.where((item) => isSameDay(selectedDate, item.date)).toList();
+    return widget.items.where((item) => isSameDay(selectedDate, item.date())).toList();
   }
 
   bool isSameDay(DateTime day1, DateTime day2) {
@@ -86,40 +91,41 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
   @override
   Widget build(BuildContext context) {
     var itemsForSelectedDay = _getItemsForSelectedDay();
-    return Stack(
+    return Column(
       children: [
-        Column(
-          children: [
-            _buildCalendar(),
-            const SizedBox(height: 1),
-            _buildCurrentDayTitleBar(),
-            itemsForSelectedDay.isEmpty ? _buildEmptyDayMessage() : _buildAppointmentsList(itemsForSelectedDay),
-          ],
+        Acrylic(
+          elevation: 150,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 13),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                    onPressed: () => widget.onAddNew(selectedDate),
+                    icon: const Row(
+                      children: [Icon(FluentIcons.add_event, size: 17), SizedBox(width: 10), Text("Add new")],
+                    )),
+                Row(
+                  children: widget.actions ?? [],
+                ),
+              ],
+            ),
+          ),
         ),
-        _buildFloatingButton()
+        _buildCalendar(),
+        const SizedBox(height: 1),
+        _buildCurrentDayTitleBar(),
+        itemsForSelectedDay.isEmpty ? _buildEmptyDayMessage() : _buildAppointmentsList(itemsForSelectedDay),
       ],
     );
   }
 
-  Widget _buildFloatingButton() {
-    return Positioned(
-      bottom: 15,
-      right: 15,
-      child: FloatingActionButton.extended(
-        onPressed: () {
-          widget.onAddNew(selectedDate);
-        },
-        label: Text("Add new"),
-        icon: const Icon(FluentIcons.add_event),
-      ),
-    );
-  }
-
   Widget _buildCalendar() {
-    return Acrylic(
-      elevation: 50,
-      child: Container(
-          constraints: BoxConstraints(maxHeight: calendarHeight),
+    return Container(
+        constraints: BoxConstraints(maxHeight: calendarHeight),
+        child: Card(
+          color: Colors.transparent,
+          elevation: 0,
           child: TableCalendar(
             firstDay: now.subtract(const Duration(days: 9999)),
             focusedDay: selectedDate,
@@ -253,13 +259,13 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
             onDaySelected: (newDate, focusedDay) {
               setState(() => selectedDate = newDate);
             },
-          )),
-    );
+          ),
+        ));
   }
 
   Widget _buildAppointmentsList(List<Item> itemsForSelectedDay) {
     var sortedItems = [...itemsForSelectedDay]
-      ..sort((a, b) => a.date.millisecondsSinceEpoch - b.date.millisecondsSinceEpoch);
+      ..sort((a, b) => a.date().millisecondsSinceEpoch - b.date().millisecondsSinceEpoch);
     return Expanded(
       child: ListView.builder(
         padding: const EdgeInsets.only(bottom: 80),
@@ -309,42 +315,9 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(DateFormat("d MMMM yyyy").format(selectedDate)),
-            Checkbox(
-              checked: appointments.showArchived(),
-              onChanged: appointments.showArchivedChanged,
-              style: const CheckboxThemeData(icon: FluentIcons.archive),
-            ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class TitleOnAcrylic extends StatelessWidget {
-  const TitleOnAcrylic({
-    super.key,
-    required this.text,
-  });
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 2, shadows: [
-        Shadow(
-          blurRadius: 7,
-          color: Colors.grey.withOpacity(0.3),
-          offset: const Offset(0, 0),
-        ),
-        Shadow(
-          blurRadius: 0,
-          color: Colors.grey.withOpacity(0.2),
-          offset: const Offset(1, 1),
-        ),
-      ]),
     );
   }
 }
@@ -355,23 +328,44 @@ class AppointmentTile<Item extends AgendaItem> extends StatelessWidget {
     required this.item,
     required this.onSetTime,
     required this.onSelect,
+    this.inModal = false,
+    this.showLeadingIcon = true,
+    this.showFullDate = false,
+    this.showSubtitleLine2 = true,
   });
 
   final Item item;
   final void Function(Item item) onSetTime;
   final void Function(Item item) onSelect;
+  final bool showLeadingIcon;
+  final bool showFullDate;
+  final bool inModal;
+  final bool showSubtitleLine2;
 
   @override
   Widget build(BuildContext context) {
     return Acrylic(
+      elevation: inModal ? 1 : 0,
+      blurAmount: inModal ? 1 : null,
       child: ListTile(
         title: AcrylicTitle(item: item),
-        subtitle: item.subtitle.isNotEmpty ? Text(item.subtitle) : null,
-        leading: const Row(children: [
-          Icon(FluentIcons.date_time),
-          SizedBox(width: 8),
-          Divider(direction: Axis.vertical, size: 40),
-        ]),
+        subtitle: item.subtitleLine1.isNotEmpty ? Text(item.subtitleLine1, overflow: TextOverflow.ellipsis) : null,
+        leading: showLeadingIcon
+            ? Row(children: [
+                Column(
+                  children: [
+                    Checkbox(
+                        checked: item.isDone(),
+                        onChanged: (checked) {
+                          item.isDone(checked ?? false);
+                          appointments.modify(item as Appointment);
+                        }),
+                  ],
+                ),
+                SizedBox(width: 8),
+                Divider(direction: Axis.vertical, size: 40),
+              ])
+            : null,
         onPressed: () {
           onSelect(item);
         },
@@ -379,22 +373,56 @@ class AppointmentTile<Item extends AgendaItem> extends StatelessWidget {
           children: [
             const Divider(direction: Axis.vertical, size: 40),
             const SizedBox(width: 5),
-            IconButton(
-              onPressed: () async {
-                TimeOfDay? res = await showTimePicker(
-                    context: context, initialTime: TimeOfDay(hour: item.date.hour, minute: item.date.minute));
-                if (res != null) {
-                  item.date = DateTime(item.date.year, item.date.month, item.date.day, res.hour, res.minute);
-                  onSetTime(item);
-                }
-              },
-              icon: Row(
-                children: [
-                  const Icon(FluentIcons.clock),
-                  const SizedBox(width: 8),
-                  Text(DateFormat('hh:mm a').format(item.date)),
-                ],
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (showFullDate)
+                  IconButton(
+                    onPressed: () async {
+                      DateTime? res = await showDatePicker(
+                          context: context,
+                          initialDate: item.date(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2025));
+                      if (res != null) {
+                        item.date(DateTime(res.year, res.month, res.day));
+                        onSetTime(item);
+                      }
+                    },
+                    icon: Row(
+                      children: [
+                        const Icon(FluentIcons.calendar),
+                        const SizedBox(width: 5),
+                        Text(DateFormat('d/M/yy').format(item.date())),
+                      ],
+                    ),
+                  ),
+                IconButton(
+                  onPressed: () async {
+                    TimeOfDay? res = await showTimePicker(
+                        context: context, initialTime: TimeOfDay(hour: item.date().hour, minute: item.date().minute));
+                    if (res != null) {
+                      item.date(DateTime(item.date().year, item.date().month, item.date().day, res.hour, res.minute));
+                      onSetTime(item);
+                    }
+                  },
+                  icon: Row(
+                    children: [
+                      const Icon(FluentIcons.clock),
+                      const SizedBox(width: 5),
+                      Text(DateFormat('hh:mm a').format(item.date())),
+                    ],
+                  ),
+                ),
+                if (item.subtitleLine2.isNotEmpty && showSubtitleLine2)
+                  SizedBox(
+                      width: 75,
+                      child: Text(
+                        item.subtitleLine2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 12),
+                      ))
+              ],
             ),
           ],
         ),
@@ -404,21 +432,28 @@ class AppointmentTile<Item extends AgendaItem> extends StatelessWidget {
 }
 
 class AgendaItem extends Model {
-  DateTime date = DateTime.now();
+  final date = ObservableState(DateTime.now());
+  final isDone = ObservableState(false);
 
-  String get subtitle {
+  String get subtitleLine1 {
+    return date.toString();
+  }
+
+  String get subtitleLine2 {
     return date.toString();
   }
 
   AgendaItem.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
-    date = json["date"] != null ? DateTime.fromMillisecondsSinceEpoch(json["date"]) : date;
+    date(json["date"] != null ? DateTime.fromMillisecondsSinceEpoch(json["date"]) : date());
+    isDone(json["isDone"] ?? isDone());
   }
 
   @override
   Map<String, dynamic> toJson() {
     final json = super.toJson();
     final d = AgendaItem.fromJson({});
-    if (date.compareTo(d.date) != 0) json['date'] = date.millisecondsSinceEpoch;
+    if (date().compareTo(d.date()) != 0) json['date'] = date().millisecondsSinceEpoch;
+    if (isDone() != d.isDone()) json['isDone'] = isDone();
     return json;
   }
 }

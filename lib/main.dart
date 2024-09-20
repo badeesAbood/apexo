@@ -1,10 +1,13 @@
+import 'package:apexo/backend/observable/observable.dart';
+import 'package:apexo/state/stores/patients/patients_store.dart';
+import 'package:apexo/state/stores/staff/staff_store.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:logging/logging.dart';
 import './backend/utils/transitions/rotate.dart';
 import './pages/page_login.dart';
 import './panel_aux.dart';
 import './panel_logo.dart';
 import './state/stores/appointments/appointments_store.dart';
-import './state/stores/recipes/recipes_store.dart';
 import './state/stores/settings/settings_store.dart';
 import 'i18/index.dart';
 import 'i18/en.dart';
@@ -14,8 +17,14 @@ import 'pages/index.dart';
 import 'state/state.dart';
 
 void main() {
+  Logger.root.onRecord.listen((record) {
+    // ignore: avoid_print
+    print('>>> ${record.level.name}: ${record.time}: ${record.message}');
+  });
+
+  staff.init();
+  patients.init();
   appointments.init();
-  recipes.init();
   globalSettings.init();
   localSettings.init();
 
@@ -23,12 +32,17 @@ void main() {
 }
 
 class MyApp extends ObservingWidget {
-  const MyApp();
+  const MyApp({super.key});
+
+  @override
+  getObservableState() {
+    return [state];
+  }
 
   @override
   Widget build(BuildContext context) {
     return FluentApp(
-        locale: Locale(locale.selected.$code),
+        locale: Locale(locale.s.$code),
         themeMode: state.themeMode,
         theme: FluentThemeData(accentColor: state.themeAccentColor),
         home: Builder(
@@ -79,7 +93,12 @@ class MyApp extends ObservingWidget {
   }
 }
 
-class GlobalActions extends StatelessWidget {
+class GlobalActions extends ObservingWidget {
+  @override
+  getObservableState() {
+    return [globalActions];
+  }
+
   const GlobalActions({super.key});
   @override
   Widget build(BuildContext context) {
@@ -96,45 +115,8 @@ class GlobalActions extends StatelessWidget {
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          Container(
-                            margin: action.badge != null && action.badge != 0 ? const EdgeInsets.only(right: 6) : null,
-                            child: RotatingWrapper(
-                              key: Key(action.hashCode.toString()),
-                              rotate: action.animate == true && action.processing == true,
-                              child: Tooltip(
-                                message: action.tooltip,
-                                child: IconButton(
-                                  icon: Icon(
-                                    action.iconData,
-                                    color: action.processing ?? false ? Colors.white : null,
-                                  ),
-                                  onPressed: action.onPressed,
-                                  iconButtonMode: IconButtonMode.large,
-                                  style: ButtonStyle(
-                                      shape: WidgetStatePropertyAll(
-                                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(50))),
-                                      iconSize: WidgetStateProperty.all(18),
-                                      backgroundColor: WidgetStatePropertyAll(
-                                          action.processing ?? false ? action.activeColor : Colors.transparent)),
-                                ),
-                              ),
-                            ),
-                          ),
-                          if (action.badge != null)
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                height: 14,
-                                width: 14,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(50),
-                                  boxShadow: kElevationToShadow[2],
-                                ),
-                                child: Center(child: Text(action.badge ?? "", style: TextStyle(fontSize: 10))),
-                              ),
-                            ),
+                          _buildActionIcon(action),
+                          if (action.badge != null) _buildBadge(action),
                         ],
                       ),
                     ),
@@ -145,9 +127,57 @@ class GlobalActions extends StatelessWidget {
       ),
     );
   }
+
+  Container _buildActionIcon(GlobalAction action) {
+    return Container(
+      margin: action.badge != null ? const EdgeInsets.only(right: 6) : null,
+      child: RotatingWrapper(
+        key: Key(action.hashCode.toString()),
+        rotate: action.animate == true && action.processing == true,
+        child: Tooltip(
+          message: action.tooltip,
+          child: IconButton(
+            icon: Icon(
+              action.iconData,
+              color: action.processing ?? false ? Colors.white : null,
+            ),
+            onPressed: action.onPressed,
+            iconButtonMode: IconButtonMode.large,
+            style: ButtonStyle(
+                shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50))),
+                iconSize: WidgetStateProperty.all(18),
+                backgroundColor:
+                    WidgetStatePropertyAll(action.processing ?? false ? action.activeColor : Colors.transparent)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Positioned _buildBadge(GlobalAction action) {
+    return Positioned(
+      bottom: 0,
+      right: 0,
+      child: Container(
+        height: 14,
+        width: 14,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(50),
+          boxShadow: kElevationToShadow[2],
+        ),
+        child: Center(child: Text(action.badge ?? "", style: const TextStyle(fontSize: 10))),
+      ),
+    );
+  }
 }
 
-class BackButton extends StatelessWidget {
+class BackButton extends ObservingWidget {
+  @override
+  getObservableState() {
+    return [pages];
+  }
+
   const BackButton({super.key});
   @override
   Widget build(BuildContext context) {
@@ -156,7 +186,7 @@ class BackButton extends StatelessWidget {
       child: Tooltip(
         message: "Back",
         child: IconButton(
-            icon: Icon(locale.selected.$direction == Direction.rtl ? FluentIcons.forward : FluentIcons.back),
+            icon: Icon(locale.s.$direction == Direction.rtl ? FluentIcons.forward : FluentIcons.back),
             onPressed: () => pages.goBack()),
       ),
     );

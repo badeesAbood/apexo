@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:apexo/backend/utils/hash.dart';
+import 'package:apexo/backend/utils/logger.dart';
+import 'package:apexo/state/state.dart';
 import 'package:hive_flutter/adapters.dart';
 import './observing_widget.dart';
 import './model.dart';
@@ -20,12 +23,6 @@ class CustomError {
   final String message;
   final StackTrace stackTrace;
   CustomError(this.message, this.stackTrace);
-}
-
-class Observer {
-  final String id = uuid();
-  final OEventCallback callback;
-  Observer(OEventCallback cb) : callback = cb;
 }
 
 enum EventType {
@@ -52,16 +49,10 @@ class OEvent {
 /// the observable functionality of the application is all based on this class
 class ObservableBase {
   ObservableBase() {
-    observe((_) {
-      for (var callback in viewUpdatersCallbacks) {
-        callback();
-      }
-    });
-
     _stream.listen((events) {
       for (var observer in _observers) {
         try {
-          observer.callback(events);
+          observer(events);
         } catch (message, stackTrace) {
           errors.add(CustomError(message.toString(), stackTrace));
         }
@@ -70,7 +61,7 @@ class ObservableBase {
   }
 
   final StreamController<List<OEvent>> _controller = StreamController<List<OEvent>>.broadcast();
-  final List<Observer> _observers = [];
+  final List<OEventCallback> _observers = [];
   final List<CustomError> errors = [];
   Stream<List<OEvent>> get _stream => _controller.stream;
   double _silent = 0;
@@ -79,18 +70,17 @@ class ObservableBase {
     if (_silent == 0) _controller.add(events);
   }
 
-  String observe(OEventCallback callback) {
-    int existing = _observers.indexWhere((o) => o.callback == callback);
+  int observe(OEventCallback callback) {
+    int existing = _observers.indexWhere((o) => o == callback);
     if (existing > -1) {
-      return _observers[existing].id;
+      return existing;
     }
-    Observer observer = Observer(callback);
-    _observers.add(observer);
-    return observer.id;
+    _observers.add(callback);
+    return _observers.length - 1;
   }
 
-  void unObserve(String id) {
-    _observers.removeWhere((observer) => observer.id == id);
+  void unObserve(OEventCallback callback) {
+    _observers.removeWhere((existing) => existing == callback);
   }
 
   void dispose() {
@@ -106,6 +96,8 @@ class ObservableBase {
     try {
       fn();
     } catch (e, stacktrace) {
+      logger(e);
+      logger(stacktrace);
       errors.add(CustomError(e.toString(), stacktrace));
     }
     _silent--;
@@ -145,7 +137,7 @@ abstract class ObservablePersistingObject extends ObservableObject {
   ObservablePersistingObject(this.identifier) {
     box = () async {
       await Hive.initFlutter();
-      return Hive.openBox<String>(identifier);
+      return Hive.openBox<String>(identifier + simpleHash(state.dbBranchUrl));
     }();
     _initialLoad();
   }

@@ -7,13 +7,16 @@ import '../../backend/utils/colors_without_yellow.dart';
 class AcrylicTitle extends StatelessWidget {
   final Model item;
   final double radius;
+  final double maxWidth;
   late Color color;
-  AcrylicTitle({super.key, required this.item, this.radius = 15}) {
+  AcrylicTitle({super.key, required this.item, this.radius = 15, Color? predefinedColor, this.maxWidth = 130.0}) {
     if (item.title.isEmpty) {
       item.title = " ";
     }
-    color =
-        item.archived == true ? Colors.grey.withOpacity(0.2) : getDeterministicItem(colorsWithoutYellow, (item.title));
+    color = predefinedColor ??
+        (item.archived == true
+            ? Colors.grey.withOpacity(0.2)
+            : getDeterministicItem(colorsWithoutYellow, (item.title)));
   }
 
   @override
@@ -39,7 +42,7 @@ class AcrylicTitle extends StatelessWidget {
             ),
             luminosityAlpha: 0.3,
             child: Container(
-              constraints: const BoxConstraints(minWidth: 100, maxWidth: 130),
+              constraints: BoxConstraints(minWidth: 100, maxWidth: maxWidth),
               padding: const EdgeInsets.fromLTRB(12, 5, 12, 5),
               child: Text(
                 item.title,

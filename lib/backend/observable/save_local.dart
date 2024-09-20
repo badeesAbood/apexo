@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:apexo/backend/utils/hash.dart';
+import 'package:apexo/state/state.dart';
 import 'package:hive_flutter/adapters.dart';
 
 // Constants for metadata keys
@@ -26,7 +28,7 @@ class SaveLocal {
 
   Future<Box<String>> initialize(String name) async {
     await Hive.initFlutter();
-    return Hive.openBox<String>(name);
+    return Hive.openBox<String>(name + simpleHash(state.dbBranchUrl));
   }
 
   // Put entries into the main box

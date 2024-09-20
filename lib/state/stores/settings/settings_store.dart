@@ -5,8 +5,8 @@ import '../../state.dart';
 import './settings_model.dart';
 import '../../../backend/observable/store.dart';
 
-const _storeNameGlobal = "settings_global_w";
-const _storeNameLocal = "settings_local_w";
+const _storeNameGlobal = "settings_global";
+const _storeNameLocal = "settings_local";
 
 class GlobalSettings extends Store<Setting> {
   Map<String, String> defaults = {
@@ -17,7 +17,6 @@ class GlobalSettings extends Store<Setting> {
   GlobalSettings()
       : super(
           modeling: Setting.fromJson,
-          local: SaveLocal("global_settings1"),
           onSyncStart: () {
             state.isSyncing++;
             state.notify();
@@ -36,6 +35,9 @@ class GlobalSettings extends Store<Setting> {
 
       final dbURL = credentials[0];
       final token = credentials[1];
+
+      local = SaveLocal(_storeNameGlobal);
+      await loadFromLocal();
 
       remote = SaveRemote(
         token: token,

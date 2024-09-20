@@ -1,10 +1,17 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/cupertino.dart';
 import '../../../backend/utils/colors_without_yellow.dart';
 import '../../../backend/observable/model.dart';
 import '../../../backend/utils/get_deterministic_item.dart';
 import './acrylic_title.dart';
+
+class _SortableItem<Item> {
+  String value;
+  Item item;
+  _SortableItem(this.value, this.item);
+}
 
 class DataTableAction {
   void Function(List<String>) callback;
@@ -15,7 +22,6 @@ class DataTableAction {
 
 class DataTable<Item extends Model> extends StatefulWidget {
   final List<Item> items;
-  final List<String> labels;
   final List<DataTableAction> actions;
   final void Function(Item) onSelect;
   final List<Widget> furtherActions;
@@ -23,7 +29,6 @@ class DataTable<Item extends Model> extends StatefulWidget {
   const DataTable({
     super.key,
     required this.items,
-    required this.labels,
     required this.actions,
     required this.onSelect,
     this.furtherActions = const [],
@@ -40,11 +45,25 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
   int slice = 10;
   TextEditingController searchTerm = TextEditingController();
 
+  /// labels must be cached since this computation would
+  /// occur too many times on every rebuild
+  List<String>? _labels;
+  List<String> get labels {
+    return _labels ??=
+        widget.items.fold(<String>{}, (labels, item) => labels..addAll((item.labels.keys.toList()))).toList()
+          ..sort((a, b) => a.compareTo(b))
+          ..removeWhere((label) => label.isEmpty);
+  }
+
+  List<String> get nonNullLabels {
+    return labels.where((x) => !x.contains("\u200B")).toList();
+  }
+
   String get sortByString {
     if (sortBy < 0) {
       return "title";
     } else {
-      return widget.labels[sortBy];
+      return labels[sortBy];
     }
   }
 
@@ -64,25 +83,26 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
   }
 
   List<Item> get sortedItems {
-    List<Item> sortedItems = List.from(filteredItems);
+    List<Item> result = List<Item>.from(filteredItems);
     if (sortBy < 0) {
-      sortedItems.sort((a, b) {
+      result.sort((a, b) {
         return a.title.toLowerCase().compareTo(b.title.toLowerCase()) * sortDirection;
       });
     } else {
-      sortedItems.sort((a, b) {
-        var aValue = a.labels[widget.labels[sortBy]] ?? "";
-        var bValue = b.labels[widget.labels[sortBy]] ?? "";
-
-        if (double.tryParse(aValue) != null && double.tryParse(bValue) != null) {
-          return double.parse(aValue).compareTo(double.parse(bValue)) * sortDirection;
-        } else {
-          return aValue.compareTo(bValue) * sortDirection;
-        }
-      });
+      final sorted = List<_SortableItem<Item>>.from(result.map((e) {
+        return _SortableItem(e.labels[labels[sortBy]] ?? "", e);
+      }))
+        ..sort((a, b) {
+          if (double.tryParse(a.value) != null && double.tryParse(b.value) != null) {
+            return double.parse(a.value).compareTo(double.parse(b.value)) * sortDirection;
+          } else {
+            return a.value.compareTo(b.value) * sortDirection;
+          }
+        });
+      result = sorted.map((e) => e.item).toList();
     }
 
-    return sortedItems.sublist(0, min(sortedItems.length, slice));
+    return result.sublist(0, min(result.length, slice));
   }
 
   showMore() {
@@ -144,16 +164,6 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
                     filteredItems.length > sortedItems.length && index == sortedItems.length
                         ? _buildShowMore()
                         : _buildSingleItem(sortedItems[index], checkedIds.contains(sortedItems[index].id)),
-
-                // [
-                //   if (filteredItems.isEmpty) _buildNoItemsFound(),
-                //   ...sortedItems.map((item) {
-                //     bool isChecked = checkedIds.contains(item.id);
-                //     return _buildSingleItem(item, isChecked);
-                //   }),
-                //   if (sortedItems.length < filteredItems.length)
-
-                // ],
               ),
             ),
           ],
@@ -207,7 +217,12 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     );
   }
 
+  int getCycledNumber(int num) {
+    return (num - 1) % 7;
+  }
+
   Expanded _buildInnerRow(item) {
+    var nonEmptyLabels = labels.where((l) => item.labels[l] != null).toList();
     return Expanded(
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -217,7 +232,8 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AcrylicTitle(radius: 20, item: item),
-              ...widget.labels.where((l) => item.labels[l] != null).map((l) => _buildLabelPill(l, item))
+              ...nonEmptyLabels
+                  .map((l) => _buildLabelPill(l, item, colorsWithoutYellow[getCycledNumber(nonEmptyLabels.indexOf(l))]))
             ],
           ),
         ),
@@ -227,20 +243,6 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
 
   _buildCheckBox(bool isChecked, item) {
     return Checkbox(checked: isChecked, onChanged: (checked) => itemSelectToggle(item, checked));
-  }
-
-  BoxDecoration _itemBorder(item, bool isChecked) {
-    return BoxDecoration(
-      gradient: LinearGradient(colors: [
-        getDeterministicItem(colorsWithoutYellow, item.title).withOpacity(0.1),
-        Colors.white.withOpacity(0.01),
-      ]),
-      border: Border.all(
-        color: isChecked ? Colors.blue : Colors.transparent,
-        width: 1,
-      ),
-      borderRadius: BorderRadius.circular(300),
-    );
   }
 
   Padding _buildListController() {
@@ -270,7 +272,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     return ComboBox<int>(
       items: [
         const ComboBoxItem<int>(value: -1, child: Text("By title")),
-        ...widget.labels.map((l) => ComboBoxItem<int>(value: widget.labels.indexOf(l), child: Text("By $l")))
+        ...nonNullLabels.map((l) => ComboBoxItem<int>(value: nonNullLabels.indexOf(l), child: Text("By $l")))
       ],
       value: sortBy,
       onChanged: setSortBy,
@@ -316,7 +318,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
             const Divider(size: 20, direction: Axis.vertical),
             SizedBox(
               width: 165,
-              child: TextBox(
+              child: CupertinoTextField(
                 controller: searchTerm,
                 placeholder: "search",
                 onChanged: setSearchTerm,
@@ -358,10 +360,9 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     );
   }
 
-  Widget _buildLabelPill(String l, Item item) {
+  Widget _buildLabelPill(String l, Item item, [Color? color]) {
     var selected = searchTerm.text.toLowerCase() == item.labels[l]?.toLowerCase();
-    var color =
-        colorsWithoutYellow[((widget.labels.indexOf(l) / widget.labels.length) * colorsWithoutYellow.length).floor()];
+    color = color ?? colorsWithoutYellow[((labels.indexOf(l) / labels.length) * colorsWithoutYellow.length).floor()];
     return Padding(
       padding: const EdgeInsets.all(2),
       child: GestureDetector(
@@ -388,7 +389,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
                 child: Wrap(
                   children: [
                     Text(
-                      "$l: ",
+                      "$l",
                       style: TextStyle(
                           fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, fontSize: 11.5, color: color),
                     ),

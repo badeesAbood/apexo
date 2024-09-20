@@ -1,5 +1,5 @@
-name: starter
-description: "A new Flutter project."
+name: apexo
+description: "Dental Clinic Management System"
 publish_to: "none"
 
 version: 1.0.0+1
@@ -19,7 +19,7 @@ dependencies:
   flutter_svg: ^2.0.10+1
   intl: ^0.19.0
   table_calendar: ^3.1.2
-
+  logging: ^1.2.0
 
 dev_dependencies:
   flutter_test:

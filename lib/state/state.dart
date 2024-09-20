@@ -1,3 +1,4 @@
+import 'package:apexo/backend/utils/logger.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Locale;
 import "package:http/http.dart" as http;
 import '../backend/observable/observable.dart';
@@ -80,7 +81,7 @@ class State extends ObservablePersistingObject {
       try {
         res = await http.get(Uri.parse(u), headers: {"Authorization": "Bearer $t"});
       } catch (e) {
-        print(e);
+        logger(e);
         return finishedLoginProcess("Error while connecting to the server");
       }
 
@@ -99,7 +100,7 @@ class State extends ObservablePersistingObject {
       try {
         await callback([dbBranchUrl, token]);
       } catch (e) {
-        print(e);
+        logger(e);
       }
     }
 

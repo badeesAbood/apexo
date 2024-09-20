@@ -1,6 +1,6 @@
-// ignore_for_file: prefer_const_constructors
-
+import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Page;
+import 'package:flutter/cupertino.dart';
 import '../backend/observable/store.dart';
 import '../state/stores/settings/settings_model.dart';
 import '../state/stores/settings/settings_store.dart';
@@ -9,8 +9,13 @@ enum InputType { text, dropDown }
 
 enum Scope { device, app }
 
-class PageTwo extends StatelessWidget {
+class PageTwo extends ObservingWidget {
   const PageTwo({super.key});
+
+  @override
+  getObservableState() {
+    return [globalSettings.observableObject, localSettings.observableObject];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +139,7 @@ class SettingsItemState extends State<SettingsItem> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (widget.inputType == InputType.text)
-                      TextBox(
+                      CupertinoTextField(
                         controller: _controller,
                         onChanged: (value) => setState(() => _controller.text = value),
                       )

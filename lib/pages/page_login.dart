@@ -1,10 +1,16 @@
+import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import "package:flutter/cupertino.dart" show CupertinoTextField;
 import '../panel_logo.dart';
 import '../state/state.dart';
 
-class Login extends StatelessWidget {
+class Login extends ObservingWidget {
   Login({super.key});
+
+  @override
+  getObservableState() {
+    return [state];
+  }
 
   @override
   Widget build(BuildContext context) {

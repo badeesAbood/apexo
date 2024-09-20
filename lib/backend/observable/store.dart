@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:apexo/backend/utils/logger.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
 import 'model.dart';
@@ -28,7 +29,7 @@ class Store<G extends Model> {
   final Function? onSyncEnd;
   final ObservableList<G> observableObject;
   final Set<String> changes = {};
-  final SaveLocal? local;
+  SaveLocal? local;
   SaveRemote? remote;
   final int debounceMS;
   late Debouncer _debouncer;
@@ -44,7 +45,7 @@ class Store<G extends Model> {
     );
 
     // loading from local
-    loaded = _loadFromLocal();
+    loaded = loadFromLocal();
   }
 
   @mustCallSuper
@@ -63,7 +64,7 @@ class Store<G extends Model> {
     });
   }
 
-  Future<void> _loadFromLocal() async {
+  Future<void> loadFromLocal() async {
     if (local == null) {
       return;
     }
@@ -126,8 +127,8 @@ class Store<G extends Model> {
         synchronize();
         return;
       } catch (e) {
-        print("Will defer updates, due to error during sending.");
-        print(e);
+        logger("Will defer updates, due to error during sending.");
+        logger(e);
       }
     }
 
@@ -168,16 +169,14 @@ class Store<G extends Model> {
       List<int> remoteLosersIndices = [];
 
       // check conflicts: last write wins
-      deferred.removeWhere((dfID, dfTS) {
+      deferred.removeWhere((dfID, deferredTimeStamp) {
         int remoteConflictIndex = remoteUpdates.rows.indexWhere((r) => r.id == dfID);
         if (remoteConflictIndex == -1) {
+          // no conflict
           return false;
         }
-        int remoteTS = remoteUpdates.rows[remoteConflictIndex].ts;
-        if (remoteConflictIndex == -1) {
-          // no conflicts
-          return false;
-        } else if (dfTS > remoteTS) {
+        int remoteTimeStamp = remoteUpdates.rows[remoteConflictIndex].ts;
+        if (deferredTimeStamp > remoteTimeStamp) {
           // local update wins
           conflicts++;
           remoteLosersIndices.add(remoteConflictIndex);
@@ -191,7 +190,9 @@ class Store<G extends Model> {
       });
 
       // remove losers from remote updates
-      for (var index in remoteLosersIndices) {
+      // Sort indices in descending order
+      remoteLosersIndices.sort((a, b) => b.compareTo(a));
+      for (int index in remoteLosersIndices) {
         remoteUpdates.rows.removeAt(index);
       }
 
@@ -225,12 +226,12 @@ class Store<G extends Model> {
       // until the versions match
       // this is why there's another sync method below
 
-      await _loadFromLocal();
+      await loadFromLocal();
       return SyncResult(
           pulled: toLocalWrite.length, pushed: toRemoteWrite.length, conflicts: conflicts, exception: null);
     } catch (e, stacktrace) {
-      print("Error during synchronization: $e");
-      print(stacktrace);
+      logger("Error during synchronization: $e");
+      logger(stacktrace);
       return SyncResult(exception: e.toString());
     }
   }
@@ -258,14 +259,14 @@ class Store<G extends Model> {
       if (deferredPresent) return false;
       return await local!.getVersion() == await remote!.getVersion();
     } catch (e) {
-      print("error during inSync check: $e");
+      logger("error during inSync check: $e");
       return false;
     }
   }
 
   /// Reloads the store from the local database
   Future<void> reload() async {
-    await _loadFromLocal();
+    await loadFromLocal();
   }
 
   /// Returns a list of all the documents in the local database
@@ -274,7 +275,8 @@ class Store<G extends Model> {
   }
 
   /// gets a document by id
-  G get(String id) {
+  G? get(String id) {
+    if (docs.where((x) => x.id == id).isEmpty) return null;
     return docs.firstWhere((x) => x.id == id);
   }
 
@@ -335,13 +337,13 @@ class Store<G extends Model> {
       await remote!.clear();
       await remote!.put(dump.main.entries.map((e) => RowToWriteRemotely(id: e.key, data: e.value)).toList());
       await synchronize();
-      await _loadFromLocal();
+      await loadFromLocal();
     } catch (e) {
-      print("error during restoration $e");
+      logger("error during restoration $e");
     }
   }
 
-  notify() {
+  void notify() {
     observableObject.notifyView();
   }
 }

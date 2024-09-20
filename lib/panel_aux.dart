@@ -1,8 +1,14 @@
+import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import './state/state.dart';
 
-class AuxiliarySection extends StatelessWidget {
+class AuxiliarySection extends ObservingWidget {
+  @override
+  getObservableState() {
+    return [state];
+  }
+
   const AuxiliarySection({super.key});
   @override
   Widget build(BuildContext context) {

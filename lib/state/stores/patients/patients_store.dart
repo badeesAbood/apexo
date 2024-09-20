@@ -1,17 +1,16 @@
+import './patient_model.dart';
+import '../../state.dart';
 import '../../../backend/observable/save_local.dart';
 import '../../../backend/observable/save_remote.dart';
 import '../../../global_actions.dart';
-import '../../../state/state.dart';
-import './recipes_model.dart';
 import '../../../backend/observable/store.dart';
 
-const _storeName = "recipes_w";
+const _storeName = "patients";
 
-class Recipes extends Store<Recipe> {
-  Recipes()
+class Patients extends Store<Patient> {
+  Patients()
       : super(
-          modeling: Recipe.fromJson,
-          local: SaveLocal(_storeName),
+          modeling: Patient.fromJson,
           onSyncStart: () {
             state.isSyncing++;
             state.notify();
@@ -31,6 +30,9 @@ class Recipes extends Store<Recipe> {
       final dbURL = credentials[0];
       final token = credentials[1];
 
+      local = SaveLocal(_storeName);
+      await loadFromLocal();
+
       remote = SaveRemote(
         token: token,
         dbBranchUrl: dbURL,
@@ -44,7 +46,7 @@ class Recipes extends Store<Recipe> {
         },
       );
 
-      state.setLoadingIndicator("Synchronizing recipes");
+      state.setLoadingIndicator("Synchronizing patients");
       await synchronize();
 
       globalActions.syncCallbacks[_storeName] = synchronize;
@@ -52,10 +54,18 @@ class Recipes extends Store<Recipe> {
     };
   }
 
+  List<String> get allTags {
+    return Set<String>.from(present.expand((doc) => doc.tags)).toList();
+  }
+
+  List<Patient> get present {
+    return docs.where((doc) => doc.archived != true).toList();
+  }
+
   bool showArchived = false;
-  List<Recipe> get present {
-    if (showArchived) return recipes.docs;
-    return [...recipes.docs].where((doc) => doc.archived != true).toList();
+  List<Patient> get showing {
+    if (showArchived) return docs;
+    return present;
   }
 
   showArchivedChanged(bool? value) {
@@ -64,4 +74,5 @@ class Recipes extends Store<Recipe> {
   }
 }
 
-final recipes = Recipes();
+final patients = Patients();
+// don't forget to initialize it in main.dart

@@ -1,16 +1,16 @@
+import './member_model.dart';
+import '../../state.dart';
 import '../../../backend/observable/save_local.dart';
 import '../../../backend/observable/save_remote.dart';
 import '../../../global_actions.dart';
-import '../../../state/state.dart';
-import './appointment_model.dart';
 import '../../../backend/observable/store.dart';
 
-const _storeName = "appointments";
+const _storeName = "staff";
 
-class Appointments extends Store<Appointment> {
-  Appointments()
+class Staff extends Store<Member> {
+  Staff()
       : super(
-          modeling: Appointment.fromJson,
+          modeling: Member.fromJson,
           onSyncStart: () {
             state.isSyncing++;
             state.notify();
@@ -46,7 +46,7 @@ class Appointments extends Store<Appointment> {
         },
       );
 
-      state.setLoadingIndicator("Synchronizing appointments");
+      state.setLoadingIndicator("Synchronizing staff members");
       await synchronize();
 
       globalActions.syncCallbacks[_storeName] = synchronize;
@@ -54,33 +54,25 @@ class Appointments extends Store<Appointment> {
     };
   }
 
-  bool showArchived = false;
+  List<Member> get presentAndOperate {
+    return docs.where((doc) => doc.archived != true && doc.operates).toList();
+  }
 
-  String staffId = "";
-
-  List<Appointment> get present {
-    if (showArchived) return docs;
+  List<Member> get present {
     return docs.where((doc) => doc.archived != true).toList();
   }
 
-  List<Appointment> get filtered {
-    if (staffId.isEmpty) return present;
-    return present.where((doc) => doc.operatorsIDs.contains(staffId)).toList();
-  }
-
-  List<String> get allPrescriptions {
-    return Set<String>.from(present.expand((doc) => doc.prescriptions)).toList();
+  bool showArchived = false;
+  List<Member> get showing {
+    if (showArchived) return docs;
+    return present;
   }
 
   showArchivedChanged(bool? value) {
     showArchived = value ?? false;
     notify();
   }
-
-  filterByStaff(String? value) {
-    staffId = value ?? "";
-    notify();
-  }
 }
 
-final appointments = Appointments();
+final staff = Staff();
+// don't forget to initialize it in main.dart

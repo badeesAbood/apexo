@@ -1,17 +1,24 @@
+import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/pages/page_patients.dart';
+import 'package:apexo/state/stores/appointments/appointment_model.dart';
+import 'package:apexo/state/stores/patients/patient_model.dart';
+import 'package:apexo/state/stores/patients/patients_store.dart';
+import 'package:apexo/state/stores/staff/member_model.dart';
+import 'package:apexo/state/stores/staff/staff_store.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Page;
 import '../i18/index.dart';
 import '../pages/page_calendar.dart';
-import '../pages/page_recipes.dart';
+import '../pages/page_staff.dart';
 import '../pages/page_settings.dart';
 import '../backend/observable/observable.dart';
 import "../state/stores/appointments/appointments_store.dart";
-import "../state/stores/recipes/recipes_store.dart";
 import "../state/stores/settings/settings_store.dart";
 
 class Page {
   IconData icon;
   String title;
-  StatelessWidget Function() body;
+  String identifier;
+  ObservingWidget Function() body;
 
   /// show in the navigation pane and thus being activated
   bool show;
@@ -27,6 +34,7 @@ class Page {
 
   Page({
     required this.title,
+    required this.identifier,
     required this.icon,
     required this.body,
     this.show = true,
@@ -39,7 +47,30 @@ class Page {
 class Pages extends ObservableObject {
   final List<Page> allPages = [
     Page(
-      title: "My page",
+      title: "Staff",
+      identifier: "staff",
+      icon: FluentIcons.medical,
+      body: StaffMembers.new,
+      show: true,
+      dominant: false,
+      onSelect: () {
+        staff.synchronize();
+      },
+    ),
+    Page(
+      title: "Patients",
+      identifier: "patients",
+      icon: FluentIcons.medication_admin,
+      body: PatientPage.new,
+      show: true,
+      dominant: false,
+      onSelect: () {
+        patients.synchronize();
+      },
+    ),
+    Page(
+      title: "Appointments calendar",
+      identifier: "calendar",
       icon: FluentIcons.calendar,
       body: Calendar.new,
       show: true,
@@ -48,17 +79,8 @@ class Pages extends ObservableObject {
       },
     ),
     Page(
-      title: locale.selected.recipes,
-      icon: FluentIcons.accept,
-      body: PageOne.new,
-      show: true,
-      dominant: false,
-      onSelect: () {
-        recipes.synchronize();
-      },
-    ),
-    Page(
-      title: locale.selected.settings,
+      title: locale.s.settings,
+      identifier: "settings",
       icon: FluentIcons.view,
       body: PageTwo.new,
       show: true,
@@ -72,6 +94,13 @@ class Pages extends ObservableObject {
 
   int currentPageIndex = 0;
   List<int> history = [];
+
+  // bottom sheets
+  Patient openPatient = Patient.fromJson({});
+  Appointment openAppointment = Appointment.fromJson({});
+  Member openMember = Member.fromJson({});
+
+  int selectedTabInSheet = 0;
 
   Page get currentPage {
     return activePages[currentPageIndex];
@@ -106,6 +135,12 @@ class Pages extends ObservableObject {
       currentPage.onSelect!();
     }
     notify();
+  }
+
+  Page? getByIdentifier(String identifier) {
+    var target = allPages.where((element) => element.identifier == identifier);
+    if (target.isEmpty) return null;
+    return target.first;
   }
 }
 

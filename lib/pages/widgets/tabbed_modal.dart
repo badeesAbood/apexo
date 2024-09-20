@@ -3,31 +3,36 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 // ignore: must_be_immutable
 class _Sheet extends StatefulWidget {
-  int selectedIndex = 0;
   List<TabbedModal> tabs;
   double height = 500;
 
   _Sheet(this.tabs);
 
   @override
-  State<StatefulWidget> createState() => _SheetState();
+  State<StatefulWidget> createState() => SheetState();
 }
 
-class _SheetState extends State<_Sheet> {
+class SheetState extends State<_Sheet> {
+  int selectedTab = 0;
+
+  notify() {
+    if (mounted) setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
         alignment: AlignmentDirectional.bottomEnd,
         width: 350,
-        height: widget.tabs[widget.selectedIndex].content().length * 95 + 100,
+        height: widget.tabs[selectedTab].content(this).length * widget.tabs[selectedTab].heightFactor + 100,
         margin: const EdgeInsets.fromLTRB(12, 40, 12, 12),
         child: TabView(
-            currentIndex: widget.selectedIndex,
+            currentIndex: selectedTab,
             tabWidthBehavior: TabWidthBehavior.compact,
             onChanged: (index) {
               setState(() {
-                widget.selectedIndex = index;
+                selectedTab = index;
               });
             },
             tabs: widget.tabs
@@ -37,7 +42,7 @@ class _SheetState extends State<_Sheet> {
                       onClosed: () {
                         Navigator.pop(context);
                       },
-                      closeIcon: (tab.closable && widget.tabs.indexOf(tab) == widget.selectedIndex)
+                      closeIcon: (tab.closable && widget.tabs.indexOf(tab) == selectedTab)
                           ? const Icon(FluentIcons.clear)
                           : null,
                       backgroundColor: const Color.fromARGB(255, 194, 194, 194),
@@ -50,14 +55,15 @@ class _SheetState extends State<_Sheet> {
                           children: [
                             Expanded(
                               child: ListView(
-                                padding: const EdgeInsets.all(20),
+                                padding: EdgeInsets.all(tab.padding),
                                 children: tab
-                                    .content()
-                                    .map((e) => Padding(padding: const EdgeInsets.only(bottom: 20), child: e))
+                                    .content(this)
+                                    .map((e) => Padding(padding: EdgeInsets.only(bottom: tab.spacing), child: e))
                                     .toList(),
                               ),
                             ),
-                            if (tab.actions.isNotEmpty) _buildActions(tab, context)
+                            if (tab.actions.isNotEmpty) _buildActions(tab, context),
+                            if (tab.footer != null) _buildFooter(tab, context),
                           ],
                         ),
                       ),
@@ -65,6 +71,20 @@ class _SheetState extends State<_Sheet> {
                 .toList()),
       );
     });
+  }
+
+  Container _buildFooter(TabbedModal tab, BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(color: Colors.grey.withOpacity(0.05)),
+          color: const Color.fromARGB(255, 240, 240, 240)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: tab.footer,
+      ),
+    );
   }
 
   Container _buildActions(TabbedModal tab, BuildContext context) {
@@ -83,7 +103,7 @@ class _SheetState extends State<_Sheet> {
                   style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(action.color)),
                   onPressed: () {
                     if (action.callback()) {
-                      Navigator.of(context).pop();
+                      Navigator.pop(context);
                     }
                   },
                   child: Row(
@@ -109,13 +129,21 @@ class TabbedModal {
   String title;
   IconData icon;
   bool closable;
-  List<Widget> Function() content;
+  List<Widget> Function(SheetState) content;
   List<TabAction> actions;
+  double spacing;
+  double padding;
+  double heightFactor;
+  Widget? footer;
   TabbedModal({
     required this.title,
     required this.icon,
     required this.closable,
     required this.content,
+    this.footer,
+    this.spacing = 20,
+    this.padding = 20,
+    this.heightFactor = 95,
     this.actions = const [],
   });
 }
@@ -123,7 +151,6 @@ class TabbedModal {
 void showTabbedModal({
   required BuildContext context,
   required List<TabbedModal> tabs,
-  int initiallySelected = 0,
 }) async {
   assert(debugCheckHasMediaQuery(context));
   await Navigator.of(context, rootNavigator: true).push(ModalSheetRoute(
