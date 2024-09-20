@@ -1,4 +1,4 @@
-package com.example.flutter2
+package com.example.apexo
 
 import io.flutter.embedding.android.FlutterActivity
 

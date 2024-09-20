@@ -1,6 +1,6 @@
 # apexo
 
-A new Flutter project.
+Dental clinic management system
 
 ## Getting Started
 

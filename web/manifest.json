@@ -1,11 +1,11 @@
 {
-    "name": "flutter2",
-    "short_name": "flutter2",
+    "name": "apexo",
+    "short_name": "apexo",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Dental clinic management system",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
