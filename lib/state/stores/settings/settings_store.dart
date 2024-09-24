@@ -85,11 +85,6 @@ class LocalSettings extends Store<Setting> {
       });
     });
   }
-
-  @override
-  init() {
-    super.init();
-  }
 }
 
 final globalSettings = GlobalSettings();
