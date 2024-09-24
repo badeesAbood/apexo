@@ -54,12 +54,10 @@ class Appointments extends Store<Appointment> {
     };
   }
 
-  bool showArchived = false;
-
   String staffId = "";
 
   List<Appointment> get present {
-    if (showArchived) return docs;
+    if (state.showArchived) return docs;
     return docs.where((doc) => doc.archived != true).toList();
   }
 
@@ -70,11 +68,6 @@ class Appointments extends Store<Appointment> {
 
   List<String> get allPrescriptions {
     return Set<String>.from(present.expand((doc) => doc.prescriptions)).toList();
-  }
-
-  showArchivedChanged(bool? value) {
-    showArchived = value ?? false;
-    notify();
   }
 
   filterByStaff(String? value) {

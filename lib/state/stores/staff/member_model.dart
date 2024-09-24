@@ -11,7 +11,8 @@ class Member extends Model {
   }
 
   List<Appointment> get upcomingAppointments {
-    return allAppointments.where((x) => x.date().isAfter(DateTime.now())).toList();
+    return allAppointments.where((x) => x.date().isAfter(DateTime.now())).toList()
+      ..sort((a, b) => a.date().compareTo(b.date()));
   }
 
   List<Appointment> get pastDoneAppointments {

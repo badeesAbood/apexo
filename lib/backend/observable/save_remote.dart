@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
+import 'package:apexo/backend/utils/imgs.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
+
+import 'package:mime/mime.dart';
 
 class RowToWriteRemotely {
   String id;
@@ -96,7 +100,7 @@ class SaveRemote {
               'Content-Type': "application/json",
             },
             body: jsonEncode({
-              "columns": ["id", "data", "xata.updatedAt"],
+              "columns": ["id", "data", "xata.updatedAt", "imgs"],
               if (cursor.isEmpty)
                 "filter": {
                   "store": store,
@@ -119,6 +123,14 @@ class SaveRemote {
       Map<String, dynamic> queryResult = jsonDecode(utf8.decode(response.bodyBytes));
 
       List rows = queryResult["records"];
+
+      // handle uploaded images
+      for (var r in rows) {
+        for (var img in r["imgs"]) {
+          await saveImageFromUrl(img["url"], img["name"]);
+        }
+      }
+
       Iterable<Row> formattedRows = rows.map((row) =>
           Row(id: row["id"], data: row["data"], ts: DateTime.parse(row["xata"]["updatedAt"]).millisecondsSinceEpoch));
       result.addAll(formattedRows);
@@ -170,11 +182,7 @@ class SaveRemote {
   }
 
   Future<bool> put(List<RowToWriteRemotely> data) async {
-    for (var row in data) {
-      row.store = store;
-    }
-
-    final url = '$dbBranchUrl/tables/$tableName/bulk';
+    final url = '$dbBranchUrl/transaction';
 
     http.Response response;
     try {
@@ -185,9 +193,109 @@ class SaveRemote {
           'Content-Type': "application/json",
         },
         body: jsonEncode({
-          "records": data,
+          "operations": data.map((r) {
+            return {
+              "update": {
+                "table": tableName,
+                "id": r.id,
+                "fields": {
+                  "store": store,
+                  "data": r.data,
+                },
+                "upsert": true
+              }
+            };
+          }).toList(),
         }),
       ));
+    } catch (e) {
+      await checkOnline();
+      rethrow;
+    }
+
+    if (response.statusCode > 299) {
+      throw response.body;
+    }
+    return true;
+  }
+
+  Future<bool> uploadImages(String rowID, List<String> paths) async {
+    print(paths);
+    print("-----------------");
+    final files = paths.map((p) => File(p)).toList();
+    final filenames = paths.map((p) => p.split('/').last).toList();
+    final url = '$dbBranchUrl/tables/$tableName/data/$rowID';
+
+    http.Response response;
+    try {
+      // get older files
+      final olderFiles = await http.get(Uri.parse(url), headers: {"Authorization": "Bearer $token"});
+      final olderIds = jsonDecode(olderFiles.body)["imgs"].map((e) => e["id"]).toList();
+
+      // Read the file content as bytes
+      final filesBytes = await Future.wait(files.map((file) => file.readAsBytes()).toList());
+      final base64Strings = filesBytes.map((bytes) => base64Encode(bytes)).toList();
+      final mimeTypes = files.map((file) => lookupMimeType(file.path) ?? "application/octet-stream").toList();
+
+      final List<Map<String, String>> newFiles = [];
+
+      for (int i = 0; i < files.length; i++) {
+        newFiles.add({
+          "base64Content": base64Strings[i],
+          "name": filenames[i],
+          "mediaType": mimeTypes[i],
+        });
+      }
+
+      // Send the PUT request
+      response = await http.patch(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          "imgs": [
+            ...olderIds.map((id) => {"id": id}),
+            ...newFiles,
+          ]
+        }),
+      );
+    } catch (e) {
+      await checkOnline();
+      rethrow;
+    }
+
+    if (response.statusCode > 299) {
+      throw response.body;
+    }
+    return true;
+  }
+
+  Future<bool> deleteImages(String rowID, List<String> paths) async {
+    final filenames = paths.map((p) => p.split('/').last).toList();
+    final url = '$dbBranchUrl/tables/$tableName/data/$rowID';
+
+    http.Response response;
+    try {
+      // get older files
+      final uploaded = await http.get(Uri.parse(url), headers: {"Authorization": "Bearer $token"});
+      final uploadedMetadata = jsonDecode(uploaded.body)["imgs"].toList();
+      final keepMetadata = uploadedMetadata.where((m) => !filenames.contains(m["name"])).toList();
+
+      // Send the PATCH request
+      response = await http.patch(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          "imgs": [
+            ...keepMetadata.map((metadata) => {"id": metadata["id"]}),
+          ]
+        }),
+      );
     } catch (e) {
       await checkOnline();
       rethrow;

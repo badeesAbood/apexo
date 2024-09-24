@@ -8,7 +8,7 @@ TabAction archiveButton<T extends Model>(T item, Store<T> store) {
     text: item.archived == true ? "Unarchive" : "Archive",
     icon: item.archived == true ? FluentIcons.archive_undo : FluentIcons.archive_undo,
     color: item.archived == true ? Colors.grey : Colors.warningPrimaryColor,
-    callback: () {
+    callback: (_) {
       item.archived = !(item.archived ?? false);
       store.modify(item);
       return true;

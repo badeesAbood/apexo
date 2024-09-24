@@ -4,7 +4,9 @@ class Model {
   String id;
   bool? archived;
   String title;
-  String? imgUrl;
+  String? get avatar {
+    return null;
+  }
 
   Model.fromJson(Map<String, dynamic> json)
       : id = uuid(),
@@ -12,7 +14,6 @@ class Model {
     id = json["id"] ?? id;
     archived = json["archived"];
     title = json["title"] ?? title;
-    imgUrl = json["imgUrl"];
   }
 
   Map<String, String> get labels {
@@ -26,8 +27,6 @@ class Model {
     json['id'] = id;
     if (archived != d.archived) json['archived'] = archived;
     if (title != d.title) json["title"] = title;
-    if (imgUrl != d.imgUrl) json["imgUrl"] = imgUrl;
-
     return json;
   }
 }

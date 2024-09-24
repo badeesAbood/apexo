@@ -4,7 +4,6 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import '../../../backend/utils/colors_without_yellow.dart';
 import '../../../backend/observable/model.dart';
-import '../../../backend/utils/get_deterministic_item.dart';
 import './acrylic_title.dart';
 
 class _SortableItem<Item> {
@@ -195,7 +194,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
       padding: const EdgeInsets.all(1.5),
       child: Acrylic(
         child: ListTile(
-          contentPadding: EdgeInsets.all(0),
+          contentPadding: const EdgeInsets.all(0),
           title: Container(
             margin: const EdgeInsets.fromLTRB(5, 5, 5, 0),
             decoration: BoxDecoration(
@@ -231,7 +230,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AcrylicTitle(radius: 20, item: item),
+              AcrylicTitle(key: Key(item.id), radius: 20, item: item),
               ...nonEmptyLabels
                   .map((l) => _buildLabelPill(l, item, colorsWithoutYellow[getCycledNumber(nonEmptyLabels.indexOf(l))]))
             ],

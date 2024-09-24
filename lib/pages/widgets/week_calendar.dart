@@ -2,9 +2,8 @@ import 'dart:math';
 
 import 'package:apexo/backend/observable/observable.dart';
 import 'package:apexo/state/stores/appointments/appointment_model.dart';
-import 'package:apexo/state/stores/staff/staff_store.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Card;
-import 'package:flutter/material.dart' show showTimePicker, showDatePicker, TimeOfDay, FloatingActionButton, Card;
+import 'package:flutter/material.dart' show showTimePicker, showDatePicker, TimeOfDay, Card;
 import 'package:intl/intl.dart';
 import '../../backend/observable/model.dart';
 import '../../backend/utils/colors_without_yellow.dart';
@@ -274,7 +273,7 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
           Item item = sortedItems[index];
           return Padding(
             padding: const EdgeInsets.all(1),
-            child: AppointmentTile<Item>(
+            child: AppointmentAcrylicTile<Item>(
               item: item,
               onSetTime: (item) {
                 widget.onSetTime(item);
@@ -322,8 +321,8 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
   }
 }
 
-class AppointmentTile<Item extends AgendaItem> extends StatelessWidget {
-  const AppointmentTile({
+class AppointmentAcrylicTile<Item extends AgendaItem> extends StatelessWidget {
+  const AppointmentAcrylicTile({
     super.key,
     required this.item,
     required this.onSetTime,

@@ -52,6 +52,15 @@ class Patient extends Model {
     return DateTime.now().difference(doneAppointments.last.date()).inDays;
   }
 
+  List<String> get imgs {
+    return allAppointments.expand((a) => a.imgs).toList();
+  }
+
+  @override
+  get avatar {
+    return imgs.isNotEmpty ? imgs.first : null;
+  }
+
   @override
   Map<String, String> get labels {
     Map<String, String> buildingLabels = {

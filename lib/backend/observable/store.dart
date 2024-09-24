@@ -124,6 +124,8 @@ class Store<G extends Model> {
         changes.clear();
         onSyncEnd?.call();
         // while we have the connection lets synchronize
+        // don't put "await" before synchronize() since we don't want catch the error
+        // if it gets caught it means the same file will be placed in deferred
         synchronize();
         return;
       } catch (e) {
@@ -198,14 +200,45 @@ class Store<G extends Model> {
 
       Map<String, String> toLocalWrite = Map.fromEntries(remoteUpdates.rows.map((r) => MapEntry(r.id, r.data)));
 
-      Map<String, String> toRemoteWrite = Map.fromEntries(
-          await Future.wait(deferred.entries.map((entry) async => MapEntry(entry.key, await local!.get(entry.key)))));
+      // those will be built in the for loop below
+      Map<String, String> toRemoteWrite = {};
+      Map<String, List<String>> toUploadFiles = {};
+      Map<String, List<String>> toRemoveFiles = {};
+
+      for (var entry in deferred.entries) {
+        if (entry.key.startsWith("FILE")) {
+          List<String> deferredFile = entry.key.split("||");
+          if (deferredFile[1] == "R") {
+            if (!toRemoveFiles.containsKey(deferredFile[2])) {
+              toRemoveFiles[deferredFile[2]] = [];
+            }
+            toRemoveFiles[deferredFile[2]]!.addAll(deferredFile[3].split("#"));
+          } else {
+            if (!toUploadFiles.containsKey(deferredFile[2])) {
+              toUploadFiles[deferredFile[2]] = [];
+            }
+            toUploadFiles[deferredFile[2]]!.addAll(deferredFile[3].split("#"));
+          }
+        } else {
+          toRemoteWrite.addAll({entry.key: await local!.get(entry.key)});
+        }
+      }
 
       if (toLocalWrite.isNotEmpty) {
         await local!.put(toLocalWrite);
       }
       if (toRemoteWrite.isNotEmpty) {
         await remote!.put(toRemoteWrite.entries.map((e) => RowToWriteRemotely(id: e.key, data: e.value)).toList());
+      }
+      if (toUploadFiles.isNotEmpty) {
+        for (var element in toUploadFiles.entries) {
+          await remote!.uploadImages(element.key, element.value);
+        }
+      }
+      if (toRemoveFiles.isNotEmpty) {
+        for (var element in toRemoveFiles.entries) {
+          await remote!.deleteImages(element.key, element.value);
+        }
       }
 
       // reset deferred
@@ -343,6 +376,45 @@ class Store<G extends Model> {
     }
   }
 
+  /// upload set of files to a certain row
+  Future<void> images(String rowID, List<String> paths, [bool upload = true]) async {
+    onSyncStart?.call();
+    if (remote == null) throw Exception("remote persistence layer is not defined");
+    if (local == null) throw Exception("local persistence layer is not defined");
+
+    Map<String, int> lastDeferred = await local!.getDeferred();
+
+    if (remote!.isOnline && lastDeferred.isEmpty) {
+      try {
+        if (upload) {
+          await remote!.uploadImages(rowID, paths);
+        } else {
+          await remote!.deleteImages(rowID, paths);
+        }
+        onSyncEnd?.call();
+        synchronize();
+        return;
+      } catch (e) {
+        logger("Will defer upload, due to error during sending the file.");
+        logger(e);
+      }
+    }
+
+    /**
+     * If we reached here it means that its either
+     * 1. we're offline
+     * 2. there was an error during sending updates
+     * 3. there are already deferred updates
+     */
+    // DEFERRED Structure: "FILE||{U or R}||{rowID}||path1#path2#path3"
+    await local!.putDeferred({}
+      ..addAll(lastDeferred)
+      ..addAll({"FILE||${upload ? "U" : "R"}||$rowID||${paths.join("#")}": 0}));
+    deferredPresent = true;
+    onSyncEnd?.call();
+  }
+
+  /// notifies the view that the store has changed
   void notify() {
     observableObject.notifyView();
   }

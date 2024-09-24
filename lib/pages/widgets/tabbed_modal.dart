@@ -14,6 +14,10 @@ class _Sheet extends StatefulWidget {
 
 class SheetState extends State<_Sheet> {
   int selectedTab = 0;
+  bool progress = false;
+
+  startProgress() => setState(() => progress = true);
+  endProgress() => setState(() => progress = false);
 
   notify() {
     if (mounted) setState(() {});
@@ -25,7 +29,6 @@ class SheetState extends State<_Sheet> {
       return Container(
         alignment: AlignmentDirectional.bottomEnd,
         width: 350,
-        height: widget.tabs[selectedTab].content(this).length * widget.tabs[selectedTab].heightFactor + 100,
         margin: const EdgeInsets.fromLTRB(12, 40, 12, 12),
         child: TabView(
             currentIndex: selectedTab,
@@ -37,7 +40,16 @@ class SheetState extends State<_Sheet> {
             },
             tabs: widget.tabs
                 .map((tab) => Tab(
-                      text: Text(tab.title),
+                      text: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(tab.title),
+                          if (tab.headerToggle != null) ...[
+                            const SizedBox(width: 10),
+                            tab.headerToggle!(this),
+                          ]
+                        ],
+                      ),
                       icon: Icon(tab.icon),
                       onClosed: () {
                         Navigator.pop(context);
@@ -63,7 +75,6 @@ class SheetState extends State<_Sheet> {
                               ),
                             ),
                             if (tab.actions.isNotEmpty) _buildActions(tab, context),
-                            if (tab.footer != null) _buildFooter(tab, context),
                           ],
                         ),
                       ),
@@ -73,46 +84,32 @@ class SheetState extends State<_Sheet> {
     });
   }
 
-  Container _buildFooter(TabbedModal tab, BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          border: Border.all(color: Colors.grey.withOpacity(0.05)),
-          color: const Color.fromARGB(255, 240, 240, 240)),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: tab.footer,
-      ),
-    );
-  }
-
   Container _buildActions(TabbedModal tab, BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(5),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          border: Border.all(color: Colors.grey.withOpacity(0.05)),
-          color: const Color.fromARGB(255, 240, 240, 240)),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-          ...tab.actions.map((action) => Padding(
-                padding: const EdgeInsets.only(left: 5),
-                child: FilledButton(
-                  style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(action.color)),
-                  onPressed: () {
-                    if (action.callback()) {
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Row(
-                    children: [Icon(action.icon), const SizedBox(width: 10), Text(action.text)],
-                  ),
+          borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5), bottomRight: Radius.circular(5)),
+          color: Color.fromARGB(255, 255, 255, 255),
+          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, -2))]),
+      child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+        progress ? ProgressBar() : SizedBox(),
+        ...tab.actions.map((action) => Padding(
+              padding: const EdgeInsets.only(left: 5),
+              child: FilledButton(
+                style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(progress ? Colors.grey.withOpacity(0.4) : action.color)),
+                onPressed: () {
+                  if (progress) return;
+                  if (action.callback(this)) {
+                    Navigator.pop(context);
+                  }
+                },
+                child: Row(
+                  children: [Icon(action.icon), const SizedBox(width: 10), Text(action.text)],
                 ),
-              ))
-        ]),
-      ),
+              ),
+            ))
+      ]),
     );
   }
 }
@@ -121,7 +118,7 @@ class TabAction {
   String text;
   IconData icon;
   Color? color;
-  bool Function() callback;
+  bool Function(SheetState) callback;
   TabAction({required this.text, required this.callback, required this.icon, this.color});
 }
 
@@ -133,17 +130,16 @@ class TabbedModal {
   List<TabAction> actions;
   double spacing;
   double padding;
-  double heightFactor;
-  Widget? footer;
+  Widget Function(SheetState)? headerToggle;
+
   TabbedModal({
     required this.title,
     required this.icon,
     required this.closable,
     required this.content,
-    this.footer,
+    this.headerToggle,
     this.spacing = 20,
     this.padding = 20,
-    this.heightFactor = 95,
     this.actions = const [],
   });
 }

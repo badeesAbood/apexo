@@ -1,24 +1,21 @@
-import 'package:apexo/backend/observable/model.dart';
 import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:apexo/pages/index.dart';
 import 'package:apexo/pages/page_calendar.dart';
-import 'package:apexo/pages/widgets/acrylic_title.dart';
+import 'package:apexo/pages/widgets/appointment_card.dart';
+import 'package:apexo/pages/widgets/archive_toggle.dart';
 import 'package:apexo/pages/widgets/tag_input.dart';
-import 'package:apexo/pages/widgets/week_calendar.dart';
-import 'package:apexo/state/stores/appointments/appointment_model.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
 import 'package:apexo/state/stores/patients/patient_model.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide TextBox;
 import 'package:flutter/cupertino.dart';
-import 'package:intl/intl.dart';
 import 'widgets/archive_button.dart';
 import "widgets/datatable.dart";
 import "widgets/tabbed_modal.dart";
 
 // ignore: must_be_immutable
 class PatientPage extends ObservingWidget {
-  PatientPage({super.key});
+  const PatientPage({super.key});
 
   @override
   getObservableState() {
@@ -53,14 +50,7 @@ class PatientPage extends ObservingWidget {
               icon: FluentIcons.archive,
               title: "Archive Selected")
         ],
-        furtherActions: [
-          const SizedBox(width: 5),
-          Checkbox(
-            style: const CheckboxThemeData(icon: FluentIcons.archive),
-            checked: patients.showArchived,
-            onChanged: patients.showArchivedChanged,
-          )
-        ],
+        furtherActions: [const SizedBox(width: 5), ArchiveToggle(notifier: patients.notify)],
         onSelect: (item) {
           openSinglePatient(
             context: context,
@@ -87,7 +77,7 @@ openSinglePatient({
     TabAction(
       text: "Save",
       icon: FluentIcons.save,
-      callback: () {
+      callback: (_) {
         onSave(pages.openPatient);
         return true;
       },
@@ -209,129 +199,56 @@ openSinglePatient({
       ],
       actions: actions,
     ),
-    if (editing) appointmentsTab(context),
-    if (editing) financesTab(context)
+    if (editing) appointmentsTab(context)
   ]);
 }
 
 TabbedModal appointmentsTab(BuildContext context) {
   return TabbedModal(
-      title: "Appointments",
-      icon: FluentIcons.calendar,
-      closable: true,
-      spacing: 0,
-      padding: pages.openPatient.allAppointments.isEmpty ? 15 : 5,
-      content: (state) => pages.openPatient.allAppointments.isEmpty
-          ? const [InfoBar(title: Text("No appointments for this patient are found, use the button below to add one."))]
-          : pages.openPatient.allAppointments
-              .map((e) => AppointmentTile(
-                    item: e,
-                    onSetTime: (item) {},
-                    onSelect: (item) {
-                      openSingleAppointment(
-                        context: context,
-                        json: item.toJson(),
-                        title: "Editing appointment",
-                        onSave: appointments.modify,
-                        editing: true,
-                      );
-                    },
-                    showLeadingIcon: false,
-                    showFullDate: true,
-                    showSubtitleLine2: false,
-                    inModal: true,
-                  ))
-              .toList(),
-      actions: [
-        TabAction(
-          text: "New appointment",
-          icon: FluentIcons.add_event,
-          callback: () {
-            openSingleAppointment(
-              context: context,
-              json: {"patientID": pages.openPatient.id},
-              title: "New appointment",
-              onSave: appointments.add,
-              editing: false,
-            );
-            return false;
-          },
-        ),
-      ]);
-}
-
-// TODO: implment the checkbox (whether to account for entry or not)
-TabbedModal financesTab(BuildContext context) {
-  return TabbedModal(
-    title: "Finances",
-    icon: FluentIcons.money,
+    title: "Appointments",
+    icon: FluentIcons.calendar,
     closable: true,
-    spacing: 5,
-    padding: 5,
-    heightFactor: pages.openPatient.doneAppointments.isEmpty ? 105 : 65,
-    content: (state) => pages.openPatient.doneAppointments.isEmpty
+    spacing: 0,
+    padding: 0,
+    headerToggle: (state) => ArchiveToggle(notifier: state.notify),
+    content: (state) => pages.openPatient.allAppointments.isEmpty
         ? const [
             InfoBar(
-                title: Text("No appointments for this patient have been done, hence no financial data is available."))
+                title: Text("No appointments found for this patient, use the button below to add new appointment.")),
           ]
-        : pages.openPatient.doneAppointments.map((appointment) => _buildFinanceLine(context, appointment)).toList(),
-    footer: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Text("${pages.openPatient.doneAppointments.length} appointments"),
-      financesPaymentsNumbersToWidgets(pages.openPatient.paymentsMade, pages.openPatient.pricesGiven),
-    ]),
+        : [
+            ...pages.openPatient.allAppointments.map((appointment) {
+              String? difference;
+              int index = pages.openPatient.allAppointments.indexOf(appointment);
+              if (pages.openPatient.allAppointments.last != appointment) {
+                int differenceInDays =
+                    appointment.date().difference(pages.openPatient.allAppointments[index + 1].date()).inDays.abs();
+
+                difference = "after $differenceInDays day${differenceInDays > 1 ? "s" : ""}";
+              }
+              return AppointmentCard(
+                key: Key(appointment.id),
+                appointment: appointment,
+                difference: difference,
+                hide: const [AppointmentSections.patient],
+              );
+            })
+          ],
+    actions: [
+      TabAction(
+        text: "New appointment",
+        icon: FluentIcons.add_event,
+        callback: (_) {
+          openSingleAppointment(
+            context: context,
+            json: {"patientID": pages.openPatient.id},
+            title: "New appointment",
+            onSave: appointments.add,
+            editing: false,
+          );
+          return false;
+        },
+      ),
+    ],
   );
-}
-
-Container _buildFinanceLine(BuildContext context, Appointment appointment) {
-  return Container(
-    decoration: BoxDecoration(
-      border: Border.all(
-        color: colorBasedOnPayments(appointment.paid, appointment.price).withOpacity(0.1),
-      ),
-      color: Colors.white,
-    ),
-    child: ListTile(
-      leading: Checkbox(checked: false, onChanged: (_) {}),
-      onPressed: () => openSingleAppointment(
-        context: context,
-        json: appointment.toJson(),
-        title: "Editing appointment",
-        onSave: appointments.modify,
-        editing: true,
-      ),
-      title: AcrylicTitle(
-        radius: 5,
-        item: Model.fromJson({"title": " ${DateFormat("dd/MM/yyyy").format(appointment.date())} "}),
-        predefinedColor: colorBasedOnPayments(appointment.paid, appointment.price),
-        maxWidth: 200,
-      ),
-      trailing: financesPaymentsNumbersToWidgets(appointment.paid, appointment.price),
-    ),
-  );
-}
-
-Widget financesPaymentsNumbersToWidgets(double paid, double price) {
-  bool isOOverPaid = paid > price;
-  bool isUnderpaid = paid < price;
-  double difference = (price - paid).abs();
-
-  return Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-    Text("$paid / $price",
-        style: TextStyle(fontSize: 12, backgroundColor: colorBasedOnPayments(paid, price).withOpacity(0.1))),
-    Text(
-      "${isOOverPaid ? "Overpaid:" : isUnderpaid ? "Underpaid:" : "Paid:"}${difference == 0 ? " $paid" : " $difference"}",
-      style: TextStyle(
-          color: colorBasedOnPayments(paid, price), fontWeight: difference != 0 ? FontWeight.bold : null, fontSize: 12),
-    ),
-  ]);
-}
-
-Color colorBasedOnPayments(double paid, double price) {
-  bool isOOverPaid = paid > price;
-  bool isUnderpaid = paid < price;
-  return isOOverPaid
-      ? Colors.blue
-      : isUnderpaid
-          ? Colors.red
-          : Colors.grey;
 }

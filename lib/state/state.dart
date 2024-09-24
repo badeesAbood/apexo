@@ -21,6 +21,12 @@ class State extends ObservablePersistingObject {
   bool isOnline = false;
   bool proceededOffline = true;
 
+  bool showArchived = false;
+  showArchivedChanged(bool? value) {
+    showArchived = value ?? false;
+    notify();
+  }
+
   // login related state
 
   // login page state:

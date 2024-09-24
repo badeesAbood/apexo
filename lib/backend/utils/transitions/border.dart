@@ -29,7 +29,7 @@ class _BorderColorTransitionState extends State<BorderColorTransition> with Sing
     )..repeat(reverse: true);
 
     _colorAnimation = ColorTween(
-      begin: Colors.blue,
+      begin: Colors.white,
       end: Colors.transparent,
     ).animate(_controller);
   }

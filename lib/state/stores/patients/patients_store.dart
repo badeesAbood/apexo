@@ -62,15 +62,9 @@ class Patients extends Store<Patient> {
     return docs.where((doc) => doc.archived != true).toList();
   }
 
-  bool showArchived = false;
   List<Patient> get showing {
-    if (showArchived) return docs;
+    if (state.showArchived) return docs;
     return present;
-  }
-
-  showArchivedChanged(bool? value) {
-    showArchived = value ?? false;
-    notify();
   }
 }
 

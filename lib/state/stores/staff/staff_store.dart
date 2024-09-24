@@ -62,15 +62,9 @@ class Staff extends Store<Member> {
     return docs.where((doc) => doc.archived != true).toList();
   }
 
-  bool showArchived = false;
   List<Member> get showing {
-    if (showArchived) return docs;
+    if (state.showArchived) return docs;
     return present;
-  }
-
-  showArchivedChanged(bool? value) {
-    showArchived = value ?? false;
-    notify();
   }
 }
 

@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/backend/utils/imgs.dart';
+import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/pages/index.dart';
 import 'package:apexo/pages/page_patients.dart';
 import 'package:apexo/pages/page_staff.dart';
 import 'package:apexo/pages/widgets/acrylic_button.dart';
+import 'package:apexo/pages/widgets/archive_toggle.dart';
 import 'package:apexo/pages/widgets/date_time_picker.dart';
+import 'package:apexo/pages/widgets/grid_gallery.dart';
 import 'package:apexo/pages/widgets/tag_input.dart';
 import 'package:apexo/state/stores/patients/patient_model.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
@@ -16,9 +22,10 @@ import './widgets/archive_button.dart';
 import './widgets/week_calendar.dart';
 import '../../state/stores/appointments/appointment_model.dart';
 import '../../state/stores/appointments/appointments_store.dart';
+import 'package:image_picker/image_picker.dart';
 
-// ignore: must_be_immutable
 class Calendar extends ObservingWidget {
+  // ignore: prefer_const_constructors_in_immutables
   Calendar({super.key});
 
   @override
@@ -40,10 +47,10 @@ class Calendar extends ObservingWidget {
                 value: "",
                 child: Text("All operators"),
               ),
-              ...staff.present.map((e) {
+              ...staff.present.where((m) => m.operates).map((e) {
                 var doctorName = e.title;
                 if (doctorName.length > 20) {
-                  doctorName = doctorName.substring(0, 17) + "...";
+                  doctorName = "${doctorName.substring(0, 17)}...";
                 }
                 return ComboBoxItem(value: e.id, child: Text(doctorName));
               }),
@@ -52,11 +59,7 @@ class Calendar extends ObservingWidget {
             value: appointments.staffId,
           ),
           const SizedBox(width: 5),
-          Checkbox(
-            checked: appointments.showArchived,
-            onChanged: appointments.showArchivedChanged,
-            style: const CheckboxThemeData(icon: FluentIcons.archive),
-          )
+          ArchiveToggle(notifier: appointments.notify)
         ],
         startDay: "saturday",
         initiallySelectedDay: DateTime.now().millisecondsSinceEpoch,
@@ -105,7 +108,7 @@ openSingleAppointment({
     TabAction(
       text: "Save",
       icon: FluentIcons.save,
-      callback: () {
+      callback: (_) {
         onSave(pages.openAppointment);
         return true;
       },
@@ -119,7 +122,6 @@ openSingleAppointment({
       icon: FluentIcons.add_event,
       closable: true,
       actions: actions,
-      heightFactor: 110,
       content: (state) => [
         InfoLabel(
           label: "Patient:",
@@ -308,6 +310,65 @@ openSingleAppointment({
               ),
             ],
           )
+        ],
+      ),
+    if (editing)
+      TabbedModal(
+        title: "Gallery",
+        icon: FluentIcons.camera,
+        closable: true,
+        padding: 0,
+        spacing: 0,
+        actions: [
+          TabAction(
+            text: "Add photos",
+            callback: (state) {
+              () async {
+                List<XFile> res = await ImagePicker().pickMultiImage();
+                state.startProgress();
+                try {
+                  // copy image
+                  List<File> files = [];
+                  for (var img in res) {
+                    files.add(await savePickedImage(img));
+                  }
+                  // upload images
+                  await appointments.images(pages.openAppointment.id, files.map((f) => f.path).toList());
+                  // update the model
+                  pages.openAppointment.imgs.addAll(res.map((e) => e.name).toList());
+                  appointments.modify(pages.openAppointment);
+                } catch (e) {
+                  logger(e);
+                }
+                state.endProgress();
+              }();
+              return false;
+            },
+            icon: FluentIcons.photo2_add,
+          )
+        ],
+        content: (state) => [
+          pages.openAppointment.imgs.isEmpty
+              ? const InfoBar(
+                  title: Text("Empty gallery"),
+                  content: Text("Currently the gallery for this appointment is empty"),
+                )
+              : SingleChildScrollView(
+                  child: GridGallery(
+                    imgs: pages.openAppointment.imgs,
+                    onPressDelete: (img) async {
+                      state.startProgress();
+                      try {
+                        await appointments.images(pages.openAppointment.id, [img], false);
+                        pages.openAppointment.imgs.remove(img);
+                        appointments.modify(pages.openAppointment);
+                      } catch (e) {
+                        logger(e);
+                      }
+                      state.endProgress();
+                    },
+                  ),
+                )
         ],
       )
   ]);

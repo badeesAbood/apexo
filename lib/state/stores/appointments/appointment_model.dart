@@ -7,6 +7,12 @@ import '../../../pages/widgets/week_calendar.dart';
 
 class Appointment extends AgendaItem {
   @override
+  String? get avatar {
+    if (imgs.isEmpty) return null;
+    return imgs.first;
+  }
+
+  @override
   String get title {
     if (patient == null) {
       return "  ";
@@ -51,15 +57,20 @@ class Appointment extends AgendaItem {
     return paid < price;
   }
 
+  bool get isMissed {
+    return date().isBefore(DateTime.now()) && date().difference(DateTime.now()).inDays.abs() > 0 && !isDone();
+  }
+
   // id: id of the member (inherited from Model)
   // date: date (& time) of the member (inherited from AgendaItem)
   /* 1 */ List<String> operatorsIDs = [];
   /* 2 */ String? patientID;
-  /* 4 */ String preOpNotes = "";
-  /* 5 */ String postOpNotes = "";
-  /* 6 */ List<String> prescriptions = [];
-  /* 7 */ double price = 0;
-  /* 8 */ double paid = 0;
+  /* 3 */ String preOpNotes = "";
+  /* 4 */ String postOpNotes = "";
+  /* 5 */ List<String> prescriptions = [];
+  /* 6 */ double price = 0;
+  /* 7 */ double paid = 0;
+  /* 8 */ List<String> imgs = [];
 
   Appointment.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
     /* 1 */ operatorsIDs = List<String>.from(json["operatorsIDs"] ?? operatorsIDs);
@@ -69,19 +80,24 @@ class Appointment extends AgendaItem {
     /* 5 */ postOpNotes = json["postOpNotes"] ?? postOpNotes;
     /* 6 */ price = json["price"] ?? price;
     /* 7 */ paid = json["paid"] ?? paid;
+    /* 8 */ imgs = List<String>.from(json["imgs"] ?? imgs);
   }
 
   @override
   Map<String, dynamic> toJson() {
     final json = super.toJson();
     final d = Appointment.fromJson({});
-    /* 1 */ if (operatorsIDs.toString() != d.operatorsIDs.toString()) json['operatorsIDs'] = operatorsIDs;
-    /* 2 */ if (prescriptions.toString() != d.prescriptions.toString()) json['prescriptions'] = prescriptions;
+    /* 1 */ if (operatorsIDs.isNotEmpty) json['operatorsIDs'] = operatorsIDs;
+    /* 2 */ if (prescriptions.isNotEmpty) json['prescriptions'] = prescriptions;
     /* 3 */ if (patientID != d.patientID) json['patientID'] = patientID;
     /* 4 */ if (preOpNotes != d.preOpNotes) json['preOpNotes'] = preOpNotes;
     /* 5 */ if (postOpNotes != d.postOpNotes) json['postOpNotes'] = postOpNotes;
     /* 6 */ if (price != d.price) json['price'] = price;
     /* 7 */ if (paid != d.paid) json['paid'] = paid;
+    /* 8 */ if (imgs.isNotEmpty) json['imgs'] = imgs;
+
+    json.remove("title"); // remove since it is a computed value in this case
+
     return json;
   }
 }

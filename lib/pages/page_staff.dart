@@ -1,8 +1,9 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:apexo/pages/index.dart';
 import 'package:apexo/pages/page_calendar.dart';
+import 'package:apexo/pages/widgets/appointment_card.dart';
+import 'package:apexo/pages/widgets/archive_toggle.dart';
 import 'package:apexo/pages/widgets/tag_input.dart';
-import 'package:apexo/pages/widgets/week_calendar.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
 import 'package:apexo/state/stores/staff/staff_store.dart';
 import 'package:apexo/state/stores/staff/member_model.dart';
@@ -12,9 +13,8 @@ import 'widgets/archive_button.dart';
 import "widgets/datatable.dart";
 import "widgets/tabbed_modal.dart";
 
-// ignore: must_be_immutable
 class StaffMembers extends ObservingWidget {
-  StaffMembers({super.key});
+  const StaffMembers({super.key});
 
   @override
   getObservableState() {
@@ -49,14 +49,7 @@ class StaffMembers extends ObservingWidget {
             title: "Archive Selected",
           )
         ],
-        furtherActions: [
-          const SizedBox(width: 5),
-          Checkbox(
-            style: const CheckboxThemeData(icon: FluentIcons.archive),
-            checked: staff.showArchived,
-            onChanged: staff.showArchivedChanged,
-          )
-        ],
+        furtherActions: [const SizedBox(width: 5), ArchiveToggle(notifier: staff.notify)],
         onSelect: (item) => openSingleMember(
           context: context,
           json: item.toJson(),
@@ -81,7 +74,7 @@ openSingleMember({
     TabAction(
       text: "Save",
       icon: FluentIcons.save,
-      callback: () {
+      callback: (_) {
         onSave(pages.openMember);
         return true;
       },
@@ -110,7 +103,7 @@ openSingleMember({
             pages.openMember.operates = checked ?? false;
             state.notify();
           },
-          content: Text("Operates on patients"),
+          content: const Text("Operates on patients"),
         ),
         InfoLabel(
           label: "Duty days:",
@@ -163,49 +156,51 @@ openSingleMember({
 
 TabbedModal upcomingAppointmentsTab(BuildContext context) {
   return TabbedModal(
-      title: "Upcoming appointments",
-      icon: FluentIcons.forward_event,
-      closable: true,
-      spacing: 0,
-      padding: pages.openMember.upcomingAppointments.isEmpty ? 15 : 5,
-      content: (state) => pages.openMember.upcomingAppointments.isEmpty
-          ? const [InfoBar(title: Text("No upcoming appointments for this staff member are found."))]
-          : pages.openMember.upcomingAppointments
-              .map((e) => AppointmentTile(
-                    item: e,
-                    onSetTime: (item) {},
-                    onSelect: (item) {
-                      openSingleAppointment(
-                        context: context,
-                        json: item.toJson(),
-                        title: "Editing appointment",
-                        onSave: appointments.modify,
-                        editing: true,
-                      );
-                    },
-                    showLeadingIcon: false,
-                    showFullDate: true,
-                    showSubtitleLine2: false,
-                    inModal: true,
-                  ))
-              .toList(),
-      actions: [
-        TabAction(
-          text: "New appointment",
-          icon: FluentIcons.add_event,
-          callback: () {
-            openSingleAppointment(
-              context: context,
-              json: {
-                "operatorsIDs": [pages.openMember.id],
-                "date": DateTime.now().add(Duration(days: 1)).millisecondsSinceEpoch,
-              },
-              title: "New appointment",
-              onSave: appointments.add,
-              editing: false,
-            );
-            return false;
-          },
-        ),
-      ]);
+    title: "Appointments",
+    icon: FluentIcons.calendar,
+    closable: true,
+    spacing: 0,
+    padding: 0,
+    headerToggle: (state) => ArchiveToggle(notifier: state.notify),
+    content: (state) => pages.openMember.upcomingAppointments.isEmpty
+        ? const [
+            InfoBar(title: Text("No upcoming appointments found. Use the button below to register new one")),
+          ]
+        : [
+            ...pages.openMember.upcomingAppointments.map((appointment) {
+              String? difference;
+              int index = pages.openMember.upcomingAppointments.indexOf(appointment);
+              if (pages.openMember.upcomingAppointments.last != appointment) {
+                int differenceInDays =
+                    appointment.date().difference(pages.openMember.upcomingAppointments[index + 1].date()).inDays.abs();
+
+                difference = "after $differenceInDays day${differenceInDays > 1 ? "s" : ""}";
+              }
+              return AppointmentCard(
+                key: Key(appointment.id),
+                appointment: appointment,
+                difference: difference,
+                hide: const [AppointmentSections.staff],
+              );
+            })
+          ],
+    actions: [
+      TabAction(
+        text: "New appointment",
+        icon: FluentIcons.add_event,
+        callback: (_) {
+          openSingleAppointment(
+            context: context,
+            json: {
+              "operatorsIDs": [pages.openMember.id]
+            },
+            title: "New appointment",
+            onSave: appointments.add,
+            editing: false,
+          );
+          return false;
+        },
+      ),
+    ],
+  );
 }
