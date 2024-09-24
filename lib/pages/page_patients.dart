@@ -112,7 +112,7 @@ openSinglePatient({
               ),
             ),
           ),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           Expanded(
             child: InfoLabel(
               label: "Gender:",
@@ -150,7 +150,7 @@ openSinglePatient({
               ),
             ),
           ),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           Expanded(
             child: InfoLabel(
               label: "Email:",
