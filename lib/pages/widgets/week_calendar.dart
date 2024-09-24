@@ -168,11 +168,11 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
                       IconButton(
                         onPressed: _goToToday,
                         iconButtonMode: IconButtonMode.large,
-                        icon: Row(
+                        icon: const Row(
                           children: [Icon(FluentIcons.goto_today), SizedBox(width: 5), Text("Today")],
                         ),
                         style: ButtonStyle(
-                          padding: WidgetStatePropertyAll(EdgeInsets.all(8)),
+                          padding: const WidgetStatePropertyAll(EdgeInsets.all(8)),
                           shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5),
                               side: BorderSide(color: colorsWithoutYellow[DateTime.now().weekday - 1].withOpacity(1)))),
@@ -361,8 +361,8 @@ class AppointmentAcrylicTile<Item extends AgendaItem> extends StatelessWidget {
                         }),
                   ],
                 ),
-                SizedBox(width: 8),
-                Divider(direction: Axis.vertical, size: 40),
+                const SizedBox(width: 8),
+                const Divider(direction: Axis.vertical, size: 40),
               ])
             : null,
         onPressed: () {
