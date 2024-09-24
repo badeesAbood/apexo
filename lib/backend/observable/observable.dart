@@ -4,9 +4,7 @@ import 'package:apexo/backend/utils/hash.dart';
 import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/state/state.dart';
 import 'package:hive_flutter/adapters.dart';
-import './observing_widget.dart';
 import './model.dart';
-import '../utils/uuid.dart';
 
 /// This file introduces 5 types of observable objects
 /// all of which will notify their observers and automatically updates ObservableWidgets
