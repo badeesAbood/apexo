@@ -127,7 +127,7 @@ class SettingsItemState extends State<SettingsItem> {
   @override
   Widget build(BuildContext context) {
     return widget.entry == null
-        ? Text("Loading")
+        ? const Text("Loading")
         : Padding(
             padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
             child: Expander(
@@ -149,9 +149,9 @@ class SettingsItemState extends State<SettingsItem> {
                         onChanged: (value) => setState(() => value != null ? _controller.text = value : null),
                         value: _controller.text,
                       ),
-                    SizedBox(height: 5),
-                    Text(widget.description, style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 5),
+                    Text(widget.description, style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
+                    const SizedBox(height: 10),
                     if (_controller.text != widget.entry!.value)
                       Row(
                         children: [
@@ -162,17 +162,25 @@ class SettingsItemState extends State<SettingsItem> {
                                 widget.settings.modify(widget.entry!);
                               });
                             },
-                            child: Row(children: const [Icon(FluentIcons.save), SizedBox(width: 10), Text("Save")]),
+                            child: const Row(children: [
+                              Icon(FluentIcons.save),
+                              SizedBox(width: 10),
+                              Text("Save"),
+                            ]),
                           ),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           FilledButton(
-                            style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey)),
+                            style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey)),
                             onPressed: () {
                               setState(() {
                                 _controller.text = widget.entry!.value;
                               });
                             },
-                            child: Row(children: const [Icon(FluentIcons.cancel), SizedBox(width: 10), Text("Cancel")]),
+                            child: const Row(children: [
+                              Icon(FluentIcons.cancel),
+                              SizedBox(width: 10),
+                              Text("Cancel"),
+                            ]),
                           ),
                         ],
                       )
@@ -181,7 +189,7 @@ class SettingsItemState extends State<SettingsItem> {
               ),
               initiallyExpanded: false,
               trailing: Container(
-                padding: EdgeInsets.fromLTRB(7, 5, 7, 5),
+                padding: const EdgeInsets.fromLTRB(7, 5, 7, 5),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     gradient: LinearGradient(
@@ -194,7 +202,7 @@ class SettingsItemState extends State<SettingsItem> {
                     )),
                 child: Text(
                   "Applies to: ${widget.scope == Scope.app ? "all" : "you"} ",
-                  style: TextStyle(fontSize: 13),
+                  style: const TextStyle(fontSize: 13),
                 ),
               ),
             ),
