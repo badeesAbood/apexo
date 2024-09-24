@@ -70,9 +70,6 @@ class State extends ObservablePersistingObject {
 
   /// run a series of callbacks that would require the login credentials to be active
   activate(String u, String t, bool online) async {
-    // https://ali-saleem-s-workspace-5hcj8d.us-east-1.xata.sh/db/fleebit:main
-    // xau_vmtdcyehunYmhQuf9aPXu4j7vJEbNixb3
-
     if (validateXataUrl(u) != true) {
       return finishedLoginProcess(
           "Database URL must be in the following format: \n https://[workspace].[region].xata.sh/db/[db]:[table]");
