@@ -5,7 +5,7 @@ import '../panel_logo.dart';
 import '../state/state.dart';
 
 class Login extends ObservingWidget {
-  Login({super.key});
+  const Login({super.key});
 
   @override
   getObservableState() {
@@ -28,8 +28,8 @@ class Login extends ObservingWidget {
             child: Padding(
               padding: const EdgeInsets.all(15),
               child: Column(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-                AppLogo(),
-                SizedBox(height: 20),
+                const AppLogo(),
+                const SizedBox(height: 20),
                 if (state.loginError.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 18.0),
@@ -65,7 +65,7 @@ class Login extends ObservingWidget {
                       if (state.loginError.isNotEmpty)
                         FilledButton(
                           onPressed: () => state.loginButton(false),
-                          style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey)),
+                          style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey)),
                           child: const Row(children: [
                             Icon(FluentIcons.virtual_network),
                             SizedBox(width: 10),
