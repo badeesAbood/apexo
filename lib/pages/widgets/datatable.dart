@@ -341,24 +341,6 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     );
   }
 
-  Widget _buildArchiveLabel() {
-    return Align(
-      alignment: AlignmentDirectional.centerStart,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(18, 4, 18, 4),
-        margin: const EdgeInsets.fromLTRB(10, 25, 0, 0),
-        decoration: BoxDecoration(
-            border: Border.all(color: const Color.fromARGB(119, 50, 49, 48)),
-            color: Colors.grey,
-            borderRadius: BorderRadius.circular(20)),
-        child: const Text(
-          "Archive",
-          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-      ),
-    );
-  }
-
   Widget _buildLabelPill(String l, Item item, [Color? color]) {
     var selected = searchTerm.text.toLowerCase() == item.labels[l]?.toLowerCase();
     color = color ?? colorsWithoutYellow[((labels.indexOf(l) / labels.length) * colorsWithoutYellow.length).floor()];
@@ -388,7 +370,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
                 child: Wrap(
                   children: [
                     Text(
-                      "$l",
+                      l,
                       style: TextStyle(
                           fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, fontSize: 11.5, color: color),
                     ),
