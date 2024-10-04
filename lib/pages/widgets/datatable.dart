@@ -48,10 +48,10 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
   /// occur too many times on every rebuild
   List<String>? _labels;
   List<String> get labels {
-    return _labels ??=
-        widget.items.fold(<String>{}, (labels, item) => labels..addAll((item.labels.keys.toList()))).toList()
-          ..sort((a, b) => a.compareTo(b))
-          ..removeWhere((label) => label.isEmpty);
+    return _labels ??= widget.items
+        .fold(<String>{}, (labels, item) => labels..addAll((item.labels.keys.toList()))).toList()
+      ..sort((a, b) => a.compareTo(b));
+    //..removeWhere((label) => label.isEmpty);
   }
 
   List<String> get nonNullLabels {

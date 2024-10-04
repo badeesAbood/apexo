@@ -309,6 +309,7 @@ class Store<G extends Model> {
 
   /// gets a document by id
   G? get(String id) {
+    // TOOD: wouldn't a map be better representation of the database (local storage?)
     if (docs.where((x) => x.id == id).isEmpty) return null;
     return docs.firstWhere((x) => x.id == id);
   }

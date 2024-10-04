@@ -1,6 +1,12 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/pages/page_dashboard.dart';
+import 'package:apexo/pages/page_labwork.dart';
 import 'package:apexo/pages/page_patients.dart';
+import 'package:apexo/pages/page_stats.dart';
+import 'package:apexo/state/charts.dart';
 import 'package:apexo/state/stores/appointments/appointment_model.dart';
+import 'package:apexo/state/stores/labworks/labwork_model.dart';
+import 'package:apexo/state/stores/labworks/labworks_store.dart';
 import 'package:apexo/state/stores/patients/patient_model.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
 import 'package:apexo/state/stores/staff/member_model.dart';
@@ -47,6 +53,19 @@ class Page {
 class Pages extends ObservableObject {
   final List<Page> allPages = [
     Page(
+      title: "Dashboard",
+      identifier: "dashboard",
+      icon: FluentIcons.home,
+      body: PageDashboard.new,
+      show: true,
+      dominant: false,
+      onSelect: () {
+        chartsState.resetSelected();
+        patients.synchronize();
+        appointments.synchronize();
+      },
+    ),
+    Page(
       title: "Staff",
       identifier: "staff",
       icon: FluentIcons.medical,
@@ -79,6 +98,29 @@ class Pages extends ObservableObject {
       },
     ),
     Page(
+      title: "Labworks",
+      identifier: "labworks",
+      icon: FluentIcons.manufacturing,
+      body: LabworksPage.new,
+      show: true,
+      onSelect: () {
+        labworks.synchronize();
+      },
+    ),
+    Page(
+      title: "Statistics",
+      identifier: "statistics",
+      icon: FluentIcons.chart,
+      body: PageStats.new,
+      show: true,
+      dominant: false,
+      onSelect: () {
+        chartsState.resetSelected();
+        patients.synchronize();
+        appointments.synchronize();
+      },
+    ),
+    Page(
       title: locale.s.settings,
       identifier: "settings",
       icon: FluentIcons.view,
@@ -99,6 +141,7 @@ class Pages extends ObservableObject {
   Patient openPatient = Patient.fromJson({});
   Appointment openAppointment = Appointment.fromJson({});
   Member openMember = Member.fromJson({});
+  Labwork openLabwork = Labwork.fromJson({});
 
   int selectedTabInSheet = 0;
 

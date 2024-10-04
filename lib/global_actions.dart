@@ -39,6 +39,7 @@ class GlobalActions extends ObservableObject {
           for (var callback in syncCallbacks.values) {
             callback();
           }
+          await state.downloadImgs();
         },
         badge: state.isSyncing > 0 ? "${state.isSyncing}" : syncCallbacks.length.toString(),
         disabled: (state.isOnline == false || state.isSyncing > 0 || state.proceededOffline),

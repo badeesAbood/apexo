@@ -16,8 +16,8 @@ class SheetState extends State<_Sheet> {
   int selectedTab = 0;
   bool progress = false;
 
-  startProgress() => setState(() => progress = true);
-  endProgress() => setState(() => progress = false);
+  startProgress() => mounted ? setState(() => progress = true) : null;
+  endProgress() => mounted ? setState(() => progress = false) : null;
 
   notify() {
     if (mounted) setState(() {});

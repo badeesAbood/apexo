@@ -456,3 +456,12 @@ class AgendaItem extends Model {
     return json;
   }
 }
+
+
+/**
+ * TODO: do wee need a speicific widget for weekly calendar?
+ * is it being used elsewhere?
+ * why not keep it inside the page_calendar.dart?
+ * this way, we don't need agenda item
+ * less complexity... less code... less bugs... less maintenance...
+ */

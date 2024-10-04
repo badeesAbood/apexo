@@ -92,7 +92,7 @@ class Patient extends Model {
     }
 
     for (var i = 0; i < tags.length; i++) {
-      buildingLabels[List.generate(i, (_) => "\u200B").join("")] = tags[i];
+      buildingLabels[List.generate(i + 1, (_) => "\u200B").join("")] = tags[i];
     }
     return buildingLabels;
   }

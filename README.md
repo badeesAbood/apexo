@@ -2,15 +2,49 @@
 
 Dental clinic management system
 
-## Getting Started
+## Todo
 
-This project is a starting point for a Flutter application.
+- dashboard : TODO: payments tab
+- Permissions for each staff member
+- Web: my appointments
+- Web: my images
+- Web: my payments
+- Web: me + QR code scanner
+- Xata Login?? it's not very user friendly
+- Xata Client??
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+DATABASE Migration:
+
+```json
+[
+    {
+        "create_table": {
+            "name": "main",
+            "columns": [
+                {
+                    "name": "data",
+                    "type": "jsonb",
+                    "pk": false,
+                    "unique": false,
+                    "default": "'{}'::jsonb",
+                    "nullable": false
+                },
+                {
+                    "name": "store",
+                    "type": "text"
+                },
+                {
+                    "name": "imgs",
+                    "type": "xata.xata_file_array",
+                    "pk": false,
+                    "unique": false,
+                    "comment": "{\"xata.file.dpa\":true}",
+                    "nullable": false
+                }
+            ]
+        }
+    }
+]
+```

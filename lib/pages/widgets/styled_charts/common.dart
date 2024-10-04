@@ -1,0 +1,102 @@
+import 'dart:math' as math;
+
+import 'package:fl_chart/fl_chart.dart';
+import 'package:fluent_ui/fluent_ui.dart';
+
+FlTitlesData titles(List<String> labels) {
+  return FlTitlesData(
+    show: true,
+    bottomTitles: AxisTitles(
+      sideTitles: SideTitles(
+        reservedSize: 30,
+        showTitles: labels.length > 15 ? false : true,
+        getTitlesWidget: (value, meta) {
+          return SideTitleWidget(
+            axisSide: meta.axisSide,
+            child: Transform.translate(
+              offset: const Offset(0, -10),
+              child: Transform.rotate(
+                angle: math.pi / -4,
+                child: Text(
+                  labels[value.toInt()],
+                  style: const TextStyle(fontSize: 12, color: Colors.black),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    ),
+    leftTitles: AxisTitles(
+      drawBelowEverything: true,
+      sideTitles: SideTitles(
+        minIncluded: false,
+        showTitles: true,
+        reservedSize: 30,
+        maxIncluded: false,
+        getTitlesWidget: (value, meta) {
+          return SideTitleWidget(
+            axisSide: meta.axisSide,
+            child: Text(
+              value.toInt().toString(),
+              style: const TextStyle(fontSize: 12, color: Colors.black),
+            ),
+          );
+        },
+      ),
+    ),
+    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+  );
+}
+
+FlGridData grid(double max) {
+  return FlGridData(
+    show: true,
+    drawVerticalLine: true,
+    horizontalInterval: math.max(max / 20, 1),
+    verticalInterval: 1,
+    getDrawingHorizontalLine: (value) {
+      return FlLine(
+        color: Colors.grey.withOpacity(0.1),
+        strokeWidth: 1,
+      );
+    },
+    getDrawingVerticalLine: (value) {
+      return FlLine(
+        color: Colors.grey.withOpacity(0.05),
+        strokeWidth: 1,
+      );
+    },
+  );
+}
+
+FlBorderData border() {
+  return FlBorderData(show: false);
+}
+
+BarTouchData barTouchData(List<String> labels) {
+  return BarTouchData(
+    allowTouchBarBackDraw: true,
+    touchTooltipData: BarTouchTooltipData(
+      fitInsideHorizontally: true,
+      fitInsideVertically: true,
+      getTooltipItem: (group, groupIndex, rod, rodIndex) {
+        return BarTooltipItem(
+          '${labels[groupIndex]}\n',
+          const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          children: <TextSpan>[
+            TextSpan(
+              text: rod.toY.round().toString(),
+              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w100),
+            ),
+          ],
+        );
+      },
+    ),
+  );
+}
+
+double barWidth(List<String> labels) {
+  return math.max((200 / labels.length), 3);
+}

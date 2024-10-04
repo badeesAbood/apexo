@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'package:apexo/backend/utils/imgs.dart';
+import 'package:apexo/state/state.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 
@@ -94,23 +94,27 @@ class SaveRemote {
       final url = '$dbBranchUrl/tables/$tableName/query';
       http.Response response;
       try {
-        response = (await http.post(Uri.parse(url),
-            headers: {
-              'Authorization': 'Bearer $token',
-              'Content-Type': "application/json",
-            },
-            body: jsonEncode({
-              "columns": ["id", "data", "xata.updatedAt", "imgs"],
-              if (cursor.isEmpty)
-                "filter": {
-                  "store": store,
-                  "xata.updatedAt": {"\$gt": formattedDate}
-                },
-              "page": {
-                "size": 15,
-                if (cursor.isNotEmpty) "after": cursor,
-              }
-            })));
+        response = await http.post(
+          Uri.parse(url),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': "application/json",
+          },
+          body: jsonEncode({
+            "columns": ["id", "data", "xata.updatedAt", "imgs"],
+            if (cursor.isEmpty)
+              "filter": {
+                "store": store,
+                "xata.updatedAt": {"\$gt": formattedDate}
+              },
+            "page": {
+              // the limit is 1000
+              // but to be safe, we use 900
+              "size": 900,
+              if (cursor.isNotEmpty) "after": cursor,
+            }
+          }),
+        );
       } catch (e) {
         await checkOnline();
         rethrow;
@@ -127,9 +131,11 @@ class SaveRemote {
       // handle uploaded images
       for (var r in rows) {
         for (var img in r["imgs"]) {
-          await saveImageFromUrl(img["url"], img["name"]);
+          state.imagesToDownload.addAll({img["url"]: img["name"]});
         }
       }
+      // trigger but don't wait for it to finish
+      state.downloadImgs();
 
       Iterable<Row> formattedRows = rows.map((row) =>
           Row(id: row["id"], data: row["data"], ts: DateTime.parse(row["xata"]["updatedAt"]).millisecondsSinceEpoch));
@@ -157,7 +163,7 @@ class SaveRemote {
             'Content-Type': "application/json",
           },
           body: jsonEncode({
-            "columns": ["xata"],
+            "columns": ["xata.updatedAt"],
             "filter": {
               "store": store,
             },
@@ -184,44 +190,61 @@ class SaveRemote {
   Future<bool> put(List<RowToWriteRemotely> data) async {
     final url = '$dbBranchUrl/transaction';
 
-    http.Response response;
-    try {
-      response = (await http.post(
-        Uri.parse(url),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': "application/json",
-        },
-        body: jsonEncode({
-          "operations": data.map((r) {
-            return {
-              "update": {
-                "table": tableName,
-                "id": r.id,
-                "fields": {
-                  "store": store,
-                  "data": r.data,
-                },
-                "upsert": true
-              }
-            };
-          }).toList(),
-        }),
-      ));
-    } catch (e) {
-      await checkOnline();
-      rethrow;
+    if (data.isEmpty) {
+      return true;
     }
 
-    if (response.statusCode > 299) {
-      throw response.body;
+    // split data into chunks of 900
+    // the limit 1000, but to be safe we'll use 900
+    // https://xata.io/docs/rest-api/limits#request-limits
+    List<List<RowToWriteRemotely>> chunks = [];
+    for (int i = 0; i < data.length; i += 900) {
+      chunks.add(data.sublist(i, i + 900 > data.length ? data.length : i + 900));
     }
+
+    for (var chunk in chunks) {
+      http.Response response;
+      try {
+        response = (await http.post(
+          Uri.parse(url),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': "application/json",
+          },
+          body: jsonEncode({
+            "operations": chunk
+                .map((r) => {
+                      "update": {
+                        "table": tableName,
+                        "id": r.id,
+                        "fields": {
+                          "store": store,
+                          "data": r.data,
+                        },
+                        "upsert": true
+                      }
+                    })
+                .toList(),
+          }),
+        ));
+      } catch (e) {
+        await checkOnline();
+        rethrow;
+      }
+      if (response.statusCode > 299) {
+        throw response.body;
+      }
+    }
+
     return true;
   }
 
   Future<bool> uploadImages(String rowID, List<String> paths) async {
-    print(paths);
-    print("-----------------");
+    paths = paths.where((p) => p.isNotEmpty).toList();
+    if (paths.isEmpty) {
+      return true;
+    }
+
     final files = paths.map((p) => File(p)).toList();
     final filenames = paths.map((p) => p.split('/').last).toList();
     final url = '$dbBranchUrl/tables/$tableName/data/$rowID';
@@ -229,8 +252,8 @@ class SaveRemote {
     http.Response response;
     try {
       // get older files
-      final olderFiles = await http.get(Uri.parse(url), headers: {"Authorization": "Bearer $token"});
-      final olderIds = jsonDecode(olderFiles.body)["imgs"].map((e) => e["id"]).toList();
+      final http.Response olderFiles = await http.get(Uri.parse(url), headers: {"Authorization": "Bearer $token"});
+      final Set<String> olderIds = Set<String>.from(jsonDecode(olderFiles.body)["imgs"].map((e) => e["id"]));
 
       // Read the file content as bytes
       final filesBytes = await Future.wait(files.map((file) => file.readAsBytes()).toList());
@@ -244,30 +267,53 @@ class SaveRemote {
           "base64Content": base64Strings[i],
           "name": filenames[i],
           "mediaType": mimeTypes[i],
+          "id": base64
+              .encode(utf8.encode(filenames[i] + DateTime.now().toString()))
+              .splitMapJoin(RegExp(r'[A-Z]|\W'), onMatch: (m) => "")
         });
       }
 
-      // Send the PUT request
-      response = await http.patch(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({
-          "imgs": [
-            ...olderIds.map((id) => {"id": id}),
-            ...newFiles,
-          ]
-        }),
-      );
+      // upload new files one by one
+      // to limits the size of the request body
+      for (var i = 0; i < newFiles.length; i++) {
+        if (i != 0) {
+          // add the previous ID to the list of older IDs
+          String? prevId = newFiles[i - 1]["id"];
+          if (prevId != null) {
+            olderIds.add(prevId);
+          }
+        }
+
+        if (olderIds.contains(newFiles[i]["id"])) {
+          // if the file already exists, skip it
+          // since a previous upload try
+          // might have already uploaded it
+          continue;
+        }
+
+        Map<String, String> newFile = newFiles[i];
+
+        response = await http.patch(
+          Uri.parse(url),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode({
+            "imgs": [
+              ...olderIds.map((id) => {"id": id}),
+              newFile,
+            ]
+          }),
+        );
+
+        if (response.statusCode > 299) {
+          throw response.body;
+        }
+      }
     } catch (e) {
       await checkOnline();
       rethrow;
-    }
-
-    if (response.statusCode > 299) {
-      throw response.body;
     }
     return true;
   }

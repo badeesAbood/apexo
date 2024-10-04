@@ -1,19 +1,17 @@
 import 'dart:io';
-
 import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:apexo/backend/utils/imgs.dart';
 import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/pages/index.dart';
 import 'package:apexo/pages/page_patients.dart';
-import 'package:apexo/pages/page_staff.dart';
 import 'package:apexo/pages/widgets/acrylic_button.dart';
 import 'package:apexo/pages/widgets/archive_toggle.dart';
 import 'package:apexo/pages/widgets/date_time_picker.dart';
 import 'package:apexo/pages/widgets/grid_gallery.dart';
+import 'package:apexo/pages/widgets/operators_picker.dart';
+import 'package:apexo/pages/widgets/patient_picker.dart';
 import 'package:apexo/pages/widgets/tag_input.dart';
-import 'package:apexo/state/stores/patients/patient_model.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
-import 'package:apexo/state/stores/staff/member_model.dart';
 import 'package:apexo/state/stores/staff/staff_store.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
@@ -124,39 +122,17 @@ openSingleAppointment({
       actions: actions,
       content: (state) => [
         InfoLabel(
+          /// rebuild needed if a patient is selected/deselected
+          key: Key(pages.openAppointment.patientID ?? ""),
           label: "Patient:",
           child: Row(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Expanded(
-              child: TagInputWidget(
-                /// rebuild needed if a new patient added
-                /// while creating/editing the appointment
-                key: Key(pages.openAppointment.patientID ?? ""),
-                onItemTap: (tag) {
-                  Patient? tapped = patients.get(tag.value ?? "");
-                  Map<String, dynamic> json = tapped != null ? tapped.toJson() : {};
-                  openSinglePatient(
-                      context: context, json: json, title: "Patient Details", onSave: patients.modify, editing: true);
-                },
-                suggestions: patients.present.map((e) => TagInputItem(value: e.id, label: e.title)).toList(),
-                onChanged: (s) {
-                  if (s.isNotEmpty) {
-                    pages.openAppointment.patientID = s.first.value;
-                  } else {
-                    pages.openAppointment.patientID = null;
-                  }
-                  state.notify();
-                },
-                initialValue: pages.openAppointment.patientID != null
-                    ? [
-                        TagInputItem(
-                            value: pages.openAppointment.patientID!,
-                            label: patients.get(pages.openAppointment.patientID!)!.title)
-                      ]
-                    : [],
-                strict: true,
-                limit: 1,
-                placeholder: "Select patient",
-              ),
+              child: PatientPicker(
+                  value: pages.openAppointment.patientID,
+                  onChanged: (id) {
+                    pages.openAppointment.patientID = id;
+                    state.notify();
+                  }),
             ),
             const SizedBox(width: 5),
             if (pages.openAppointment.patientID == null)
@@ -171,7 +147,7 @@ openSingleAppointment({
                       onSave: (patient) {
                         patients.add(patient);
                         pages.openAppointment.patientID = patient.id;
-                        appointments.notify();
+                        state.notify();
                       },
                       editing: false,
                     );
@@ -180,31 +156,12 @@ openSingleAppointment({
         ),
         InfoLabel(
           label: "Operators:",
-          child: TagInputWidget(
-            suggestions:
-                staff.presentAndOperate.map((staff) => TagInputItem(value: staff.id, label: staff.title)).toList(),
-            onChanged: (s) {
-              pages.openAppointment.operatorsIDs = s.where((x) => x.value != null).map((x) => x.value!).toList();
-              state.notify();
-            },
-            initialValue: pages.openAppointment.operatorsIDs
-                .map((id) => TagInputItem(value: id, label: staff.get(id)!.title))
-                .toList(),
-            onItemTap: (tag) {
-              Member? tapped = staff.get(tag.value ?? "");
-              Map<String, dynamic> json = tapped != null ? tapped.toJson() : {};
-              openSingleMember(
-                context: context,
-                json: json,
-                title: "Staff member Details",
-                onSave: staff.modify,
-                editing: true,
-              );
-            },
-            strict: true,
-            limit: 999,
-            placeholder: "Select operators",
-          ),
+          child: OperatorsPicker(
+              value: pages.openAppointment.operatorsIDs,
+              onChanged: (s) {
+                pages.openAppointment.operatorsIDs = s;
+                state.notify();
+              }),
         ),
         Column(
           children: [
@@ -324,7 +281,7 @@ openSingleAppointment({
             text: "Add photos",
             callback: (state) {
               () async {
-                List<XFile> res = await ImagePicker().pickMultiImage();
+                List<XFile> res = await ImagePicker().pickMultiImage(limit: 50 - pages.openAppointment.imgs.length);
                 state.startProgress();
                 try {
                   // copy image

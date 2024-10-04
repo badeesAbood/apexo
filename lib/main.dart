@@ -1,3 +1,4 @@
+import 'package:apexo/state/stores/labworks/labworks_store.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
 import 'package:apexo/state/stores/staff/staff_store.dart';
 import 'package:fluent_ui/fluent_ui.dart';
@@ -26,6 +27,7 @@ void main() {
   appointments.init();
   globalSettings.init();
   localSettings.init();
+  labworks.init();
 
   runApp(const MyApp());
 }
@@ -56,7 +58,7 @@ class MyApp extends ObservingWidget {
                 // ignore: prefer_const_constructors
                 actions: GlobalActions(),
               ),
-              content: state.loginActive ? null : Login(),
+              content: state.loginActive ? null : const Login(),
               pane: state.loginActive != true
                   ? null
                   : NavigationPane(

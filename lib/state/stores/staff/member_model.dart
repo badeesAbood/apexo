@@ -24,8 +24,8 @@ class Member extends Model {
   Map<String, String> get labels {
     return _labels ??= {
       "Operates": operates ? "Yes" : "No",
-      "Upcoming appointments": upcomingAppointments.length.toString(),
-      "Past appointments": pastDoneAppointments.length.toString()
+      if (operates) "Upcoming appointments": upcomingAppointments.length.toString(),
+      if (operates) "Past appointments": pastDoneAppointments.length.toString()
     };
   }
 
@@ -35,12 +35,14 @@ class Member extends Model {
   /* 2 */ List<String> canView = [];
   /* 3 */ List<String> canEdit = [];
   /* 4 */ List<String> dutyDays = allDays;
+  /* 5 */ String pin = "1234";
   @override
   Member.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
     /* 1 */ operates = json['operates'] ?? operates;
     /* 2 */ canView = List<String>.from(json['canView'] ?? canView);
     /* 3 */ canEdit = List<String>.from(json['canEdit'] ?? canEdit);
     /* 4 */ dutyDays = List<String>.from(json['dutyDays'] ?? dutyDays);
+    /* 5 */ pin = json["pin"] ?? pin;
   }
   @override
   Map<String, dynamic> toJson() {
@@ -50,7 +52,7 @@ class Member extends Model {
     /* 2 */ if (canView.toString() != d.canView.toString()) json['canView'] = canView;
     /* 3 */ if (canEdit.toString() != d.canEdit.toString()) json['canEdit'] = canEdit;
     /* 4 */ if (dutyDays.toString() != d.dutyDays.toString()) json['dutyDays'] = dutyDays;
-
+    /* 5 */ if (pin != d.pin) json["pin"] = pin;
     return json;
   }
 }

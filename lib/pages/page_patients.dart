@@ -132,7 +132,7 @@ openSinglePatient({
                 value: pages.openPatient.gender,
                 onChanged: (value) {
                   pages.openPatient.gender = value ?? pages.openPatient.gender;
-                  patients.notify();
+                  state.notify();
                 },
               ),
             ),

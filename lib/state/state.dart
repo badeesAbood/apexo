@@ -1,4 +1,7 @@
+import 'package:apexo/backend/utils/imgs.dart';
 import 'package:apexo/backend/utils/logger.dart';
+import 'package:apexo/state/stores/staff/member_model.dart';
+import 'package:apexo/state/stores/staff/staff_store.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Locale;
 import "package:http/http.dart" as http;
 import '../backend/observable/observable.dart';
@@ -32,6 +35,7 @@ class State extends ObservablePersistingObject {
   // login page state:
   TextEditingController urlField = TextEditingController();
   TextEditingController tokenField = TextEditingController();
+  TextEditingController pinField = TextEditingController();
   bool initialStateLoaded = false;
   String loginError = "";
   String loadingIndicator = "";
@@ -39,9 +43,36 @@ class State extends ObservablePersistingObject {
   // login credentials
   String dbBranchUrl = "";
   String token = "";
+  String memberID = "";
+
+  Member? get currentMember {
+    return staff.get(memberID);
+  }
 
   /// means we checked and verified that it works
   bool loginActive = false;
+  bool showStaffPicker = false;
+
+  /// images that needs to be downloaded
+  Map<String, String> imagesToDownload = {};
+  Future<void> downloadImgs() async {
+    // this is going to be triggered on:
+    // 1. adding images
+    // 2. when this object is initialized from JSON
+
+    isSyncing++;
+    try {
+      while (imagesToDownload.isNotEmpty) {
+        final url = imagesToDownload.keys.first;
+        final String name = imagesToDownload.values.first;
+        await saveImageFromUrl(url, name);
+        imagesToDownload.remove(url);
+      }
+    } catch (e) {
+      logger(e);
+    }
+    isSyncing--;
+  }
 
   setLoadingIndicator(String message) {
     loadingIndicator = message;
@@ -54,12 +85,14 @@ class State extends ObservablePersistingObject {
     notify();
   }
 
-  ///
   logout() {
     loginActive = false;
+    pinField.text = "";
+    showStaffPicker = false;
     dbBranchUrl = "";
     token = "";
     notify();
+    return finishedLoginProcess();
   }
 
   loginButton([bool online = true]) {
@@ -99,16 +132,34 @@ class State extends ObservablePersistingObject {
     dbBranchUrl = u;
     token = t;
 
-    for (var callback in activators.values) {
-      try {
-        await callback([dbBranchUrl, token]);
-      } catch (e) {
-        logger(e);
+    if (online) {
+      for (var callback in activators.values) {
+        try {
+          await callback([dbBranchUrl, token]);
+        } catch (e) {
+          logger(e);
+        }
       }
     }
 
-    loginActive = true;
+    if (staff.docs.isEmpty) {
+      loginActive = true;
+    } else {
+      showStaffPicker = true;
+    }
+
     return finishedLoginProcess();
+  }
+
+  openAsCertainStaff() {
+    if (currentMember == null) {
+      return finishedLoginProcess("Please choose from the dropdown who you are");
+    } else if (currentMember?.pin == pinField.text) {
+      loginActive = true;
+      return finishedLoginProcess("Please choose from the dropdown who you are");
+    } else {
+      return finishedLoginProcess("Incorrect PIN");
+    }
   }
 
   Map<String, Future Function(List<String>)> activators = {};
@@ -120,6 +171,8 @@ class State extends ObservablePersistingObject {
         isPositiveInt(json["themeAccentColor"]) ? Colors.accentColors[json["themeAccentColor"]] : themeAccentColor;
     dbBranchUrl = json["dbBranchUrl"] ?? dbBranchUrl;
     token = json["token"] ?? token;
+    memberID = json["memberID"] ?? memberID;
+    imagesToDownload = json["imagesToDownload"] == null ? {} : Map<String, String>.from(json["imagesToDownload"]);
 
     if (dbBranchUrl.isNotEmpty && token.isNotEmpty) {
       urlField = TextEditingController(text: dbBranchUrl);
@@ -128,6 +181,8 @@ class State extends ObservablePersistingObject {
     } else {
       loginActive = false;
     }
+
+    downloadImgs();
   }
 
   @override
@@ -138,6 +193,8 @@ class State extends ObservablePersistingObject {
     json['dbBranchUrl'] = dbBranchUrl;
     json['token'] = token;
     json["loginActive"] = loginActive;
+    json["memberID"] = memberID;
+    json["imagesToDownload"] = imagesToDownload;
     return json;
   }
 }

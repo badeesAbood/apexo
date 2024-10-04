@@ -26,8 +26,14 @@ class Appointment extends AgendaItem {
   }
 
   List<Member> get operators {
-    // ignore: unnecessary_null_comparison
-    return operatorsIDs.map((id) => staff.get(id)!).where((a) => a != null).toList();
+    List<Member> foundOperators = [];
+    for (var id in operatorsIDs) {
+      var found = staff.get(id);
+      if (found != null) {
+        foundOperators.add(found);
+      }
+    }
+    return foundOperators;
   }
 
   Set<int> get availableWeekDays {
@@ -59,6 +65,11 @@ class Appointment extends AgendaItem {
 
   bool get isMissed {
     return date().isBefore(DateTime.now()) && date().difference(DateTime.now()).inDays.abs() > 0 && !isDone();
+  }
+
+  bool get firstAppointmentForThisPatient {
+    if (patient == null) return false;
+    return patient!.allAppointments.first == this;
   }
 
   // id: id of the member (inherited from Model)
