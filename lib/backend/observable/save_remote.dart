@@ -33,7 +33,6 @@ class VersionedResult {
 }
 
 class SaveRemote {
-  /// https://[workspace].[region].xata.sh/db/[db]:[branch]
   final String dbBranchUrl;
   final String token;
   final String tableName;
