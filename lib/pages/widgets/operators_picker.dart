@@ -12,7 +12,7 @@ class OperatorsPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TagInputWidget(
-      suggestions: staff.presentAndOperate.map((staff) => TagInputItem(value: staff.id, label: staff.title)).toList(),
+      suggestions: staff.present.map((staff) => TagInputItem(value: staff.id, label: staff.title)).toList(),
       onChanged: (s) {
         onChanged(s.where((x) => x.value != null).map((x) => x.value!).toList());
       },

@@ -1,11 +1,11 @@
+import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/imgs.dart';
 import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/state/stores/staff/member_model.dart';
 import 'package:apexo/state/stores/staff/staff_store.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Locale;
-import "package:http/http.dart" as http;
 import '../backend/observable/observable.dart';
-import '../../backend/utils/validate_database_url.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 bool isPositiveInt(int? value) {
   if (value == null) return false;
@@ -34,27 +34,35 @@ class State extends ObservablePersistingObject {
 
   // login page state:
   TextEditingController urlField = TextEditingController();
-  TextEditingController tokenField = TextEditingController();
-  TextEditingController pinField = TextEditingController();
+  TextEditingController emailField = TextEditingController();
+  TextEditingController passwordField = TextEditingController();
   bool initialStateLoaded = false;
   String loginError = "";
   String loadingIndicator = "";
 
   // login credentials
-  String dbBranchUrl = "";
+  String url = "";
+  String email = "";
+  String password = "";
   String token = "";
-  String memberID = "";
+
+  // PocketBase instance
+  PocketBase? pb;
 
   Member? get currentMember {
-    return staff.get(memberID);
+    return staff.get(email); // TODO get by email
   }
 
   /// means we checked and verified that it works
   bool loginActive = false;
-  bool showStaffPicker = false;
+
+  bool get isAdmin {
+    if (pb == null) return false;
+    return pb!.authStore.model is AdminModel;
+  }
 
   /// images that needs to be downloaded
-  Map<String, String> imagesToDownload = {};
+  List<String> imagesToDownload = [];
   Future<void> downloadImgs() async {
     // this is going to be triggered on:
     // 1. adding images
@@ -63,10 +71,8 @@ class State extends ObservablePersistingObject {
     isSyncing++;
     try {
       while (imagesToDownload.isNotEmpty) {
-        final url = imagesToDownload.keys.first;
-        final String name = imagesToDownload.values.first;
-        await saveImageFromUrl(url, name);
-        imagesToDownload.remove(url);
+        await saveImageFromUrl(imagesToDownload.first);
+        imagesToDownload.removeAt(0);
       }
     } catch (e) {
       logger(e);
@@ -87,97 +93,135 @@ class State extends ObservablePersistingObject {
 
   logout() {
     loginActive = false;
-    pinField.text = "";
-    showStaffPicker = false;
-    dbBranchUrl = "";
+    url = "";
+    email = "";
+    password = "";
     token = "";
+    pb!.authStore.clear();
     notify();
     return finishedLoginProcess();
   }
 
   loginButton([bool online = true]) {
-    String u = urlField.text;
-    String t = tokenField.text;
-    activate(u, t, online);
+    String url = urlField.text.replaceFirst(RegExp(r'/+$'), "");
+    String email = emailField.text;
+    String password = passwordField.text;
+    activate(url, [email, password], online);
+  }
+
+  Future<String> authenticateWithPassword(String email, String password) async {
+    try {
+      final auth = await pb!.admins.authWithPassword(email, password);
+      return auth.token;
+    } catch (e) {
+      final auth = await pb!.collection("users").authWithPassword(email, password);
+      return auth.token;
+    }
+  }
+
+  Future<String> authenticateWithToken(String token) async {
+    try {
+      final auth = await pb!.admins.refresh();
+      return auth.token;
+    } catch (e) {
+      final auth = await pb!.collection("users").authRefresh();
+      return auth.token;
+    }
   }
 
   /// run a series of callbacks that would require the login credentials to be active
-  activate(String u, String t, bool online) async {
-    if (validateXataUrl(u) != true) {
-      return finishedLoginProcess(
-          "Database URL must be in the following format: \n https://[workspace].[region].xata.sh/db/[db]:[table]");
-    }
+  activate(String inputURL, List<String> credentials, bool online) async {
+    pb ??= PocketBase(inputURL);
 
     setLoadingIndicator("Connecting to the server");
     loginError = "";
 
     if (online) {
-      http.Response? res;
-
       try {
-        res = await http.get(Uri.parse(u), headers: {"Authorization": "Bearer $t"});
+        // email and password authentication
+        if (credentials.length == 2) {
+          token = await authenticateWithPassword(credentials[0], credentials[1]);
+          email = credentials[0];
+          url = inputURL;
+        }
+        // token authentication
+        if (credentials.length == 1) {
+          pb!.authStore.save(credentials[0], null);
+          if (pb!.authStore.isValid == false) {
+            throw Exception("Invalid token");
+          }
+          token = await authenticateWithToken(token);
+          url = inputURL;
+        }
+
+        // create database if it doesn't exist
+        // TODO: we should also set the create rule to admin only in "users" collection
+
+        // TODO: should we create a new staff member on first login?
+        // when we create the database I mean
+        // just to make things a bit easier
+
+        try {
+          try {
+            await pb!.collections.getOne(collectionName);
+          } catch (e) {
+            if (isAdmin) {
+              await pb!.collections.import([collectionImport]);
+            }
+          }
+        } catch (e) {
+          throw Exception("Error while creating the collection for the first time: $e");
+        }
       } catch (e) {
-        logger(e);
-        return finishedLoginProcess("Error while connecting to the server");
+        if (e.runtimeType != ClientException) {
+          loginError = "Error while logging-in: $e.";
+        } else if ((e as ClientException).statusCode == 404) {
+          loginError = "Invalid server, make sure PocketBase is installed and running.";
+        } else if (e.statusCode == 400) {
+          loginError = "Invalid email or password.";
+        } else if (e.statusCode == 0) {
+          loginError = "Unable to connect, please check your internet connection, firewall, or the server URL field.";
+        } else {
+          loginError = "Unknown client exception while authenticating: $e.";
+        }
+        return finishedLoginProcess(loginError);
       }
 
-      if (res.statusCode != 200) {
-        return finishedLoginProcess("Error code: ${res.statusCode}\n${res.body}");
-      }
       proceededOffline = false;
     }
 
     /// if we reached here it means it was a successful login
 
-    dbBranchUrl = u;
-    token = t;
-
     if (online) {
       for (var callback in activators.values) {
         try {
-          await callback([dbBranchUrl, token]);
+          await callback();
         } catch (e) {
           logger(e);
         }
       }
     }
-
-    if (staff.docs.isEmpty) {
-      loginActive = true;
-    } else {
-      showStaffPicker = true;
-    }
-
+    loginActive = true;
     return finishedLoginProcess();
   }
 
-  openAsCertainStaff() {
-    if (currentMember == null) {
-      return finishedLoginProcess("Please choose from the dropdown who you are");
-    } else if (currentMember?.pin == pinField.text) {
-      loginActive = true;
-      return finishedLoginProcess("Please choose from the dropdown who you are");
-    } else {
-      return finishedLoginProcess("Incorrect PIN");
-    }
-  }
-
-  Map<String, Future Function(List<String>)> activators = {};
+  Map<String, Future Function()> activators = {};
 
   @override
   fromJson(Map<String, dynamic> json) async {
     themeMode = isPositiveInt(json["themeMode"]) ? ThemeMode.values[json["themeMode"]] : themeMode;
     themeAccentColor =
         isPositiveInt(json["themeAccentColor"]) ? Colors.accentColors[json["themeAccentColor"]] : themeAccentColor;
-    dbBranchUrl = json["dbBranchUrl"] ?? dbBranchUrl;
+    url = json["url"] ?? url;
+    email = json["email"] ?? email;
+    imagesToDownload = json["imagesToDownload"] == null ? [] : List<String>.from(json["imagesToDownload"]);
     token = json["token"] ?? token;
-    memberID = json["memberID"] ?? memberID;
-    imagesToDownload = json["imagesToDownload"] == null ? {} : Map<String, String>.from(json["imagesToDownload"]);
 
-    if (dbBranchUrl.isNotEmpty && token.isNotEmpty) {
-      urlField = TextEditingController(text: dbBranchUrl);
-      tokenField = TextEditingController(text: token);
-      await activate(dbBranchUrl, token, true);
+    urlField.text = url;
+    emailField.text = email;
+
+    if (token.isNotEmpty) {
+      await activate(url, [token], true);
     } else {
       loginActive = false;
     }
@@ -190,11 +234,11 @@ class State extends ObservablePersistingObject {
     final Map<String, dynamic> json = {};
     json['themeMode'] = themeMode.index;
     json['themeAccentColor'] = Colors.accentColors.indexWhere((color) => color.value == themeAccentColor.value);
-    json['dbBranchUrl'] = dbBranchUrl;
-    json['token'] = token;
+    json['url'] = url;
+    json['email'] = email;
     json["loginActive"] = loginActive;
-    json["memberID"] = memberID;
     json["imagesToDownload"] = imagesToDownload;
+    json["token"] = token;
     return json;
   }
 }

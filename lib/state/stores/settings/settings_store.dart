@@ -1,3 +1,10 @@
+import 'dart:convert';
+
+import 'package:apexo/state/admins.dart';
+import 'package:apexo/state/backups.dart';
+import 'package:apexo/state/permissions.dart';
+import 'package:apexo/state/users.dart';
+
 import '../../../backend/observable/save_local.dart';
 import '../../../backend/observable/save_remote.dart';
 import '../../../global_actions.dart';
@@ -10,8 +17,9 @@ const _storeNameLocal = "settings_local";
 
 class GlobalSettings extends Store<Setting> {
   Map<String, String> defaults = {
-    "currency": "\$",
-    "phone": "1234567890",
+    "currency_______": "\$",
+    "phone__________": "1234567890",
+    "permissions____": jsonEncode([false, true, true, true, false]),
   };
 
   GlobalSettings()
@@ -30,19 +38,14 @@ class GlobalSettings extends Store<Setting> {
   @override
   init() {
     super.init();
-    state.activators[_storeNameGlobal] = (credentials) async {
+    state.activators[_storeNameGlobal] = () async {
       await loaded;
-
-      final dbURL = credentials[0];
-      final token = credentials[1];
 
       local = SaveLocal(_storeNameGlobal);
       await loadFromLocal();
 
       remote = SaveRemote(
-        token: token,
-        dbBranchUrl: dbURL,
-        tableName: "main",
+        pb: state.pb!,
         store: _storeNameGlobal,
         onOnlineStatusChange: (current) {
           if (state.isOnline != current) {
@@ -61,8 +64,24 @@ class GlobalSettings extends Store<Setting> {
         });
       });
 
-      globalActions.syncCallbacks[_storeNameGlobal] = synchronize;
+      globalActions.syncCallbacks[_storeNameGlobal] = () async {
+        await Future.wait([
+          synchronize(),
+          admins.reloadFromRemote(),
+          backups.reloadFromRemote(),
+          users.reloadFromRemote(),
+          permissions.reloadFromRemote()
+        ]);
+      };
       globalActions.reconnectCallbacks[_storeNameGlobal] = remote!.checkOnline;
+
+      // setting services
+      await Future.wait([
+        admins.reloadFromRemote(),
+        backups.reloadFromRemote(),
+        users.reloadFromRemote(),
+        permissions.reloadFromRemote()
+      ]);
     };
   }
 }

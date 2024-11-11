@@ -62,8 +62,8 @@ class PageDashboard extends ObservingWidget {
         padding: const EdgeInsets.all(15),
         child: Row(
           children: [
-            Icon(FluentIcons.medical),
-            SizedBox(width: 10),
+            const Icon(FluentIcons.medical),
+            const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -80,102 +80,112 @@ class PageDashboard extends ObservingWidget {
           ],
         ),
       ),
-      Divider(size: 1300),
-      SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              dashboardSquare(
-                Colors.purple,
-                FluentIcons.goto_today,
-                todayAppointments.length.toString(),
-                "Appointments Today",
-              ),
-              dashboardSquare(
-                Colors.blue,
-                FluentIcons.medication_admin,
-                newPatientsToday.toString(),
-                "New Patients Today",
-              ),
-              dashboardSquare(
-                Colors.teal,
-                FluentIcons.money,
-                paymentsToday.toStringAsFixed(2),
-                "Payments Made Today",
-              ),
-            ],
+      const Divider(size: 1300),
+      // TODO: go to full stats
+      // TODO: hide if we're hiding the stats
+      buildTopSquares(),
+      buildDashboardCharts()
+    ]);
+  }
+
+  Expanded buildDashboardCharts() {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        child: TabView(
+          currentIndex: openTab(),
+          closeButtonVisibility: CloseButtonVisibilityMode.never,
+          header: const SizedBox(width: 5),
+          footer: IconButton(
+            icon: const Row(
+              children: [Icon(FluentIcons.chart), SizedBox(width: 5), Text("Full Stats")],
+            ),
+            onPressed: () => openTab(null),
           ),
+          onChanged: (value) => openTab(value),
+          tabs: [
+            Tab(
+              text: Text("Appointments"),
+              icon: Icon(FluentIcons.calendar),
+              closeIcon: null,
+              outlineColor: Colors.grey.withOpacity(0.1),
+              body: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.4),
+                  border: Border.all(color: Colors.grey.withOpacity(0.1)),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(children: [
+                    Expanded(
+                        child: StyledBarChart(
+                      labels: chartsState.periods.map((p) => p.label).toList(),
+                      yAxis: chartsState.groupedAppointments.map((g) => g.length.toDouble()).toList(),
+                    ))
+                  ]),
+                ),
+              ),
+            ),
+            Tab(
+              text: Text("Payments"),
+              icon: Icon(FluentIcons.money),
+              closeIcon: null,
+              outlineColor: Colors.grey.withOpacity(0.1),
+              body: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.4),
+                  border: Border.all(color: Colors.grey.withOpacity(0.1)),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+                  child: Column(children: [
+                    Expanded(
+                        child: StyledLineChart(
+                      labels: chartsState.periods.map((p) => p.label).toList(),
+                      datasets: [chartsState.groupedPayments.toList()],
+                      datasetLabels: const ["Payments"],
+                    ))
+                  ]),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
-      Expanded(
-        child: Container(
-          padding: const EdgeInsets.all(15),
-          child: TabView(
-            currentIndex: openTab(),
-            closeButtonVisibility: CloseButtonVisibilityMode.never,
-            header: const SizedBox(width: 5),
-            footer: IconButton(
-              icon: const Row(
-                children: [Icon(FluentIcons.chart), SizedBox(width: 5), Text("Full Stats")],
-              ),
-              onPressed: () => openTab(null),
+    );
+  }
+
+  SingleChildScrollView buildTopSquares() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            dashboardSquare(
+              Colors.purple,
+              FluentIcons.goto_today,
+              todayAppointments.length.toString(),
+              "Appointments Today",
             ),
-            onChanged: (value) => openTab(value),
-            tabs: [
-              Tab(
-                text: Text("Appointments"),
-                icon: Icon(FluentIcons.calendar),
-                closeIcon: null,
-                outlineColor: Colors.grey.withOpacity(0.1),
-                body: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.4),
-                    border: Border.all(color: Colors.grey.withOpacity(0.1)),
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(children: [
-                      Expanded(
-                          child: StyledBarChart(
-                        labels: chartsState.periods.map((p) => p.label).toList(),
-                        yAxis: chartsState.groupedAppointments.map((g) => g.length.toDouble()).toList(),
-                      ))
-                    ]),
-                  ),
-                ),
-              ),
-              Tab(
-                text: Text("Payments"),
-                icon: Icon(FluentIcons.money),
-                closeIcon: null,
-                outlineColor: Colors.grey.withOpacity(0.1),
-                body: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.4),
-                    border: Border.all(color: Colors.grey.withOpacity(0.1)),
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
-                    child: Column(children: [
-                      Expanded(
-                          child: StyledLineChart(
-                        labels: chartsState.periods.map((p) => p.label).toList(),
-                        datasets: [chartsState.groupedPayments.toList()],
-                        datasetLabels: const ["Payments"],
-                      ))
-                    ]),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            dashboardSquare(
+              Colors.blue,
+              FluentIcons.medication_admin,
+              newPatientsToday.toString(),
+              "New Patients Today",
+            ),
+            dashboardSquare(
+              Colors.teal,
+              FluentIcons.money,
+              paymentsToday.toStringAsFixed(2),
+              "Payments Made Today",
+            ),
+          ],
         ),
-      )
-    ]);
+      ),
+    );
   }
 
   Padding dashboardSquare(AccentColor color, IconData icon, String title, String subtitle) {

@@ -23,36 +23,27 @@ class Member extends Model {
   @override
   Map<String, String> get labels {
     return _labels ??= {
-      "Operates": operates ? "Yes" : "No",
-      if (operates) "Upcoming appointments": upcomingAppointments.length.toString(),
-      if (operates) "Past appointments": pastDoneAppointments.length.toString()
+      "Upcoming appointments": upcomingAppointments.length.toString(),
+      "Past appointments": pastDoneAppointments.length.toString()
     };
   }
 
   // id: id of the member (inherited from Model)
   // title: name of the member (inherited from Model)
-  /* 1 */ bool operates = false;
-  /* 2 */ List<String> canView = [];
-  /* 3 */ List<String> canEdit = [];
-  /* 4 */ List<String> dutyDays = allDays;
-  /* 5 */ String pin = "1234";
+  /* 1 */ List<String> dutyDays = allDays;
+  /* 2 */ String email = "";
+
   @override
   Member.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
-    /* 1 */ operates = json['operates'] ?? operates;
-    /* 2 */ canView = List<String>.from(json['canView'] ?? canView);
-    /* 3 */ canEdit = List<String>.from(json['canEdit'] ?? canEdit);
-    /* 4 */ dutyDays = List<String>.from(json['dutyDays'] ?? dutyDays);
-    /* 5 */ pin = json["pin"] ?? pin;
+    /* 1 */ dutyDays = List<String>.from(json['dutyDays'] ?? dutyDays);
+    /* 2 */ email = json["email"] ?? email;
   }
   @override
   Map<String, dynamic> toJson() {
     final json = super.toJson();
     final d = Member.fromJson({});
-    /* 1 */ if (operates != d.operates) json['operates'] = operates;
-    /* 2 */ if (canView.toString() != d.canView.toString()) json['canView'] = canView;
-    /* 3 */ if (canEdit.toString() != d.canEdit.toString()) json['canEdit'] = canEdit;
-    /* 4 */ if (dutyDays.toString() != d.dutyDays.toString()) json['dutyDays'] = dutyDays;
-    /* 5 */ if (pin != d.pin) json["pin"] = pin;
+    /* 1 */ if (dutyDays.toString() != d.dutyDays.toString()) json['dutyDays'] = dutyDays;
+    /* 2 */ if (email != d.email) json["email"] = email;
     return json;
   }
 }

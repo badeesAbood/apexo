@@ -24,19 +24,14 @@ class Staff extends Store<Member> {
   @override
   init() {
     super.init();
-    state.activators[_storeName] = (credentials) async {
+    state.activators[_storeName] = () async {
       await loaded;
-
-      final dbURL = credentials[0];
-      final token = credentials[1];
 
       local = SaveLocal(_storeName);
       await loadFromLocal();
 
       remote = SaveRemote(
-        token: token,
-        dbBranchUrl: dbURL,
-        tableName: "main",
+        pb: state.pb!,
         store: _storeName,
         onOnlineStatusChange: (current) {
           if (state.isOnline != current) {
@@ -52,10 +47,6 @@ class Staff extends Store<Member> {
       globalActions.syncCallbacks[_storeName] = synchronize;
       globalActions.reconnectCallbacks[_storeName] = remote!.checkOnline;
     };
-  }
-
-  List<Member> get presentAndOperate {
-    return docs.where((doc) => doc.archived != true && doc.operates).toList();
   }
 
   List<Member> get present {

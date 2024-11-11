@@ -8,12 +8,9 @@ import 'package:hive_flutter/adapters.dart';
 const String _versionKey = 'meta:version';
 const String _deferredKey = 'meta:deferred';
 
-// Dump class for storing snapshots of data
-class Dump {
-  final Map<String, String> main;
-  final Map<String, String> meta;
-  Dump(this.main, this.meta);
-}
+// this would be used in restore from remote backup functionality
+final List<ClearingFunction> removeAllLocalData = [];
+typedef ClearingFunction = Future<void> Function();
 
 // SaveLocal class for managing local storage operations
 class SaveLocal {
@@ -24,11 +21,14 @@ class SaveLocal {
   SaveLocal(this.name) {
     _mainBox = initialize("$name-main");
     _metaBox = initialize("$name-meta");
+    removeAllLocalData.add(() async {
+      await clear();
+    });
   }
 
   Future<Box<String>> initialize(String name) async {
     await Hive.initFlutter();
-    return Hive.openBox<String>(name + simpleHash(state.dbBranchUrl));
+    return Hive.openBox<String>(name + simpleHash(state.url));
   }
 
   // Put entries into the main box
@@ -99,35 +99,6 @@ class SaveLocal {
       await box.put(_deferredKey, jsonEncode(deferred));
     } catch (e, s) {
       throw StorageException('Failed to put deferred data: $e', s);
-    }
-  }
-
-  // Create a dump of both boxes
-  Future<Dump> dump() async {
-    try {
-      final mainBox = await _mainBox;
-      final metaBox = await _metaBox;
-      return Dump(
-        Map<String, String>.from(mainBox.toMap()),
-        Map<String, String>.from(metaBox.toMap()),
-      );
-    } catch (e, s) {
-      throw StorageException('Failed to create dump: $e', s);
-    }
-  }
-
-  // Restore data from a dump
-  Future<void> restore(Dump dump) async {
-    try {
-      final mainBox = await _mainBox;
-      final metaBox = await _metaBox;
-      // Clear existing data
-      await clear();
-      // put new data
-      await mainBox.putAll(dump.main);
-      await metaBox.putAll(dump.meta);
-    } catch (e, s) {
-      throw StorageException('Failed to restore from dump: $e', s);
     }
   }
 

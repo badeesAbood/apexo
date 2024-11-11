@@ -1,5 +1,4 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
-import 'package:apexo/state/stores/staff/staff_store.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import "package:flutter/cupertino.dart" show CupertinoTextField;
 import '../panel_logo.dart';
@@ -38,15 +37,29 @@ class Login extends ObservingWidget {
                         title: const Text("Error"), content: Text(state.loginError), severity: InfoBarSeverity.error),
                   ),
                 InfoLabel(
-                  label: "Database URL",
+                  label: "Server URL",
                   child: CupertinoTextField(
-                      controller: state.urlField, enabled: state.loadingIndicator.isEmpty && !state.showStaffPicker),
+                      controller: state.urlField,
+                      enabled: state.loadingIndicator.isEmpty,
+                      placeholder: "https://[pocketbase server]"),
                 ),
                 const SizedBox(height: 10),
                 InfoLabel(
-                  label: "Token",
+                  label: "Email",
                   child: CupertinoTextField(
-                      controller: state.tokenField, enabled: state.loadingIndicator.isEmpty && !state.showStaffPicker),
+                    controller: state.emailField,
+                    enabled: state.loadingIndicator.isEmpty,
+                    placeholder: "email@server.com",
+                  ),
+                ),
+                const SizedBox(height: 10),
+                InfoLabel(
+                  label: "Password",
+                  child: CupertinoTextField(
+                    controller: state.passwordField,
+                    enabled: state.loadingIndicator.isEmpty,
+                    obscureText: true,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 if (state.loadingIndicator.isNotEmpty)
@@ -55,37 +68,6 @@ class Login extends ObservingWidget {
                       const ProgressBar(),
                       const SizedBox(height: 10),
                       Text(state.loadingIndicator),
-                    ],
-                  )
-                else if (state.showStaffPicker)
-                  Row(
-                    children: [
-                      SizedBox(
-                          width: 139,
-                          child: ComboBox<String>(
-                              value: state.memberID,
-                              onChanged: (id) {
-                                state.memberID = id ?? "";
-                                state.notify();
-                              },
-                              items: staff.present
-                                  .map((s) => ComboBoxItem<String>(
-                                      value: s.id,
-                                      child: Text(s.title.length > 12 ? s.title.substring(0, 12) + "..." : s.title,
-                                          overflow: TextOverflow.ellipsis)))
-                                  .toList())),
-                      const SizedBox(width: 5),
-                      Expanded(
-                          child: CupertinoTextField(
-                        placeholder: "PIN",
-                        controller: state.pinField,
-                      )),
-                      SizedBox(width: 5),
-                      FilledButton(
-                          child: Row(
-                            children: [Icon(FluentIcons.chevron_right), SizedBox(width: 5), Text("Continue")],
-                          ),
-                          onPressed: state.openAsCertainStaff)
                     ],
                   )
                 else

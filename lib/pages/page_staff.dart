@@ -88,22 +88,24 @@ openSingleMember({
       closable: true,
       content: (state) => [
         InfoLabel(
-          label: "Staff name:",
+          label: "Doctor name:",
           child: CupertinoTextField(
             controller: TextEditingController(text: pages.openMember.title),
-            placeholder: "Staff name",
+            placeholder: "doctor name",
             onChanged: (val) {
               pages.openMember.title = val;
             },
           ),
         ),
-        Checkbox(
-          checked: pages.openMember.operates,
-          onChanged: (checked) {
-            pages.openMember.operates = checked ?? false;
-            state.notify();
-          },
-          content: const Text("Operates on patients"),
+        InfoLabel(
+          label: "Doctor email:",
+          child: CupertinoTextField(
+            controller: TextEditingController(text: pages.openMember.email),
+            placeholder: "email@server.com",
+            onChanged: (val) {
+              pages.openMember.email = val;
+            },
+          ),
         ),
         InfoLabel(
           label: "Duty days:",
@@ -117,40 +119,10 @@ openSingleMember({
             limit: 7,
           ),
         ),
-        InfoLabel(
-          label: "Can view the following pages:",
-          child: TagInputWidget(
-            suggestions: [...pages.allPages.map((p) => TagInputItem(value: p.identifier, label: p.title))],
-            onChanged: (data) {
-              pages.openMember.canView = data.map((v) => v.value ?? "").where((e) => e.isNotEmpty).toList();
-            },
-            initialValue: [
-              ...pages.openMember.canView.map((v) =>
-                  TagInputItem(value: v, label: pages.getByIdentifier(v) != null ? pages.getByIdentifier(v)!.title : v))
-            ],
-            strict: true,
-            limit: 999,
-          ),
-        ),
-        InfoLabel(
-          label: "Can edit the following pages:",
-          child: TagInputWidget(
-            suggestions: [...pages.allPages.map((p) => TagInputItem(value: p.identifier, label: p.title))],
-            onChanged: (data) {
-              pages.openMember.canEdit = data.map((v) => v.value ?? "").where((e) => e.isNotEmpty).toList();
-            },
-            initialValue: [
-              ...pages.openMember.canEdit.map((v) =>
-                  TagInputItem(value: v, label: pages.getByIdentifier(v) != null ? pages.getByIdentifier(v)!.title : v))
-            ],
-            strict: true,
-            limit: 999,
-          ),
-        ),
       ],
       actions: actions,
     ),
-    if (editing && pages.openMember.operates) upcomingAppointmentsTab(context),
+    if (editing) upcomingAppointmentsTab(context),
   ]);
 }
 

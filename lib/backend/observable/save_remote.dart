@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
+import 'package:apexo/backend/utils/constants.dart';
+import 'package:apexo/backend/utils/strip_id_from_file.dart';
 import 'package:apexo/state/state.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
-
-import 'package:mime/mime.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 class RowToWriteRemotely {
   String id;
@@ -33,23 +33,23 @@ class VersionedResult {
 }
 
 class SaveRemote {
-  final String dbBranchUrl;
-  final String token;
-  final String tableName;
   final String store;
+  final PocketBase pb;
   Timer? timer;
 
   void Function(bool)? onOnlineStatusChange;
 
   bool isOnline = true;
   SaveRemote({
-    required this.dbBranchUrl,
-    required this.token,
     required this.store,
-    required this.tableName,
+    required this.pb,
     this.onOnlineStatusChange,
   }) {
     checkOnline();
+  }
+
+  RecordService get remoteRows {
+    return pb.collection(collectionName);
   }
 
   void retryConnection() {
@@ -68,7 +68,7 @@ class SaveRemote {
 
   Future<void> checkOnline() async {
     try {
-      await http.get(Uri.parse(dbBranchUrl), headers: {"Authorization": "Bearer $token"});
+      await pb.health.check().timeout(const Duration(seconds: 3));
     } catch (e) {
       isOnline = false;
       retryConnection();
@@ -85,230 +85,117 @@ class SaveRemote {
   Future<VersionedResult> getSince({int version = 0}) async {
     List<Row> result = [];
 
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(version, isUtc: true);
-    String formattedDate = dateTime.toIso8601String();
-    var cursor = "";
+    final date = DateTime.fromMillisecondsSinceEpoch(version, isUtc: true).toIso8601String();
+    bool nextPageExists = true;
+    int currentPage = 1;
 
     do {
-      final url = '$dbBranchUrl/tables/$tableName/query';
-      http.Response response;
       try {
-        response = await http.post(
-          Uri.parse(url),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': "application/json",
-          },
-          body: jsonEncode({
-            "columns": ["id", "data", "xata.updatedAt", "imgs"],
-            if (cursor.isEmpty)
-              "filter": {
-                "store": store,
-                "xata.updatedAt": {"\$gt": formattedDate}
-              },
-            "page": {
-              // the limit is 1000
-              // but to be safe, we use 900
-              "size": 900,
-              if (cursor.isNotEmpty) "after": cursor,
-            }
-          }),
+        final pageResult = await remoteRows.getList(
+          filter: 'updated>"$date"&&store="$store"',
+          sort: "updated",
+          perPage: 900,
+          page: currentPage,
         );
+
+        for (var item in pageResult.items) {
+          final ts = DateTime.parse(item.updated).millisecondsSinceEpoch;
+          result.add(Row(id: item.id, data: jsonEncode(item.data["data"]), ts: ts));
+          // handle uploaded images
+          for (var img in item.data["imgs"]) {
+            state.imagesToDownload.add("${state.url}/api/files/${item.collectionId}/${item.id}/$img");
+          }
+        }
+        // trigger but don't wait for it to finish
+        state.downloadImgs();
+
+        // handle pagination
+        if (pageResult.totalPages > currentPage) {
+          currentPage++;
+        } else {
+          nextPageExists = false;
+        }
       } catch (e) {
         await checkOnline();
         rethrow;
       }
-
-      if (response.statusCode > 299) {
-        throw response.body;
-      }
-
-      Map<String, dynamic> queryResult = jsonDecode(utf8.decode(response.bodyBytes));
-
-      List rows = queryResult["records"];
-
-      // handle uploaded images
-      for (var r in rows) {
-        for (var img in r["imgs"]) {
-          state.imagesToDownload.addAll({img["url"]: img["name"]});
-        }
-      }
-      // trigger but don't wait for it to finish
-      state.downloadImgs();
-
-      Iterable<Row> formattedRows = rows.map((row) =>
-          Row(id: row["id"], data: row["data"], ts: DateTime.parse(row["xata"]["updatedAt"]).millisecondsSinceEpoch));
-      result.addAll(formattedRows);
-
-      if (queryResult["meta"]["page"]["more"]) {
-        cursor = queryResult["meta"]["page"]["cursor"];
-      } else {
-        cursor = "";
-        break;
-      }
-    } while (cursor.isNotEmpty);
+    } while (nextPageExists);
 
     return VersionedResult(result.isNotEmpty ? result.map((r) => r.ts).reduce(max) : 0, result);
   }
 
   Future<int> getVersion() async {
-    final url = '$dbBranchUrl/tables/$tableName/query';
-
-    http.Response response;
     try {
-      response = (await http.post(Uri.parse(url),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': "application/json",
-          },
-          body: jsonEncode({
-            "columns": ["xata.updatedAt"],
-            "filter": {
-              "store": store,
-            },
-            "sort": {"xata.updatedAt": "desc"},
-            "page": {"size": 1}
-          })));
+      final result = await remoteRows.getList(sort: "-updated", perPage: 1, filter: 'store="$store"');
+      if (result.items.isEmpty) {
+        return 0;
+      }
+      return DateTime.parse(result.items.first.updated).millisecondsSinceEpoch;
     } catch (e) {
       await checkOnline();
       throw Exception(e);
     }
-
-    if (response.statusCode > 299) {
-      throw Exception(response.body);
-    }
-
-    Map<String, dynamic> queryResult = jsonDecode(response.body);
-    List rows = queryResult["records"];
-    if (rows.isEmpty) {
-      return 0;
-    }
-    return DateTime.parse(rows[0]["xata"]["updatedAt"]).millisecondsSinceEpoch;
   }
 
   Future<bool> put(List<RowToWriteRemotely> data) async {
-    final url = '$dbBranchUrl/transaction';
-
     if (data.isEmpty) {
       return true;
     }
 
-    // split data into chunks of 900
-    // the limit 1000, but to be safe we'll use 900
-    // https://xata.io/docs/rest-api/limits#request-limits
+    // split data into chunks of 50
     List<List<RowToWriteRemotely>> chunks = [];
-    for (int i = 0; i < data.length; i += 900) {
-      chunks.add(data.sublist(i, i + 900 > data.length ? data.length : i + 900));
+    for (int i = 0; i < data.length; i += 100) {
+      chunks.add(data.sublist(i, i + 100 > data.length ? data.length : i + 900));
     }
 
     for (var chunk in chunks) {
-      http.Response response;
       try {
-        response = (await http.post(
-          Uri.parse(url),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': "application/json",
-          },
-          body: jsonEncode({
-            "operations": chunk
-                .map((r) => {
-                      "update": {
-                        "table": tableName,
-                        "id": r.id,
-                        "fields": {
-                          "store": store,
-                          "data": r.data,
-                        },
-                        "upsert": true
-                      }
-                    })
-                .toList(),
-          }),
-        ));
+        // TODO: currently pocketbase doesn't support upserts nor bulk upserts
+        // once we have it in version 0.23 we should update the following code
+        // splitting the data into chunks currently doesn't serve any purpose
+        // but it's here for future use
+
+        for (var item in chunk) {
+          bool exists;
+          try {
+            await remoteRows.getOne(item.id);
+            exists = true;
+          } catch (e) {
+            exists = false;
+          }
+          if (exists) {
+            // update
+            await remoteRows.update(item.id, body: {"data": item.data});
+          } else {
+            // create
+            await remoteRows.create(body: {"store": store, "data": item.data, "id": item.id});
+          }
+        }
       } catch (e) {
         await checkOnline();
         rethrow;
       }
-      if (response.statusCode > 299) {
-        throw response.body;
-      }
     }
-
     return true;
   }
 
-  Future<bool> uploadImages(String rowID, List<String> paths) async {
+  Future<bool> uploadImages(String recordID, List<String> paths) async {
     paths = paths.where((p) => p.isNotEmpty).toList();
     if (paths.isEmpty) {
       return true;
     }
-
-    final files = paths.map((p) => File(p)).toList();
-    final filenames = paths.map((p) => p.split('/').last).toList();
-    final url = '$dbBranchUrl/tables/$tableName/data/$rowID';
-
-    http.Response response;
     try {
-      // get older files
-      final http.Response olderFiles = await http.get(Uri.parse(url), headers: {"Authorization": "Bearer $token"});
-      final Set<String> olderIds = Set<String>.from(jsonDecode(olderFiles.body)["imgs"].map((e) => e["id"]));
+      final alreadyUploaded = List<String>.from((await remoteRows.getOne(recordID, fields: "imgs")).data["imgs"])
+          .map((e) => stripIDFromFileName(e));
 
-      // Read the file content as bytes
-      final filesBytes = await Future.wait(files.map((file) => file.readAsBytes()).toList());
-      final base64Strings = filesBytes.map((bytes) => base64Encode(bytes)).toList();
-      final mimeTypes = files.map((file) => lookupMimeType(file.path) ?? "application/octet-stream").toList();
-
-      final List<Map<String, String>> newFiles = [];
-
-      for (int i = 0; i < files.length; i++) {
-        newFiles.add({
-          "base64Content": base64Strings[i],
-          "name": filenames[i],
-          "mediaType": mimeTypes[i],
-          "id": base64
-              .encode(utf8.encode(filenames[i] + DateTime.now().toString()))
-              .splitMapJoin(RegExp(r'[A-Z]|\W'), onMatch: (m) => "")
-        });
-      }
-
-      // upload new files one by one
-      // to limits the size of the request body
-      for (var i = 0; i < newFiles.length; i++) {
-        if (i != 0) {
-          // add the previous ID to the list of older IDs
-          String? prevId = newFiles[i - 1]["id"];
-          if (prevId != null) {
-            olderIds.add(prevId);
-          }
-        }
-
-        if (olderIds.contains(newFiles[i]["id"])) {
-          // if the file already exists, skip it
-          // since a previous upload try
-          // might have already uploaded it
+      // upload files one by one to avoid having large request body
+      for (final filePath in paths) {
+        final filename = filePath.split('/').last;
+        if (alreadyUploaded.contains(filename)) {
           continue;
         }
-
-        Map<String, String> newFile = newFiles[i];
-
-        response = await http.patch(
-          Uri.parse(url),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-          body: jsonEncode({
-            "imgs": [
-              ...olderIds.map((id) => {"id": id}),
-              newFile,
-            ]
-          }),
-        );
-
-        if (response.statusCode > 299) {
-          throw response.body;
-        }
+        final file = await http.MultipartFile.fromPath('imgs', filePath, filename: filename);
+        await remoteRows.update(recordID, files: [file]);
       }
     } catch (e) {
       await checkOnline();
@@ -318,59 +205,29 @@ class SaveRemote {
   }
 
   Future<bool> deleteImages(String rowID, List<String> paths) async {
-    final filenames = paths.map((p) => p.split('/').last).toList();
-    final url = '$dbBranchUrl/tables/$tableName/data/$rowID';
-
-    http.Response response;
     try {
-      // get older files
-      final uploaded = await http.get(Uri.parse(url), headers: {"Authorization": "Bearer $token"});
-      final uploadedMetadata = jsonDecode(uploaded.body)["imgs"].toList();
-      final keepMetadata = uploadedMetadata.where((m) => !filenames.contains(m["name"])).toList();
-
-      // Send the PATCH request
-      response = await http.patch(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({
-          "imgs": [
-            ...keepMetadata.map((metadata) => {"id": metadata["id"]}),
-          ]
-        }),
-      );
+      final allFullNames = List<String>.from((await remoteRows.getOne(rowID, fields: "imgs")).data["imgs"]);
+      final allLocalNames = allFullNames.map((e) => stripIDFromFileName(e)).toList();
+      final localNamesToDelete = paths.map((e) => e.split("/").last);
+      List<String> fullNamesToDelete = [];
+      for (var i = 0; i < allLocalNames.length; i++) {
+        final localName = allLocalNames[i];
+        if (localNamesToDelete.contains(localName)) {
+          fullNamesToDelete.add(allFullNames[i]);
+        }
+      }
+      if (fullNamesToDelete.isEmpty) {
+        return true;
+      }
+      await remoteRows.update(rowID, body: {
+        "imgs-": fullNamesToDelete,
+      });
     } catch (e) {
       await checkOnline();
       rethrow;
-    }
-
-    if (response.statusCode > 299) {
-      throw response.body;
-    }
-    return true;
-  }
-
-  Future<bool> clear() async {
-    final url = '$dbBranchUrl/sql';
-    http.Response response;
-    try {
-      response = await http.post(Uri.parse(url),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': "application/json",
-          },
-          body: jsonEncode({
-            "statement": "DELETE FROM $tableName WHERE store = '$store'",
-          }));
-    } catch (e) {
-      await checkOnline();
-      rethrow;
-    }
-    if (response.statusCode > 299) {
-      throw response.body;
     }
     return true;
   }
 }
+
+//TODO: implement realtime subscription to notify the client that a synchronization should be performed

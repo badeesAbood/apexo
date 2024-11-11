@@ -45,7 +45,7 @@ class Calendar extends ObservingWidget {
                 value: "",
                 child: Text("All operators"),
               ),
-              ...staff.present.where((m) => m.operates).map((e) {
+              ...staff.present.map((e) {
                 var doctorName = e.title;
                 if (doctorName.length > 20) {
                   doctorName = "${doctorName.substring(0, 17)}...";
@@ -281,6 +281,7 @@ openSingleAppointment({
             text: "Add photos",
             callback: (state) {
               () async {
+                // TODO: check to see if we can use the ImagePicker to take photos as well as picking
                 List<XFile> res = await ImagePicker().pickMultiImage(limit: 50 - pages.openAppointment.imgs.length);
                 state.startProgress();
                 try {

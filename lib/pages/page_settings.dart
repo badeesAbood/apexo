@@ -1,16 +1,23 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/pages/window_admins.dart';
+import 'package:apexo/pages/window_backups.dart';
+import 'package:apexo/pages/window_permissions.dart';
+import 'package:apexo/pages/window_users.dart';
+import 'package:apexo/state/state.dart' as appState;
 import 'package:fluent_ui/fluent_ui.dart' hide Page;
 import 'package:flutter/cupertino.dart';
 import '../backend/observable/store.dart';
 import '../state/stores/settings/settings_model.dart';
 import '../state/stores/settings/settings_store.dart';
 
+// TODO: should we lock backups, users, persmissions, admins from being edite / viewed whne the user is offline?
+
 enum InputType { text, dropDown }
 
 enum Scope { device, app }
 
-class PageTwo extends ObservingWidget {
-  const PageTwo({super.key});
+class SettingsPage extends ObservingWidget {
+  const SettingsPage({super.key});
 
   @override
   getObservableState() {
@@ -24,22 +31,24 @@ class PageTwo extends ObservingWidget {
         padding: const EdgeInsets.only(top: 10),
         child: ListView(
           children: [
-            SettingsItem(
-              identifier: "currency",
-              title: "Currency",
-              description: "Currency symbol to be used across the application",
-              icon: FluentIcons.all_currency,
-              inputType: InputType.text,
-              scope: Scope.app,
-            ),
-            SettingsItem(
-              identifier: "phone",
-              title: "Phone number",
-              description: "All calls will be transferred to this phone number",
-              icon: FluentIcons.phone,
-              inputType: InputType.text,
-              scope: Scope.app,
-            ),
+            if (appState.state.isAdmin)
+              SettingsItem(
+                identifier: "currency_______",
+                title: "Currency",
+                description: "Currency symbol to be used across the application",
+                icon: FluentIcons.all_currency,
+                inputType: InputType.text,
+                scope: Scope.app,
+              ),
+            if (appState.state.isAdmin)
+              SettingsItem(
+                identifier: "phone__________",
+                title: "Phone number",
+                description: "All calls will be transferred to this phone number",
+                icon: FluentIcons.phone,
+                inputType: InputType.text,
+                scope: Scope.app,
+              ),
             SettingsItem(
               identifier: "locale",
               title: "App language",
@@ -58,6 +67,12 @@ class PageTwo extends ObservingWidget {
                 ),
               ],
             ),
+            if (appState.state.isAdmin) ...[
+              const BackupsWindow(),
+              AdminsWindow(),
+              UsersWindow(),
+              PermissionsWindow(),
+            ],
           ],
         ),
       ),

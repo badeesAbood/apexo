@@ -135,7 +135,7 @@ abstract class ObservablePersistingObject extends ObservableObject {
   ObservablePersistingObject(this.identifier) {
     box = () async {
       await Hive.initFlutter();
-      return Hive.openBox<String>(identifier + simpleHash(state.dbBranchUrl));
+      return Hive.openBox<String>(identifier + simpleHash(state.url));
     }();
     _initialLoad();
   }

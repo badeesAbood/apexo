@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:apexo/backend/utils/strip_id_from_file.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -42,7 +43,8 @@ Future<File> savePickedImage(XFile image) async {
   return await File(image.path).copy(newImage.path);
 }
 
-Future<File> saveImageFromUrl(String imageUrl, String imageName) async {
+Future<File> saveImageFromUrl(String imageUrl) async {
+  final imageName = stripIDFromFileName(imageUrl.split('/').last);
   final File newImage = await _getOrCreateFile(imageName);
   if (await newImage.exists()) return newImage;
 

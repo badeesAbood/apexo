@@ -19,7 +19,7 @@ class AppLogo extends StatelessWidget {
           width: 30,
           height: 30,
         ),
-        const Text("App name"),
+        const Text("Apexo Clinic Manager"),
       ],
     );
   }

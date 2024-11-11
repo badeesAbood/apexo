@@ -37,7 +37,7 @@ class MyApp extends ObservingWidget {
 
   @override
   getObservableState() {
-    return [state];
+    return [state, pages];
   }
 
   @override
@@ -67,18 +67,16 @@ class MyApp extends ObservingWidget {
                       header: const AppLogo(),
                       selected: pages.currentPageIndex,
                       displayMode: PaneDisplayMode.auto,
-                      items: [
-                        ...pages.activePages.where((p) => p.onFooter != true).map(
-                              (page) => PaneItem(
-                                icon: Icon(page.icon),
-                                body: (page.body)(),
+                      items: List<NavigationPaneItem>.from(pages.allPages.where((p) => p.onFooter != true).map(
+                            (page) => PaneItem(
+                                icon: page.accessible ? Icon(page.icon) : const Icon(FluentIcons.lock),
+                                body: page.accessible ? (page.body)() : const SizedBox(),
                                 title: Text(page.title),
-                                onTap: () => pages.navigate(page),
-                              ),
-                            ),
-                      ],
+                                onTap: () => page.accessible ? pages.navigate(page) : null,
+                                enabled: page.accessible),
+                          )),
                       footerItems: [
-                        ...pages.activePages.where((p) => p.onFooter == true).map(
+                        ...pages.allPages.where((p) => p.onFooter == true).map(
                               (page) => PaneItem(
                                 icon: Icon(page.icon),
                                 body: (page.body)(),

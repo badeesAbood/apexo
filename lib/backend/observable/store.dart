@@ -309,7 +309,7 @@ class Store<G extends Model> {
 
   /// gets a document by id
   G? get(String id) {
-    // TOOD: wouldn't a map be better representation of the database (local storage?)
+    // Todo: wouldn't a map be better representation of the database (local storage?)
     if (docs.where((x) => x.id == id).isEmpty) return null;
     return docs.firstWhere((x) => x.id == id);
   }
@@ -351,30 +351,6 @@ class Store<G extends Model> {
   /// archives a document by id (the concept of deletion is not supported here)
   void delete(String id) {
     archive(id);
-  }
-
-  /// returns a dump that can be used to restore the store to a specific state
-  Future<Dump> backup() async {
-    if (local == null) throw "Unable to dump data when local persistence layer is not defined";
-    return await local!.dump();
-  }
-
-  /// restores the store to a specific state using a dump
-  Future<void> restore(Dump dump) async {
-    try {
-      if (local == null || remote == null) return;
-      await remote!.checkOnline();
-      if (remote!.isOnline == false) {
-        throw Exception("remote server is offline");
-      }
-      await local!.clear();
-      await remote!.clear();
-      await remote!.put(dump.main.entries.map((e) => RowToWriteRemotely(id: e.key, data: e.value)).toList());
-      await synchronize();
-      await loadFromLocal();
-    } catch (e) {
-      logger("error during restoration $e");
-    }
   }
 
   /// upload set of files to a certain row

@@ -1,5 +1,6 @@
+import 'package:apexo/backend/utils/constants.dart';
+
 String simpleHash(String input) {
-  const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';
   int hash = 0;
 
   // Generate a basic hash using the characters of the input string.

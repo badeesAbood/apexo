@@ -218,7 +218,7 @@ class PageStats extends ObservingWidget {
           value: "",
           child: Text("All operators"),
         ),
-        ...staff.present.where((m) => m.operates).map((e) {
+        ...staff.present.map((e) {
           var doctorName = e.title;
           if (doctorName.length > 20) {
             doctorName = "${doctorName.substring(0, 17)}...";

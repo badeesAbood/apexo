@@ -17,16 +17,19 @@ class AuxiliarySection extends ObservingWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Icon(auxiliaryIcon),
-        const SizedBox(width: 10),
-        FilledButton(
-            onPressed: state.logout,
-            child: const Row(
-              children: [
-                Icon(FluentIcons.sign_out),
-                SizedBox(width: 10),
-                Text("Logout"),
-              ],
-            )),
+        const SizedBox(width: 5),
+        Text(state.email),
+        const SizedBox(width: 5),
+        Button(
+          onPressed: state.logout,
+          child: const Row(
+            children: [
+              Icon(FluentIcons.sign_out),
+              SizedBox(width: 3),
+              Text("Logout"),
+            ],
+          ),
+        ),
       ],
     );
   }

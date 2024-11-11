@@ -35,7 +35,8 @@ class GlobalActions extends ObservableObject {
         tooltip: "Synchronize",
         iconData: FluentIcons.sync,
         onPressed: () async {
-          await state.activate(state.dbBranchUrl, state.token, true);
+          await state.activate(state.url, [state.token], true);
+
           for (var callback in syncCallbacks.values) {
             callback();
           }
@@ -51,7 +52,7 @@ class GlobalActions extends ObservableObject {
         tooltip: "Reconnect",
         iconData: (state.isOnline && !state.proceededOffline) ? FluentIcons.streaming : FluentIcons.streaming_off,
         onPressed: () async {
-          await state.activate(state.dbBranchUrl, state.token, true);
+          await state.activate(state.url, [state.token], true);
           for (var callback in reconnectCallbacks.values) {
             callback();
           }
