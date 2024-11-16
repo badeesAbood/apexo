@@ -31,14 +31,13 @@ enum EventType {
 
 class OEvent {
   final EventType type;
-  final int index;
   final String id;
   final String? property;
-  OEvent.add(this.index, this.id)
+  OEvent.add(this.id)
       : type = EventType.add,
         property = null;
-  OEvent.modify(this.index, this.id, [this.property]) : type = EventType.modify;
-  OEvent.remove(this.index, this.id)
+  OEvent.modify(this.id, [this.property]) : type = EventType.modify;
+  OEvent.remove(this.id)
       : type = EventType.remove,
         property = null;
 }
@@ -93,10 +92,9 @@ class ObservableBase {
     _silent++;
     try {
       fn();
-    } catch (e, stacktrace) {
-      logger(e);
-      logger(stacktrace);
-      errors.add(CustomError(e.toString(), stacktrace));
+    } catch (e, s) {
+      logger("Error during silent modification: $e", s);
+      errors.add(CustomError(e.toString(), s));
     }
     _silent--;
   }
@@ -124,7 +122,7 @@ class ObservableState<T> extends ObservableObject {
 /// and should call notify() when the value is changed
 class ObservableObject extends ObservableBase {
   void notify() {
-    _notifyObservers([OEvent.modify(0, "")]);
+    _notifyObservers([OEvent.modify("")]);
   }
 }
 
@@ -164,64 +162,52 @@ abstract class ObservablePersistingObject extends ObservableObject {
   Map<String, dynamic> toJson();
 }
 
-/// creates an observable list
-/// values of this list should extend Model
-/// this is typically used by stores (lists of models)
-class ObservableList<T extends Model> extends ObservableBase {
-  final List<T> _list = [];
+/// creates an observable dictionary
+/// values of this dictionary should extend Model
+/// this is typically used by stores (dictionaries of models)
+class ObservableDict<G extends Model> extends ObservableBase {
+  final Map<String, G> _dictionary = {};
 
-  T firstWhere(bool Function(T) test) {
-    return _list.where(test).first;
+  G? get(String id) {
+    return _dictionary[id];
   }
 
-  int indexWhere(bool Function(T) test) {
-    return _list.indexWhere(test);
+  void set(G item) {
+    bool isNew = !_dictionary.containsKey(item.id);
+    _dictionary[item.id] = item;
+    _notifyObservers([
+      if (isNew) OEvent.add(item.id) else OEvent.modify(item.id),
+    ]);
   }
 
-  int indexOfId(String id) {
-    return _list.indexWhere((item) => item.id == id);
-  }
-
-  void add(T item) {
-    _list.add(item);
-    _notifyObservers([OEvent.add(_list.length - 1, item.id)]);
-  }
-
-  void addAll(List<T> items) {
-    int startIndex = _list.length;
-    _list.addAll(items);
-    List<OEvent> events = [];
-    for (int i = 0; i < items.length; i++) {
-      events.add(OEvent.add(startIndex + i, items[i].id));
+  void setAll(List<G> items) {
+    for (var item in items) {
+      _dictionary[item.id] = item;
     }
-    _notifyObservers(events);
+    _notifyObservers([
+      if (items.isNotEmpty) OEvent.add(items.first.id),
+    ]);
   }
 
-  void remove(T item) {
-    int index = indexOfId(item.id);
-    if (index >= 0 && index < _list.length) {
-      String id = _list[index].id;
-      _list.removeAt(index);
-      _notifyObservers([OEvent.remove(index, id)]);
-    }
-  }
-
-  void modify(T item) {
-    int index = indexOfId(item.id);
-    if (index >= 0 && index < _list.length) {
-      _list[index] = item;
-      _notifyObservers([OEvent.modify(index, item.id)]);
+  void remove(String id) {
+    if (_dictionary.containsKey(id)) {
+      _dictionary.remove(id);
+      _notifyObservers([OEvent.remove(id)]);
     }
   }
 
   void clear() {
-    _list.clear();
-    _notifyObservers([OEvent.remove(-1, '')]);
+    _dictionary.clear();
+    _notifyObservers([OEvent.remove('')]);
   }
 
   void notifyView() {
-    _notifyObservers([OEvent.modify(-1, 'ignore')]);
+    _notifyObservers([OEvent.modify('ignore')]);
   }
 
-  List<T> get docs => List.unmodifiable(_list);
+  List<G> get values => _dictionary.values.toList();
+
+  List<String> get keys => _dictionary.keys.toList();
+
+  Map<String, G> get docs => Map<String, G>.unmodifiable(_dictionary);
 }

@@ -19,7 +19,7 @@ final collectionImport = CollectionModel(
     ),
     SchemaField(name: "imgs", type: "file", options: {
       "maxSelect": 99,
-      "maxSize": 5242880,
+      "maxSize": 1048576 * 15, // 15MB
     }),
   ],
   indexes: [

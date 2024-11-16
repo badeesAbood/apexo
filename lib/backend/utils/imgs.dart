@@ -37,14 +37,14 @@ Future<ImageProvider> getImage(String name) async {
   }
 }
 
-Future<File> savePickedImage(XFile image) async {
-  final File newImage = await _getOrCreateFile(image.name);
+Future<File> savePickedImage(XFile image, String newName) async {
+  final File newImage = await _getOrCreateFile(newName);
   if (await newImage.exists()) return newImage;
   return await File(image.path).copy(newImage.path);
 }
 
-Future<File> saveImageFromUrl(String imageUrl) async {
-  final imageName = stripIDFromFileName(imageUrl.split('/').last);
+Future<File> saveImageFromUrl(String imageUrl, [String? givenName]) async {
+  final imageName = givenName ?? stripIDFromFileName(imageUrl.split('/').last);
   final File newImage = await _getOrCreateFile(imageName);
   if (await newImage.exists()) return newImage;
 
@@ -53,5 +53,39 @@ Future<File> saveImageFromUrl(String imageUrl) async {
     return await newImage.writeAsBytes(response.bodyBytes);
   } else {
     throw Exception('Failed to download image');
+  }
+}
+
+Future<String?> getImageExtensionFromURL(String imageUrl) async {
+  try {
+    // Make HEAD request to get headers without downloading the whole file
+    final response = await http.head(Uri.parse(imageUrl));
+
+    if (response.statusCode == 200) {
+      final contentType = response.headers['content-type'];
+      if (contentType != null) {
+        // Map MIME types to extensions
+        switch (contentType.toLowerCase()) {
+          case 'image/jpeg':
+          case 'image/jpg':
+            return '.jpg';
+          case 'image/png':
+            return '.png';
+          case 'image/gif':
+            return '.gif';
+          case 'image/webp':
+            return '.webp';
+          case 'image/bmp':
+            return '.bmp';
+          case 'image/heic':
+            return '.heic';
+          default:
+            return '.${contentType.split('/').last}';
+        }
+      }
+    }
+    return null;
+  } catch (e) {
+    return null;
   }
 }

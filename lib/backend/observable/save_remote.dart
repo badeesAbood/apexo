@@ -150,7 +150,7 @@ class SaveRemote {
 
     for (var chunk in chunks) {
       try {
-        // TODO: currently pocketbase doesn't support upserts nor bulk upserts
+        // TODO [Deferred]: currently pocketbase doesn't support upserts nor bulk upserts
         // once we have it in version 0.23 we should update the following code
         // splitting the data into chunks currently doesn't serve any purpose
         // but it's here for future use
@@ -229,5 +229,3 @@ class SaveRemote {
     return true;
   }
 }
-
-//TODO: implement realtime subscription to notify the client that a synchronization should be performed

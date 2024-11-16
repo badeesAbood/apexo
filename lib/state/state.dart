@@ -39,6 +39,8 @@ class State extends ObservablePersistingObject {
   bool initialStateLoaded = false;
   String loginError = "";
   String loadingIndicator = "";
+  int selectedTab = 0;
+  bool resetInstructionsSent = false;
 
   // login credentials
   String url = "";
@@ -50,7 +52,7 @@ class State extends ObservablePersistingObject {
   PocketBase? pb;
 
   Member? get currentMember {
-    return staff.get(email); // TODO get by email
+    return staff.getByEmail(email);
   }
 
   /// means we checked and verified that it works
@@ -72,10 +74,13 @@ class State extends ObservablePersistingObject {
     try {
       while (imagesToDownload.isNotEmpty) {
         await saveImageFromUrl(imagesToDownload.first);
-        imagesToDownload.removeAt(0);
+        if (imagesToDownload.isNotEmpty) {
+          imagesToDownload.removeAt(0);
+        }
+        notify();
       }
-    } catch (e) {
-      logger(e);
+    } catch (e, s) {
+      logger("Error during downloading image: $e", s);
     }
     isSyncing--;
   }
@@ -102,7 +107,20 @@ class State extends ObservablePersistingObject {
     return finishedLoginProcess();
   }
 
+  resetButton() async {
+    final pb = PocketBase(urlField.text);
+    loginError = '';
+    loadingIndicator = "Sending password reset email";
+    notify();
+    await pb.admins.requestPasswordReset(emailField.text);
+    await pb.collection("users").requestPasswordReset(emailField.text);
+    loadingIndicator = "";
+    resetInstructionsSent = true;
+    notify();
+  }
+
   loginButton([bool online = true]) {
+    print(urlField.text.replaceFirst(RegExp(r'/+$'), ""));
     String url = urlField.text.replaceFirst(RegExp(r'/+$'), "");
     String email = emailField.text;
     String password = passwordField.text;
@@ -131,7 +149,9 @@ class State extends ObservablePersistingObject {
 
   /// run a series of callbacks that would require the login credentials to be active
   activate(String inputURL, List<String> credentials, bool online) async {
-    pb ??= PocketBase(inputURL);
+    if (pb == null || pb?.baseUrl.isEmpty == true) {
+      pb = PocketBase(inputURL);
+    }
 
     setLoadingIndicator("Connecting to the server");
     loginError = "";
@@ -155,11 +175,6 @@ class State extends ObservablePersistingObject {
         }
 
         // create database if it doesn't exist
-        // TODO: we should also set the create rule to admin only in "users" collection
-
-        // TODO: should we create a new staff member on first login?
-        // when we create the database I mean
-        // just to make things a bit easier
 
         try {
           try {
@@ -167,12 +182,13 @@ class State extends ObservablePersistingObject {
           } catch (e) {
             if (isAdmin) {
               await pb!.collections.import([collectionImport]);
+              await pb!.collections.update("users", body: {"createRule": null});
             }
           }
         } catch (e) {
           throw Exception("Error while creating the collection for the first time: $e");
         }
-      } catch (e) {
+      } catch (e, s) {
         if (e.runtimeType != ClientException) {
           loginError = "Error while logging-in: $e.";
         } else if ((e as ClientException).statusCode == 404) {
@@ -184,6 +200,7 @@ class State extends ObservablePersistingObject {
         } else {
           loginError = "Unknown client exception while authenticating: $e.";
         }
+        logger("Could not login due to the following error: $e", s, 2);
         return finishedLoginProcess(loginError);
       }
 
@@ -196,8 +213,8 @@ class State extends ObservablePersistingObject {
       for (var callback in activators.values) {
         try {
           await callback();
-        } catch (e) {
-          logger(e);
+        } catch (e, s) {
+          logger("Error during running activators: $e", s);
         }
       }
     }

@@ -50,14 +50,10 @@ class Patients extends Store<Patient> {
   }
 
   List<String> get allTags {
-    return Set<String>.from(present.expand((doc) => doc.tags)).toList();
+    return Set<String>.from(present.values.expand((doc) => doc.tags)).toList();
   }
 
-  List<Patient> get present {
-    return docs.where((doc) => doc.archived != true).toList();
-  }
-
-  List<Patient> get showing {
+  Map<String, Patient> get showing {
     if (state.showArchived) return docs;
     return present;
   }

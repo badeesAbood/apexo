@@ -1,4 +1,5 @@
 import 'package:apexo/backend/observable/observable.dart';
+import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/state/state.dart';
 import 'package:pocketbase/pocketbase.dart';
 
@@ -63,7 +64,11 @@ class Admins extends ObservableObject {
     }
     loading = true;
     notify();
-    list = await state.pb!.admins.getFullList();
+    try {
+      list = await state.pb!.admins.getFullList();
+    } catch (e, s) {
+      logger("Error when getting full list of admins service: $e", s);
+    }
     loaded = true;
     loading = false;
     notify();

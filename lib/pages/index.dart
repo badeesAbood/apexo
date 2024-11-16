@@ -1,8 +1,8 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
-import 'package:apexo/pages/page_dashboard.dart';
-import 'package:apexo/pages/page_labwork.dart';
-import 'package:apexo/pages/page_patients.dart';
-import 'package:apexo/pages/page_stats.dart';
+import 'package:apexo/pages/dashboard/page_dashboard.dart';
+import 'package:apexo/pages/labwork/page_labwork.dart';
+import 'package:apexo/pages/patients/page_patients.dart';
+import 'package:apexo/pages/stats/page_stats.dart';
 import 'package:apexo/state/admins.dart';
 import 'package:apexo/state/backups.dart';
 import 'package:apexo/state/charts.dart';
@@ -18,9 +18,9 @@ import 'package:apexo/state/stores/staff/staff_store.dart';
 import 'package:apexo/state/users.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Page;
 import '../i18/index.dart';
-import '../pages/page_calendar.dart';
-import '../pages/page_staff.dart';
-import '../pages/page_settings.dart';
+import 'calendar/page_calendar.dart';
+import 'staff/page_staff.dart';
+import 'settings/page_settings.dart';
 import '../backend/observable/observable.dart';
 import "../state/stores/appointments/appointments_store.dart";
 import "../state/stores/settings/settings_store.dart";
@@ -120,7 +120,7 @@ class Pages extends ObservableObject {
         Page(
           title: locale.s.settings,
           identifier: "settings",
-          icon: FluentIcons.view,
+          icon: FluentIcons.settings,
           body: SettingsPage.new,
           accessible: true,
           onFooter: false,

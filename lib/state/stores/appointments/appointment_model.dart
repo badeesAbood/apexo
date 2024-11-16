@@ -3,7 +3,7 @@ import 'package:apexo/state/stores/patients/patients_store.dart';
 import 'package:apexo/state/stores/staff/member_model.dart';
 import 'package:apexo/state/stores/staff/staff_store.dart';
 
-import '../../../pages/widgets/week_calendar.dart';
+import '../../../pages/shared/week_calendar.dart';
 
 class Appointment extends AgendaItem {
   @override
@@ -89,8 +89,8 @@ class Appointment extends AgendaItem {
     /* 3 */ patientID = json["patientID"] ?? patientID;
     /* 4 */ preOpNotes = json["preOpNotes"] ?? preOpNotes;
     /* 5 */ postOpNotes = json["postOpNotes"] ?? postOpNotes;
-    /* 6 */ price = json["price"] ?? price;
-    /* 7 */ paid = json["paid"] ?? paid;
+    /* 6 */ price = double.parse((json["price"] ?? price).toString());
+    /* 7 */ paid = double.parse((json["paid"] ?? paid).toString());
     /* 8 */ imgs = List<String>.from(json["imgs"] ?? imgs);
   }
 

@@ -49,14 +49,9 @@ class Labworks extends Store<Labwork> {
     };
   }
 
-  List<Labwork> get present {
-    if (state.showArchived) return docs;
-    return docs.where((doc) => doc.archived != true).toList();
-  }
-
   List<String> get allLabs {
     Set<String> labs = {};
-    for (var doc in docs) {
+    for (var doc in docs.values) {
       labs.add(doc.lab);
     }
     return labs.toList();
@@ -64,14 +59,14 @@ class Labworks extends Store<Labwork> {
 
   List<String> get allPhones {
     Set<String> phones = {};
-    for (var doc in docs) {
+    for (var doc in docs.values) {
       phones.add(doc.phoneNumber);
     }
     return phones.toList();
   }
 
   String? getPhoneNumber(String lab) {
-    for (var doc in docs) {
+    for (var doc in docs.values) {
       if (doc.lab == lab) {
         return doc.phoneNumber;
       }

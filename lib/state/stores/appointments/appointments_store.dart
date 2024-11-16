@@ -51,18 +51,14 @@ class Appointments extends Store<Appointment> {
 
   String staffId = "";
 
-  List<Appointment> get present {
-    if (state.showArchived) return docs;
-    return docs.where((doc) => doc.archived != true).toList();
-  }
-
-  List<Appointment> get filtered {
+  Map<String, Appointment> get filtered {
     if (staffId.isEmpty) return present;
-    return present.where((doc) => doc.operatorsIDs.contains(staffId)).toList();
+    return Map<String, Appointment>.fromEntries(
+        present.entries.where((entry) => entry.value.operatorsIDs.contains(staffId)));
   }
 
   List<String> get allPrescriptions {
-    return Set<String>.from(present.expand((doc) => doc.prescriptions)).toList();
+    return Set<String>.from(present.values.expand((doc) => doc.prescriptions)).toList();
   }
 
   filterByStaff(String? value) {

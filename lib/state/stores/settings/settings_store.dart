@@ -17,9 +17,10 @@ const _storeNameLocal = "settings_local";
 
 class GlobalSettings extends Store<Setting> {
   Map<String, String> defaults = {
-    "currency_______": "\$",
+    "currency_______": "USD",
     "phone__________": "1234567890",
     "permissions____": jsonEncode([false, true, true, true, false]),
+    "start_day_of_wk": "monday",
   };
 
   GlobalSettings()
@@ -58,8 +59,8 @@ class GlobalSettings extends Store<Setting> {
       state.setLoadingIndicator("Synchronizing settings");
       await Future.wait([loaded, synchronize()]).then((_) {
         defaults.forEach((key, value) {
-          if (getIndex(key) == -1) {
-            add(Setting.fromJson({"id": key, "value": value}));
+          if (has(key) == false) {
+            set(Setting.fromJson({"id": key, "value": value}));
           }
         });
       });
@@ -89,6 +90,7 @@ class GlobalSettings extends Store<Setting> {
 class LocalSettings extends Store<Setting> {
   Map<String, String> defaults = {
     "locale": "english",
+    "date_format": "dd/MM/yyyy",
   };
 
   LocalSettings()
@@ -98,8 +100,8 @@ class LocalSettings extends Store<Setting> {
         ) {
     loaded.then((_) {
       defaults.forEach((key, value) {
-        if (getIndex(key) == -1) {
-          add(Setting.fromJson({"id": key, "value": value}));
+        if (has(key) == false) {
+          set(Setting.fromJson({"id": key, "value": value}));
         }
       });
     });

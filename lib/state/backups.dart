@@ -1,5 +1,6 @@
 import 'package:apexo/backend/observable/observable.dart';
 import 'package:apexo/backend/observable/save_local.dart';
+import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/state/state.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart';
@@ -99,8 +100,12 @@ class Backups extends ObservableObject {
     }
     loading = true;
     notify();
-    list = (await state.pb!.backups.getFullList()).map((e) => BackupFile(e)).toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
+    try {
+      list = (await state.pb!.backups.getFullList()).map((e) => BackupFile(e)).toList()
+        ..sort((a, b) => b.date.compareTo(a.date));
+    } catch (e, s) {
+      logger("Error when getting full list of backups service: $e", s);
+    }
     loaded = true;
     loading = false;
     notify();

@@ -1,9 +1,11 @@
 import 'package:apexo/backend/observable/observable.dart';
 import 'package:apexo/state/stores/appointments/appointment_model.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
+import 'package:apexo/state/stores/settings/settings_store.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart' show showDateRangePicker;
+import 'package:table_calendar/table_calendar.dart';
 
 enum StatsInterval { days, weeks, months, quarters, years }
 
@@ -25,7 +27,7 @@ class _StatsPageState extends ObservableObject {
 
   List<Appointment> get filteredAppointments {
     List<Appointment> res = [];
-    for (var appointment in appointments.present) {
+    for (var appointment in appointments.present.values) {
       if (appointment.date().isAfter(end)) continue;
       if (appointment.date().isBefore(start)) continue;
       if (staffID.isNotEmpty && !appointment.operatorsIDs.contains(staffID)) continue;
@@ -159,15 +161,16 @@ class _StatsPageState extends ObservableObject {
   resetSelected() {
     final now = DateTime.now();
     start = DateTime(now.year, now.month, 1);
-    end = DateTime(now.year, now.month + 1).subtract(Duration(days: 1));
+    end = DateTime(now.year, now.month + 1).subtract(const Duration(days: 1));
     interval = StatsInterval.days;
   }
 
   int _daysSinceWeekStart(DateTime date) {
-    // TODO: by default this considers saturday to the first day of the week
-    // can we make it adjustable by using a value in settings?
-    int adjustedWeekday = (date.weekday + 1) % 7;
-    return adjustedWeekday == 0 ? 0 : adjustedWeekday;
+    int adjustedWeekday = (date.weekday -
+            StartingDayOfWeek.values.indexWhere((e) => e.name == globalSettings.get("start_day_of_wk")?.value) -
+            1) %
+        7;
+    return adjustedWeekday;
   }
 
   int _daysSinceMonthStart(DateTime date) {
@@ -217,9 +220,10 @@ class _StatsPageState extends ObservableObject {
   }
 
   String _getLabel(DateTime start) {
+    final df = localSettings.get("date_format")?.value.startsWith("d") == true ? "dd/MM" : "MM/dd";
     switch (interval) {
       case StatsInterval.days:
-        return DateFormat("dd/MM/yy").format(start);
+        return DateFormat("$df/yy").format(start);
       case StatsInterval.weeks:
         return "W${DateFormat("${_weekOfMonth(start)} MM/yy").format(start)}";
       case StatsInterval.months:

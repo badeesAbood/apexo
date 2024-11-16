@@ -4,7 +4,8 @@ import 'package:apexo/state/stores/appointments/appointments_store.dart';
 
 class Patient extends Model {
   List<Appointment> get allAppointments {
-    return appointments.present.where((x) => x.patientID == id).toList()..sort((a, b) => a.date().compareTo(b.date()));
+    return appointments.present.values.where((x) => x.patientID == id).toList()
+      ..sort((a, b) => a.date().compareTo(b.date()));
   }
 
   List<Appointment> get doneAppointments {

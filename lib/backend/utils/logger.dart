@@ -1,8 +1,10 @@
 import 'package:logging/logging.dart';
 
 final log = Logger('ApexoLogger');
-void logger(Object msg, [int level = 0]) {
-  switch (level) {
+
+/// 1 = severe, 2 = warning, 3 = info
+void logger(Object msg, StackTrace stacktrace, [int importance = 0]) {
+  switch (importance) {
     case 1:
       log.severe(msg);
       break;
@@ -13,7 +15,8 @@ void logger(Object msg, [int level = 0]) {
       log.info(msg);
       break;
     default:
-      log.info(msg);
+      log.severe(msg);
       break;
   }
+  log.fine(stacktrace);
 }

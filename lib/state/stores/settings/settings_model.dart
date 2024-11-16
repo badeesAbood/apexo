@@ -1,4 +1,4 @@
-import '../../../pages/widgets/week_calendar.dart';
+import '../../../pages/shared/week_calendar.dart';
 
 class Setting extends AgendaItem {
   String value = "";

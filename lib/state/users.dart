@@ -1,4 +1,5 @@
 import 'package:apexo/backend/observable/observable.dart';
+import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/state/state.dart';
 import 'package:pocketbase/pocketbase.dart';
 
@@ -67,9 +68,11 @@ class Users extends ObservableObject {
     }
     loading = true;
     notify();
-    list = await users.getFullList();
-    // TODO: this should be wrapped in a try catch block
-    // along side other services
+    try {
+      list = await users.getFullList();
+    } catch (e, s) {
+      logger("Error when getting full list of users service: $e", s);
+    }
     loaded = true;
     loading = false;
     notify();

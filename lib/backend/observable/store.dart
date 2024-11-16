@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/logger.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
@@ -27,10 +28,11 @@ class Store<G extends Model> {
   late Future<void> loaded;
   final Function? onSyncStart;
   final Function? onSyncEnd;
-  final ObservableList<G> observableObject;
+  final ObservableDict<G> observableObject;
   final Set<String> changes = {};
   SaveLocal? local;
   SaveRemote? remote;
+  bool realtimeIsSet = false;
   final int debounceMS;
   late Debouncer _debouncer;
   late ModellingFunc<G> modeling;
@@ -38,7 +40,7 @@ class Store<G extends Model> {
   int lastProcessChanges = 0;
 
   Store({required this.modeling, this.local, this.remote, this.debounceMS = 100, this.onSyncStart, this.onSyncEnd})
-      : observableObject = ObservableList() {
+      : observableObject = ObservableDict() {
     // setting up debouncer
     _debouncer = Debouncer(
       milliseconds: debounceMS,
@@ -64,6 +66,21 @@ class Store<G extends Model> {
     });
   }
 
+  void initAfterConnect() {
+    // setting up realtime
+    print("The following should not be null");
+    print(remote);
+    if (remote != null) {
+      remote?.pb.collection(collectionName).subscribe("*", (msg) {
+        print("message recieved on ${remote?.store}");
+        if (msg.record?.data["store"] == remote?.store) {
+          print("${remote?.store} will sync");
+          synchronize();
+        }
+      });
+    }
+  }
+
   Future<void> loadFromLocal() async {
     if (local == null) {
       return;
@@ -73,7 +90,7 @@ class Store<G extends Model> {
     // silent for persistence
     observableObject.silently(() {
       observableObject.clear();
-      observableObject.addAll(modeled.toList());
+      observableObject.setAll(modeled.toList());
     });
     // but loud for view
     observableObject.notifyView();
@@ -103,7 +120,11 @@ class Store<G extends Model> {
     List<String> changesToProcess = [...changes];
 
     for (String element in changesToProcess) {
-      G? item = observableObject.firstWhere((x) => x.id == element);
+      G? item = observableObject.get(element);
+      if (item == null) {
+        changes.remove(element);
+        continue;
+      }
       String serialized = _serialize(item);
       toWrite[element] = serialized;
       toDefer[element] = lastProcessChanges;
@@ -128,9 +149,8 @@ class Store<G extends Model> {
         // if it gets caught it means the same file will be placed in deferred
         synchronize();
         return;
-      } catch (e) {
-        logger("Will defer updates, due to error during sending.");
-        logger(e);
+      } catch (e, s) {
+        logger("Error during sending (Will defer updates): $e", s);
       }
     }
 
@@ -262,9 +282,8 @@ class Store<G extends Model> {
       await loadFromLocal();
       return SyncResult(
           pulled: toLocalWrite.length, pushed: toRemoteWrite.length, conflicts: conflicts, exception: null);
-    } catch (e, stacktrace) {
-      logger("Error during synchronization: $e");
-      logger(stacktrace);
+    } catch (e, s) {
+      logger("Error during synchronization: $e", s);
       return SyncResult(exception: e.toString());
     }
   }
@@ -273,6 +292,16 @@ class Store<G extends Model> {
 
   /// Syncs the local database with the remote database
   Future<List<SyncResult>> synchronize() async {
+    // on first sync, we need to set up the realtime subscription
+    if (remote != null && realtimeIsSet == false) {
+      realtimeIsSet = true; // prevent multiple subscriptions
+      remote?.pb.collection(collectionName).subscribe("*", (msg) {
+        if (msg.record?.data["store"] == remote?.store) {
+          synchronize();
+        }
+      });
+    }
+
     lastProcessChanges = DateTime.now().millisecondsSinceEpoch;
     onSyncStart?.call();
     List<SyncResult> tries = [];
@@ -291,8 +320,8 @@ class Store<G extends Model> {
       if (local == null || remote == null) return false;
       if (deferredPresent) return false;
       return await local!.getVersion() == await remote!.getVersion();
-    } catch (e) {
-      logger("error during inSync check: $e");
+    } catch (e, s) {
+      logger("Error during inSync check: $e", s);
       return false;
     }
   }
@@ -303,49 +332,45 @@ class Store<G extends Model> {
   }
 
   /// Returns a list of all the documents in the local database
-  List<G> get docs {
-    return [...observableObject.docs];
+  Map<String, G> get docs {
+    return Map<String, G>.unmodifiable(observableObject.docs);
+  }
+
+  Map<String, G> get present {
+    return Map<String, G>.fromEntries(docs.entries.where((entry) => entry.value.archived != true));
+  }
+
+  bool has(String id) {
+    return observableObject.docs.containsKey(id);
   }
 
   /// gets a document by id
   G? get(String id) {
-    // Todo: wouldn't a map be better representation of the database (local storage?)
-    if (docs.where((x) => x.id == id).isEmpty) return null;
-    return docs.firstWhere((x) => x.id == id);
-  }
-
-  /// gets a document index by id
-  int getIndex(String id) {
-    return docs.indexWhere((x) => x.id == id);
+    return observableObject.docs[id];
   }
 
   /// adds a document
-  void add(G item) {
-    observableObject.add(item);
+  void set(G item) {
+    observableObject.set(item);
   }
 
   /// adds a list of documents
-  void addAll(List<G> items) {
-    observableObject.addAll(items);
-  }
-
-  /// modifies a document
-  void modify(G item) {
-    observableObject.modify(item);
+  void setAll(List<G> items) {
+    observableObject.setAll(items);
   }
 
   /// archives a document by id (the concept of deletion is not supported here)
   void archive(String id) {
-    int index = getIndex(id);
-    if (index == -1) return;
-    observableObject.modify(docs[index]..archived = true);
+    G? item = get(id);
+    if (item == null) return;
+    observableObject.set(item..archived = true);
   }
 
   /// un-archives a document by id (the concept of deletion is not supported here)
   void unarchive(String id) {
-    int index = getIndex(id);
-    if (index == -1) return;
-    observableObject.modify(docs[index]..archived = false);
+    G? item = get(id);
+    if (item == null) return;
+    observableObject.set(item..archived = false);
   }
 
   /// archives a document by id (the concept of deletion is not supported here)
@@ -354,7 +379,7 @@ class Store<G extends Model> {
   }
 
   /// upload set of files to a certain row
-  Future<void> images(String rowID, List<String> paths, [bool upload = true]) async {
+  Future<void> uploadImgs(String rowID, List<String> paths, [bool upload = true]) async {
     onSyncStart?.call();
     if (remote == null) throw Exception("remote persistence layer is not defined");
     if (local == null) throw Exception("local persistence layer is not defined");
@@ -371,9 +396,8 @@ class Store<G extends Model> {
         onSyncEnd?.call();
         synchronize();
         return;
-      } catch (e) {
-        logger("Will defer upload, due to error during sending the file.");
-        logger(e);
+      } catch (e, s) {
+        logger("Error during sending the file (Will defer upload): $e", s);
       }
     }
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:apexo/backend/observable/observable.dart';
+import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/pages/index.dart';
 import 'package:apexo/state/state.dart';
 
@@ -35,9 +36,13 @@ class Permissions extends ObservableObject {
       return;
     }
     notify();
-    list = List<bool>.from(
-        jsonDecode((await state.pb!.collection("data").getOne("permissions____")).getDataValue("data")["value"]));
-    editingList = [...list];
+    try {
+      list = List<bool>.from(
+          jsonDecode((await state.pb!.collection("data").getOne("permissions____")).getDataValue("data")["value"]));
+      editingList = [...list];
+    } catch (e, s) {
+      logger("Error when getting full list of permissions service: $e", s);
+    }
     notify();
     pages.allPages = pages.genAllPages();
     pages.notify();

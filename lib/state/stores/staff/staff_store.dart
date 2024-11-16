@@ -49,13 +49,16 @@ class Staff extends Store<Member> {
     };
   }
 
-  List<Member> get present {
-    return docs.where((doc) => doc.archived != true).toList();
-  }
-
-  List<Member> get showing {
+  Map<String, Member> get showing {
     if (state.showArchived) return docs;
     return present;
+  }
+
+  Member? getByEmail(String email) {
+    for (var member in present.values) {
+      if (member.email == email) return member;
+    }
+    return null;
   }
 }
 

@@ -9,10 +9,10 @@ class TestDoc extends Model {
 void main() {
   group("Observable", () {
     group('ObservableList: Basic scenarios', () {
-      late ObservableList<TestDoc> list;
+      late ObservableDict<TestDoc> list;
 
       setUp(() {
-        list = ObservableList<TestDoc>();
+        list = ObservableDict<TestDoc>();
       });
 
       test('should add an item and notify observers', () async {
@@ -306,10 +306,10 @@ void main() {
     });
 
     group('ObservableList: Complex Scenarios', () {
-      late ObservableList<TestDoc> list;
+      late ObservableDict<TestDoc> list;
 
       setUp(() {
-        list = ObservableList<TestDoc>();
+        list = ObservableDict<TestDoc>();
       });
 
       test('should handle interleaved add, remove, and modify operations', () async {

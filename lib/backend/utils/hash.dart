@@ -1,19 +1,25 @@
 import 'package:apexo/backend/utils/constants.dart';
 
 String simpleHash(String input) {
-  int hash = 0;
+  const int prime = 31; // A prime multiplier for hashing
+  int hash1 = 0;
+  int hash2 = 0;
 
-  // Generate a basic hash using the characters of the input string.
+  // Generate two hash values to increase entropy
   for (int i = 0; i < input.length; i++) {
-    hash = (hash * 31 + input.codeUnitAt(i)) & 0xFFFFFFFF; // Basic hash function with bitwise AND
+    hash1 = (hash1 * prime + input.codeUnitAt(i)) & 0xFFFFFFFF;
+    hash2 = (hash2 + input.codeUnitAt(i) * prime) & 0xFFFFFFFF;
   }
 
-  // Convert the hash to a string of Latin alphabet characters.
+  // Combine the two hashes to extend the output
   StringBuffer result = StringBuffer();
-  while (hash != 0) {
-    int index = hash % alphabet.length;
+  for (int i = 0; i < 16; i++) {
+    // Extend to a fixed-length output
+    int combinedHash = (hash1 ^ hash2) & 0xFFFFFFFF;
+    int index = combinedHash % alphabet.length;
     result.write(alphabet[index]);
-    hash = hash ~/ alphabet.length;
+    hash1 = (hash1 >> 2) | (hash2 << 2); // Mix hash1 and hash2
+    hash2 = (hash2 >> 2) ^ (hash1 << 2); // Further mix
   }
 
   return "h${result.toString().isEmpty ? alphabet[0] : result.toString()}";

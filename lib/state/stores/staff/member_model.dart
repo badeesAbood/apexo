@@ -7,7 +7,7 @@ final allDays = StartingDayOfWeek.values.map((e) => e.name).toList();
 
 class Member extends Model {
   List<Appointment> get allAppointments {
-    return appointments.present.where((x) => x.operatorsIDs.contains(id)).toList();
+    return appointments.present.values.where((x) => x.operatorsIDs.contains(id)).toList();
   }
 
   List<Appointment> get upcomingAppointments {
