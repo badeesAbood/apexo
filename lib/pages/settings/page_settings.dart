@@ -1,4 +1,6 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/global_actions.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/settings/window_admins.dart';
 import 'package:apexo/pages/settings/window_backups.dart';
 import 'package:apexo/pages/settings/window_permissions.dart';
@@ -11,11 +13,8 @@ import 'package:apexo/state/users.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Page;
 import 'package:flutter/cupertino.dart';
 import 'package:table_calendar/table_calendar.dart';
-import '../../backend/observable/store.dart';
 import '../../state/stores/settings/settings_model.dart';
 import '../../state/stores/settings/settings_store.dart';
-
-// TODO: should we lock backups, users, persmissions, admins from being edite / viewed whne the user is offline? yes we should
 
 enum InputType { text, dropDown }
 
@@ -26,7 +25,7 @@ class SettingsPage extends ObservingWidget {
 
   @override
   getObservableState() {
-    return [globalSettings.observableObject, localSettings.observableObject];
+    return [globalSettings.observableObject, localSettings];
   }
 
   @override
@@ -38,68 +37,73 @@ class SettingsPage extends ObservingWidget {
           children: [
             if (app_state.state.isAdmin)
               SettingsItem(
-                identifier: "currency_______",
-                title: "Currency",
-                description: "Currency code to be used across the application (e.g. USD, EUR, IQD)",
+                title: txt("currency"),
+                description: txt("currency_desc"),
                 icon: FluentIcons.all_currency,
                 inputType: InputType.text,
                 scope: Scope.app,
+                value: globalSettings.get("currency_______")!.value,
+                apply: (newVal) => globalSettings.set(Setting.fromJson({"id": "currency_______", "value": newVal})),
               ),
             if (app_state.state.isAdmin)
               SettingsItem(
-                identifier: "phone__________",
-                title: "Phone number",
-                description: "This phone number will be displayed to patients",
+                title: txt("phone"),
+                description: txt("phone_desc"),
                 icon: FluentIcons.phone,
                 inputType: InputType.text,
                 scope: Scope.app,
+                value: globalSettings.get("phone__________")!.value,
+                apply: (newVal) => globalSettings.set(Setting.fromJson({"id": "phone__________", "value": newVal})),
               ),
             SettingsItem(
-              identifier: "locale",
-              title: "App language",
-              description: "The interface language for the menus, buttons, and info used across the app",
+              title: txt("language"),
+              description: txt("language_desc"),
               icon: FluentIcons.locale_language,
               inputType: InputType.dropDown,
               scope: Scope.device,
-              options: const [
-                ComboBoxItem(
-                  value: "english",
-                  child: Text("English"),
-                ),
-                ComboBoxItem(
-                  value: "arabic",
-                  child: Text("Arabic"),
-                ),
-              ],
+              options: locale.list.map((e) => ComboBoxItem(value: e.$code, child: Text(e.$name))).toList(),
+              value: localSettings.locale,
+              apply: (newVal) {
+                localSettings.locale = newVal;
+                localSettings.notify();
+                locale.notify();
+                globalActions.resync();
+              },
             ),
             SettingsItem(
-              identifier: "start_day_of_wk",
-              title: "Starting day of the week",
-              description: "On which day of the week should the week start?",
+              title: txt("startingDayOfWeek"),
+              description: txt("startingDayOfWeek_desc"),
               icon: FluentIcons.hazy_day,
               inputType: InputType.dropDown,
               scope: Scope.app,
-              options: StartingDayOfWeek.values.map((e) => ComboBoxItem(value: e.name, child: Text(e.name))).toList(),
+              options:
+                  StartingDayOfWeek.values.map((e) => ComboBoxItem(value: e.name, child: Text(txt(e.name)))).toList(),
+              value: globalSettings.get("start_day_of_wk")!.value,
+              apply: (newVal) => globalSettings.set(Setting.fromJson({"id": "start_day_of_wk", "value": newVal})),
             ),
             SettingsItem(
-              identifier: "date_format",
-              title: "Date format",
-              description: "This format will be used to display dates where applicable",
+              title: txt("dateFormat"),
+              description: txt("dateFormat_desc"),
               icon: FluentIcons.calendar_settings,
               inputType: InputType.dropDown,
               scope: Scope.device,
-              options: const [
+              options: [
                 ComboBoxItem(
                   value: "MM/dd/yyyy",
-                  child: Text("month/day/year"),
+                  child: Text(txt("month/day/year")),
                 ),
                 ComboBoxItem(
                   value: "dd/MM/yyyy",
-                  child: Text("day/month/year"),
+                  child: Text(txt("day/month/year")),
                 ),
               ],
+              value: localSettings.dateFormat,
+              apply: (newVal) {
+                localSettings.dateFormat = newVal;
+                localSettings.notify();
+              },
             ),
-            if (app_state.state.isAdmin) ...[
+            if (app_state.state.isAdmin && app_state.state.isOnline) ...[
               const BackupsWindow(),
               AdminsWindow(),
               UsersWindow(),
@@ -118,32 +122,23 @@ class SettingsItem extends StatefulWidget {
   final String title;
   final String description;
   final IconData icon;
-  final String identifier;
   final InputType inputType;
   final Scope scope;
   final List<ComboBoxItem<String>> options;
-  Setting? entry;
+  String value;
+  Function(String newVal) apply;
 
   SettingsItem({
     super.key,
     required this.title,
     required this.description,
     required this.icon,
-    required this.identifier,
     required this.inputType,
     required this.scope,
+    required this.value,
+    required this.apply,
     this.options = const [],
-  }) {
-    if (settings.has(identifier) == false) {
-      // settings.add(Setting.fromJson({"id": identifier, "value": defaultValue}));
-    } else {
-      entry = settings.get(identifier);
-    }
-  }
-
-  Store<Setting> get settings {
-    return scope == Scope.device ? localSettings : globalSettings;
-  }
+  });
 
   @override
   State<StatefulWidget> createState() => SettingsItemState();
@@ -152,61 +147,46 @@ class SettingsItem extends StatefulWidget {
 class SettingsItemState extends State<SettingsItem> {
   final TextEditingController _controller = TextEditingController();
 
-  load() async {
-    await widget.settings.loaded;
-    setState(() {
-      if (widget.settings.has(widget.identifier) == false) {
-        widget.entry =
-            Setting.fromJson({"id": widget.identifier, "value": "ERROR: unidentified setting, try restarting"});
-      } else {
-        widget.entry = widget.settings.get(widget.identifier);
-      }
-      _controller.text = widget.entry!.value;
-    });
-  }
-
   @override
-  initState() {
+  void initState() {
     super.initState();
-    load();
+    _controller.text = widget.value;
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.entry == null
-        ? const Text("Loading")
-        : Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-            child: Expander(
-              leading: Icon(widget.icon),
-              header: Text(widget.title),
-              content: SizedBox(
-                width: 400,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (widget.inputType == InputType.text)
-                      CupertinoTextField(
-                        controller: _controller,
-                        onChanged: (value) => setState(() => _controller.text = value),
-                      )
-                    else
-                      ComboBox<String>(
-                        items: widget.options,
-                        onChanged: (value) => setState(() => value != null ? _controller.text = value : null),
-                        value: _controller.text,
-                      ),
-                    const SizedBox(height: 5),
-                    Text(widget.description, style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
-                    const SizedBox(height: 10),
-                    if (_controller.text != widget.entry!.value) buildSaveCancelButtons()
-                  ],
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+      child: Expander(
+        leading: Icon(widget.icon),
+        header: Text(widget.title),
+        content: SizedBox(
+          width: 400,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (widget.inputType == InputType.text)
+                CupertinoTextField(
+                  controller: _controller,
+                  onChanged: (value) => setState(() => _controller.text = value),
+                )
+              else
+                ComboBox<String>(
+                  items: widget.options,
+                  onChanged: (value) => setState(() => value != null ? _controller.text = value : null),
+                  value: _controller.text,
                 ),
-              ),
-              initiallyExpanded: false,
-              trailing: buildAppliesToIndicator(),
-            ),
-          );
+              const SizedBox(height: 5),
+              Text(widget.description, style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
+              const SizedBox(height: 10),
+              if (_controller.text != widget.value) buildSaveCancelButtons()
+            ],
+          ),
+        ),
+        initiallyExpanded: false,
+        trailing: buildAppliesToIndicator(),
+      ),
+    );
   }
 
   Container buildAppliesToIndicator() {
@@ -224,7 +204,7 @@ class SettingsItemState extends State<SettingsItem> {
         ),
       ),
       child: Text(
-        "Applies to: ${widget.scope == Scope.app ? "all" : "you"} ",
+        "${txt("appliesTo")}: ${widget.scope == Scope.app ? txt("all") : txt("you")} ",
         style: const TextStyle(fontSize: 13),
       ),
     );
@@ -236,17 +216,17 @@ class SettingsItemState extends State<SettingsItem> {
         FilledButton(
           onPressed: () {
             setState(() {
-              widget.entry!.value = _controller.text;
-              widget.settings.set(widget.entry!);
+              widget.value = _controller.text;
+              widget.apply(_controller.text);
             });
             backups.notify();
             admins.notify();
             users.notify();
           },
-          child: const Row(children: [
-            Icon(FluentIcons.save),
-            SizedBox(width: 10),
-            Text("Save"),
+          child: Row(children: [
+            const Icon(FluentIcons.save),
+            const SizedBox(width: 10),
+            Text(txt("save")),
           ]),
         ),
         const SizedBox(width: 10),
@@ -254,13 +234,13 @@ class SettingsItemState extends State<SettingsItem> {
           style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey)),
           onPressed: () {
             setState(() {
-              _controller.text = widget.entry!.value;
+              _controller.text = widget.value;
             });
           },
-          child: const Row(children: [
-            Icon(FluentIcons.cancel),
-            SizedBox(width: 10),
-            Text("Cancel"),
+          child: Row(children: [
+            const Icon(FluentIcons.cancel),
+            const SizedBox(width: 10),
+            Text(txt("cancel")),
           ]),
         ),
       ],

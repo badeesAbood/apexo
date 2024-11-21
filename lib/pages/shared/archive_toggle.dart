@@ -1,4 +1,5 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/state/state.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
@@ -10,7 +11,7 @@ class ArchiveToggle extends ObservingWidget {
     return Transform.scale(
       scale: 1.2,
       child: Tooltip(
-        message: "Show/hide archived",
+        message: txt("showHideArchived"),
         child: Checkbox(
           style: const CheckboxThemeData(
             uncheckedIconColor: WidgetStatePropertyAll(Colors.grey),

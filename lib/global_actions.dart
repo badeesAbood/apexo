@@ -29,18 +29,22 @@ class GlobalActions extends ObservableObject {
   Map<String, void Function()> syncCallbacks = {};
   Map<String, void Function()> reconnectCallbacks = {};
 
+  resync() async {
+    await state.activate(state.url, [state.token], true);
+
+    for (var callback in syncCallbacks.values) {
+      callback();
+    }
+    await state.downloadImgs();
+  }
+
   List<GlobalAction> get actions {
     return [
       GlobalAction(
         tooltip: "Synchronize",
         iconData: FluentIcons.sync,
         onPressed: () async {
-          await state.activate(state.url, [state.token], true);
-
-          for (var callback in syncCallbacks.values) {
-            callback();
-          }
-          await state.downloadImgs();
+          await resync();
         },
         badge: state.isSyncing > 0 ? "${state.isSyncing}" : syncCallbacks.length.toString(),
         disabled: (state.isOnline == false || state.isSyncing > 0 || state.proceededOffline),

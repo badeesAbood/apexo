@@ -1,4 +1,5 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/pages/staff/modal_staff.dart';
 import 'package:apexo/state/stores/staff/staff_store.dart';
@@ -25,12 +26,12 @@ class StaffMembers extends ObservingWidget {
             callback: (_) => openSingleMember(
               context: context,
               json: {},
-              title: "Add new",
+              title: "${txt("add")} ${txt("doctor")}",
               onSave: staff.set,
               editing: false,
             ),
             icon: FluentIcons.medical,
-            title: "Add new",
+            title: txt("add"),
           ),
           DataTableAction(
             callback: (ids) {
@@ -39,14 +40,14 @@ class StaffMembers extends ObservingWidget {
               }
             },
             icon: FluentIcons.archive,
-            title: "Archive Selected",
+            title: txt("archiveSelected"),
           )
         ],
         furtherActions: [const SizedBox(width: 5), ArchiveToggle(notifier: staff.notify)],
         onSelect: (item) => openSingleMember(
           context: context,
           json: item.toJson(),
-          title: "Edit staff member",
+          title: "${txt("edit")} ${txt("doctor")}",
           onSave: staff.set,
           editing: true,
         ),

@@ -5,7 +5,7 @@ import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/pages/index.dart';
 import 'package:apexo/state/state.dart';
 
-class Permissions extends ObservableObject {
+class Permissions extends ObservablePersistingObject {
   List<bool> list = [false, false, false, false, false];
   List<bool> editingList = [false, false, false, false, false];
 
@@ -19,14 +19,18 @@ class Permissions extends ObservableObject {
   }
 
   save() async {
-    list = editingList;
-    await state.pb!.collection("data").update("permissions____", body: {
-      "data": {
-        "id": "permissions____",
-        "value": jsonEncode(editingList),
-        "date": DateTime.now().millisecondsSinceEpoch,
-      }
-    });
+    try {
+      await state.pb!.collection("data").update("permissions____", body: {
+        "data": {
+          "id": "permissions____",
+          "value": jsonEncode(editingList),
+          "date": DateTime.now().millisecondsSinceEpoch,
+        }
+      });
+    } catch (e, s) {
+      logger("Error while saving permissions: $e", s);
+    }
+
     await reloadFromRemote();
     notify();
   }
@@ -46,6 +50,20 @@ class Permissions extends ObservableObject {
     notify();
     pages.allPages = pages.genAllPages();
     pages.notify();
+  }
+
+  Permissions() : super("permissions");
+
+  @override
+  fromJson(Map<String, dynamic> json) {
+    list = json["list"] == null ? [] : List<bool>.from(json["list"]);
+    pages.notify();
+    reloadFromRemote();
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {"list": list};
   }
 }
 

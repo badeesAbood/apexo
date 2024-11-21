@@ -1,4 +1,5 @@
 import 'package:apexo/backend/observable/observable.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/state/stores/appointments/appointment_model.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
@@ -220,18 +221,18 @@ class _StatsPageState extends ObservableObject {
   }
 
   String _getLabel(DateTime start) {
-    final df = localSettings.get("date_format")?.value.startsWith("d") == true ? "dd/MM" : "MM/dd";
+    final df = localSettings.dateFormat.startsWith("d") == true ? "dd/MM" : "MM/dd";
     switch (interval) {
       case StatsInterval.days:
-        return DateFormat("$df/yy").format(start);
+        return DateFormat("$df/yy", locale.s.$code).format(start);
       case StatsInterval.weeks:
-        return "W${DateFormat("${_weekOfMonth(start)} MM/yy").format(start)}";
+        return "W${DateFormat("${_weekOfMonth(start)} MM/yy", locale.s.$code).format(start)}";
       case StatsInterval.months:
-        return DateFormat("MMM/yy").format(start);
+        return DateFormat("MMM/yy", locale.s.$code).format(start);
       case StatsInterval.quarters:
-        return "Q${DateFormat("Q yyyy").format(start)}";
+        return "Q${DateFormat("Q yyyy", locale.s.$code).format(start)}";
       default:
-        return DateFormat("yyyy").format(start);
+        return DateFormat("yyyy", locale.s.$code).format(start);
     }
   }
 

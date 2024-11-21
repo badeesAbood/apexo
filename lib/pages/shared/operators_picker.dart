@@ -1,3 +1,4 @@
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/staff/modal_staff.dart';
 import 'package:apexo/pages/shared/tag_input.dart';
 import 'package:apexo/state/stores/staff/member_model.dart';
@@ -30,7 +31,7 @@ class OperatorsPicker extends StatelessWidget {
       },
       strict: true,
       limit: 999,
-      placeholder: "Select operators",
+      placeholder: txt("selectDoctors"),
     );
   }
 }

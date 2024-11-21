@@ -2,7 +2,6 @@ import 'package:apexo/state/stores/patients/patient_model.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
 import 'package:apexo/state/stores/staff/member_model.dart';
 import 'package:apexo/state/stores/staff/staff_store.dart';
-
 import '../../../pages/shared/week_calendar.dart';
 
 class Appointment extends AgendaItem {
@@ -61,6 +60,10 @@ class Appointment extends AgendaItem {
 
   bool get underPaid {
     return paid < price;
+  }
+
+  double get paymentDifference {
+    return (paid - price).abs();
   }
 
   bool get isMissed {

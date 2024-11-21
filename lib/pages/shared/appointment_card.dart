@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:apexo/backend/utils/color_based_on_payment.dart';
 import 'package:apexo/backend/utils/colors_without_yellow.dart';
 import 'package:apexo/backend/utils/get_deterministic_item.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/calendar/modal_appointment.dart';
 import 'package:apexo/pages/patients/modal_patient.dart';
 import 'package:apexo/pages/shared/acrylic_title.dart';
@@ -14,7 +15,7 @@ import 'package:apexo/state/stores/patients/patients_store.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
 import 'package:apexo/state/stores/staff/staff_store.dart';
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' as intl;
 
 enum AppointmentSections { patient, staff, photos, preNotes, postNotes, prescriptions, pay }
 
@@ -71,13 +72,13 @@ class AppointmentCard extends StatelessWidget {
                         if (appointment.patient != null && !hide.contains(AppointmentSections.patient)) ...[
                           ..._betweenSections,
                           _buildSection(
-                            "Patient",
+                            txt("patient"),
                             GestureDetector(
                                 onTap: () {
                                   openSinglePatient(
                                       context: context,
                                       json: appointment.patient!.toJson(),
-                                      title: "Patient",
+                                      title: txt("patient"),
                                       onSave: patients.set,
                                       editing: true);
                                 },
@@ -88,7 +89,7 @@ class AppointmentCard extends StatelessWidget {
                         if (appointment.operators.isNotEmpty && !hide.contains(AppointmentSections.staff)) ...[
                           ..._betweenSections,
                           _buildSection(
-                            "Operators",
+                            txt("doctors"),
                             Column(
                               children: appointment.operators
                                   .map((e) => GestureDetector(
@@ -96,7 +97,7 @@ class AppointmentCard extends StatelessWidget {
                                         openSingleMember(
                                           context: context,
                                           json: e.toJson(),
-                                          title: "Operator",
+                                          title: txt("doctor"),
                                           onSave: staff.set,
                                           editing: true,
                                         );
@@ -110,7 +111,7 @@ class AppointmentCard extends StatelessWidget {
                         if (appointment.imgs.isNotEmpty && !hide.contains(AppointmentSections.photos)) ...[
                           ..._betweenSections,
                           _buildSection(
-                            "photos",
+                            txt("photos"),
                             GridGallery(
                               imgs: appointment.imgs,
                               countPerLine: 4,
@@ -124,7 +125,7 @@ class AppointmentCard extends StatelessWidget {
                         if (appointment.preOpNotes.isNotEmpty && !hide.contains(AppointmentSections.preNotes)) ...[
                           ..._betweenSections,
                           _buildSection(
-                              "Pre-op notes",
+                              txt("pre-opNotes"),
                               Text(
                                 appointment.preOpNotes,
                                 style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
@@ -134,7 +135,7 @@ class AppointmentCard extends StatelessWidget {
                         if (appointment.postOpNotes.isNotEmpty && !hide.contains(AppointmentSections.postNotes)) ...[
                           ..._betweenSections,
                           _buildSection(
-                              "Post-op notes",
+                              txt("post-opNotes"),
                               Text(
                                 appointment.postOpNotes,
                                 style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
@@ -145,7 +146,7 @@ class AppointmentCard extends StatelessWidget {
                             !hide.contains(AppointmentSections.prescriptions)) ...[
                           ..._betweenSections,
                           _buildSection(
-                            "prescription",
+                            txt("prescription"),
                             Text(
                               appointment.prescriptions.join("\n"),
                               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
@@ -156,7 +157,7 @@ class AppointmentCard extends StatelessWidget {
                         if (appointment.price != 0 && !hide.contains(AppointmentSections.pay)) ...[
                           ..._betweenSections,
                           _buildSection(
-                            "Pay in ${globalSettings.get("currency_______")?.value}",
+                            "${txt("pay")}\n${globalSettings.get("currency_______")?.value}",
                             _paymentPills(),
                             FluentIcons.money,
                           ),
@@ -200,6 +201,7 @@ class AppointmentCard extends StatelessWidget {
     return Center(
         child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      textDirection: TextDirection.ltr,
       children: [
         _spacerIcon(1),
         _horizontalSpacing(),
@@ -222,18 +224,18 @@ class AppointmentCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _paymentPill("price", appointment.price.toString(), null, color),
+            _paymentPill(txt("price"), appointment.price.toString(), null, color),
             _horizontalSpacing(),
-            _paymentPill("paid", appointment.paid.toString(), null, color),
+            _paymentPill(txt("paid"), appointment.paid.toString(), null, color),
           ],
         ),
         _verticalSpacing(),
         if (appointment.paid != appointment.price)
           _paymentPill(
-            appointment.overPaid ? "Overpaid" : "Underpaid",
-            appointment.paid.toString(),
+            appointment.overPaid ? txt("overpaid") : txt("underpaid"),
+            appointment.paymentDifference.toString(),
             colorBasedOnPayments(appointment.paid, appointment.price),
-          ),
+          )
       ],
     );
   }
@@ -267,7 +269,7 @@ class AppointmentCard extends StatelessWidget {
             const SizedBox(width: 5),
             Text(
               amount,
-              style: TextStyle(color: finalTextColor),
+              style: TextStyle(color: finalTextColor, fontSize: 12),
             ),
           ],
         ),
@@ -349,7 +351,7 @@ class AppointmentCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "appointment",
+              txt("appointment"),
               style: TextStyle(
                 fontSize: 10,
                 color: color.withOpacity(0.5),
@@ -372,7 +374,7 @@ class AppointmentCard extends StatelessWidget {
             openSingleAppointment(
               context: context,
               json: appointment.toJson(),
-              title: "Editing appointment",
+              title: txt("editingAppointment"),
               onSave: appointments.set,
               editing: true,
             );
@@ -384,9 +386,9 @@ class AppointmentCard extends StatelessWidget {
   }
 
   Text _buildFormattedDate(Color color) {
-    final df = localSettings.get("date_format")?.value.startsWith("d") == true ? "d/MM" : "MM/d";
+    final df = localSettings.dateFormat.startsWith("d") == true ? "d/MM" : "MM/d";
     return Text(
-      DateFormat("E $df yyyy - hh:mm a").format(appointment.date()),
+      intl.DateFormat("E $df yyyy - hh:mm a", locale.s.$code).format(appointment.date()),
       style: TextStyle(color: color, fontSize: 13, fontWeight: FontWeight.bold),
     );
   }

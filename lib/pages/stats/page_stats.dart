@@ -1,4 +1,5 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/pages/stats/reusable_styled_charts/bar.dart';
 import 'package:apexo/pages/stats/reusable_styled_charts/line.dart';
@@ -37,8 +38,8 @@ class PageStats extends ObservingWidget {
               alignment: WrapAlignment.center,
               children: [
                 chartWindow(
-                  "Appointments per ${chartsState.intervalString.toLowerCase()}",
-                  "Total: ${chartsState.filteredAppointments.length} appointments in ${chartsState.periods.length} ${chartsState.intervalString.toLowerCase()}",
+                  "${txt("appointmentsPer")} ${txt(chartsState.intervalString.toLowerCase())}",
+                  "${txt("total")}: ${chartsState.filteredAppointments.length} ${txt("appointments")} ${txt("in_Duration_")} ${chartsState.periods.length} ${txt(chartsState.intervalString.toLowerCase())}",
                   StyledBarChart(
                     labels: chartsState.periods.map((p) => p.label).toList(),
                     yAxis: chartsState.groupedAppointments.map((g) => g.length.toDouble()).toList(),
@@ -46,87 +47,92 @@ class PageStats extends ObservingWidget {
                   FluentIcons.date_time,
                 ),
                 chartWindow(
-                  "Payments per ${chartsState.intervalString.toLowerCase()}",
-                  "Total: ${chartsState.groupedPayments.reduce((v, e) => v += e)} ${globalSettings.get("currency_______")?.value} in ${chartsState.periods.length} ${chartsState.intervalString.toLowerCase()}",
+                  "${txt("paymentsPer")} ${txt(chartsState.intervalString.toLowerCase())}",
+                  "${txt("total")}: ${chartsState.groupedPayments.reduce((v, e) => v += e)} ${globalSettings.get("currency_______")?.value} ${txt("in_Duration_")} ${chartsState.periods.length} ${txt(chartsState.intervalString.toLowerCase())}",
                   StyledLineChart(
                     labels: chartsState.periods.map((p) => p.label).toList(),
                     datasets: [chartsState.groupedPayments.toList()],
-                    datasetLabels: ["Payments in ${globalSettings.get("currency_______")?.value}"],
+                    datasetLabels: ["${globalSettings.get("currency_______")?.value}"],
                   ),
                   FluentIcons.currency,
                 ),
                 chartWindow(
-                  "New patients per ${chartsState.intervalString.toLowerCase()}",
-                  "acquired patients in ${chartsState.periods.length} ${chartsState.intervalString.toLowerCase()}",
+                  "${txt("newPatientsPer")} ${txt(chartsState.intervalString.toLowerCase())}",
+                  "${txt("acquiredPatientsIn")} ${chartsState.periods.length} ${txt(chartsState.intervalString.toLowerCase())}",
                   StyledLineChart(
                     labels: chartsState.periods.map((p) => p.label).toList(),
                     datasets: [chartsState.newPatients.toList()],
-                    datasetLabels: const ["New patients"],
+                    datasetLabels: [txt("patients")],
                   ),
                   FluentIcons.people,
                 ),
                 chartWindow(
-                  "Done vs Missed per ${chartsState.intervalString.toLowerCase()}",
-                  "done and missed appointments in ${chartsState.periods.length} ${chartsState.intervalString.toLowerCase()}",
+                  "${txt("doneMissedPer")} ${txt(chartsState.intervalString.toLowerCase())}",
+                  "${txt("doneAndMissedAppointmentsIn")} ${chartsState.periods.length} ${txt(chartsState.intervalString.toLowerCase())}",
                   StyledStackedChart(
                     labels: chartsState.periods.map((p) => p.label).toList(),
                     datasets: chartsState.doneAndMissedAppointments,
-                    datasetLabels: const ["done", "missed"],
+                    datasetLabels: [txt("done"), txt("missed")],
                   ),
                   FluentIcons.check_list,
                 ),
                 chartWindow(
-                  "Time of day",
-                  "Distribution of appointments",
+                  txt("timeOfDay"),
+                  txt("distributionOfAppointments"),
                   StyledRadarChart(
                     data: [chartsState.timeOfDayDistribution],
-                    labels: List.generate(24, (index) => DateFormat("hh a").format(DateTime(0, 0, 0, index))),
+                    labels: List.generate(
+                        24, (index) => DateFormat("hh a", locale.s.$code).format(DateTime(0, 0, 0, index))),
                   ),
                   FluentIcons.clock,
                 ),
                 chartWindow(
-                  "Day of week",
-                  "Distribution of appointments",
+                  txt("dayOfWeek"),
+                  txt("distributionOfAppointments"),
                   StyledRadarChart(
-                      data: [chartsState.dayOfWeekDistribution],
-                      labels: const ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]),
+                    data: [chartsState.dayOfWeekDistribution],
+                    labels: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+                        .map((e) => txt(e))
+                        .toList(),
+                  ),
                   FluentIcons.calendar_day,
                 ),
                 chartWindow(
-                  "Day of month",
-                  "Distribution of appointments",
+                  txt("dayOfMonth"),
+                  txt("distributionOfAppointments"),
                   StyledRadarChart(
                       data: [chartsState.dayOfMonthDistribution],
                       labels: List.generate(31, (index) => (index + 1).toString())),
                   FluentIcons.calendar_day,
                 ),
                 chartWindow(
-                  "Month of year",
-                  "Distribution of appointments",
-                  StyledRadarChart(data: [
-                    chartsState.monthOfYearDistribution
-                  ], labels: const [
-                    "January",
-                    "February",
-                    "March",
-                    "April",
-                    "May",
-                    "June",
-                    "July",
-                    "August",
-                    "September",
-                    "October",
-                    "November",
-                    "December"
-                  ]),
+                  txt("monthOfYear"),
+                  txt("distributionOfAppointments"),
+                  StyledRadarChart(
+                    data: [chartsState.monthOfYearDistribution],
+                    labels: const [
+                      "January",
+                      "February",
+                      "March",
+                      "April",
+                      "May",
+                      "June",
+                      "July",
+                      "August",
+                      "September",
+                      "October",
+                      "November",
+                      "December"
+                    ].map((e) => txt(e)).toList(),
+                  ),
                   FluentIcons.calendar_year,
                 ),
                 chartWindow(
-                  "Patients Gender",
-                  "Male vs. female patient of the appointments",
+                  txt("patientsGender"),
+                  txt("maleAndFemalePatients"),
                   StyledPie(data: {
-                    "Female": chartsState.femaleMale[0].toDouble(),
-                    "Male": chartsState.femaleMale[1].toDouble(),
+                    txt("female"): chartsState.femaleMale[0].toDouble(),
+                    txt("male"): chartsState.femaleMale[1].toDouble(),
                   }),
                   FluentIcons.people_external_share,
                 ),
@@ -225,9 +231,9 @@ class PageStats extends ObservingWidget {
     return ComboBox<String>(
       style: const TextStyle(overflow: TextOverflow.ellipsis),
       items: [
-        const ComboBoxItem<String>(
+        ComboBoxItem<String>(
           value: "",
-          child: Text("All operators"),
+          child: Text(txt("allDoctors")),
         ),
         ...staff.present.values.map((e) {
           var doctorName = e.title;
@@ -244,16 +250,16 @@ class PageStats extends ObservingWidget {
 
   IconButton _buildPickRangeButton(BuildContext context) {
     return IconButton(
-      icon: const Row(
+      icon: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(
+          const Icon(
             FluentIcons.public_calendar,
             size: 17,
           ),
-          SizedBox(width: 5),
-          Text("Pick Range")
+          const SizedBox(width: 5),
+          Text(txt("pickRange"))
         ],
       ),
       onPressed: () => chartsState.rangePicker(context),

@@ -1,3 +1,4 @@
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/patients/modal_patient.dart';
 import 'package:apexo/pages/shared/tag_input.dart';
 import 'package:apexo/state/stores/patients/patient_model.dart';
@@ -32,7 +33,7 @@ class PatientPicker extends StatelessWidget {
       initialValue: value != null ? [TagInputItem(value: value!, label: patients.get(value!)!.title)] : [],
       strict: true,
       limit: 1,
-      placeholder: "Select patient",
+      placeholder: txt("selectPatient"),
     );
   }
 }

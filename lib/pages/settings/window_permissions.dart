@@ -1,5 +1,6 @@
 import 'package:apexo/backend/observable/observable.dart';
 import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/state/permissions.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
@@ -12,7 +13,7 @@ class PermissionsWindow extends ObservingWidget {
     super.key,
   });
 
-  List<String> permissionsTitles = const ["staff members", "patients", "appointments", "labworks", "statistics"];
+  List<String> permissionsTitles = const ["staff", "patients", "appointments", "labworks", "statistics"];
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class PermissionsWindow extends ObservingWidget {
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
       child: Expander(
         leading: const Icon(FluentIcons.permissions),
-        header: const Text("User Permissions"),
+        header: Text(txt("permissions")),
         contentPadding: const EdgeInsets.all(10),
         content: SizedBox(
           width: 400,
@@ -28,10 +29,9 @@ class PermissionsWindow extends ObservingWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 InfoBar(
-                  title: Text("Permissions"),
+                  title: Text(txt("permissions")),
                   severity: InfoBarSeverity.warning,
-                  content: Text(
-                      "The followng persmission apply to the users listed above. However, adminstrators like you, have unrestricted access in the application."),
+                  content: Text(txt("permissionsNotice")),
                 ),
                 ...List.generate(
                     permissions.list.length,
@@ -41,7 +41,7 @@ class PermissionsWindow extends ObservingWidget {
                             permissions.editingList[index] = val;
                             permissions.notify();
                           },
-                          content: Text("Users can access ${permissionsTitles[index]}"),
+                          content: Text("${txt("usersCanAccess")} ${txt(permissionsTitles[index])}"),
                         )),
                 if (permissions.edited) ...[
                   const SizedBox(),
@@ -49,16 +49,16 @@ class PermissionsWindow extends ObservingWidget {
                     children: [
                       FilledButton(
                         child: Row(
-                          children: [Icon(FluentIcons.save), SizedBox(width: 5), Text("Save")],
+                          children: [const Icon(FluentIcons.save), const SizedBox(width: 5), Text(txt("save"))],
                         ),
                         onPressed: () {
                           permissions.save();
                         },
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       FilledButton(
                         child: Row(
-                          children: [Icon(FluentIcons.reset), SizedBox(width: 5), Text("Reset")],
+                          children: [const Icon(FluentIcons.reset), const SizedBox(width: 5), Text(txt("reset"))],
                         ),
                         onPressed: () {
                           permissions.reset();

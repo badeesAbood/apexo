@@ -1,5 +1,6 @@
 import 'package:apexo/backend/observable/observable.dart';
 import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/index.dart';
 import 'package:apexo/pages/stats/reusable_styled_charts/bar.dart';
 import 'package:apexo/pages/stats/reusable_styled_charts/line.dart';
@@ -58,6 +59,22 @@ class PageDashboard extends ObservingWidget {
     return state.currentMember?.title ?? "";
   }
 
+  String get mode {
+    return state.isAdmin
+        ? txt("modeAdmin")
+        : state.isOnline
+            ? txt("modeUser")
+            : txt("modeOffline");
+  }
+
+  String get dashboardMessage {
+    final onceStable = state.isOnline ? "" : " ${txt("onceConnectionIsStable")}.";
+
+    final restriction = (state.isAdmin && state.isOnline) ? txt("unRestrictedAccess") : txt("restrictedAccess");
+
+    return "${txt("youAreCurrentlyIn")} $mode ${txt("mode")}. ${txt("youHave")} $restriction.$onceStable";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -71,11 +88,11 @@ class PageDashboard extends ObservingWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Hello, $currentName!",
+                  "${txt("hello")}, $currentName",
                   style: const TextStyle(fontSize: 20),
                 ),
                 Text(
-                  "It is ${DateFormat("MMMM d yyyy, hh:mm:a").format(DateTime.now())}",
+                  DateFormat("MMMM d yyyy, hh:mm:a", locale.s.$code).format(DateTime.now()),
                   style: const TextStyle(fontSize: 14),
                 ),
               ],
@@ -87,12 +104,9 @@ class PageDashboard extends ObservingWidget {
       Padding(
         padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
         child: InfoBar(
-          title: state.isAdmin ? Text("Adminstrator mode") : Text("User mode"),
+          title: Text(mode),
           severity: state.isAdmin ? InfoBarSeverity.success : InfoBarSeverity.warning,
-          content: state.isAdmin
-              ? Text("You're currently in ADMIN mode. You have unrestricted access to all pages of the application.")
-              : Text(
-                  "You're currently in USER mode. You may access some pages of the applications as dictated by your adminstrator."),
+          content: Text(dashboardMessage),
         ),
       ),
       if (permissions.list[4] || state.isAdmin) ...[buildTopSquares(), buildDashboardCharts()]
@@ -108,15 +122,15 @@ class PageDashboard extends ObservingWidget {
           closeButtonVisibility: CloseButtonVisibilityMode.never,
           header: const SizedBox(width: 5),
           footer: IconButton(
-            icon: const Row(
-              children: [Icon(FluentIcons.chart), SizedBox(width: 5), Text("Full Stats")],
+            icon: Row(
+              children: [const Icon(FluentIcons.chart), const SizedBox(width: 5), Text(txt("fullStats"))],
             ),
             onPressed: () => pages.navigate(pages.getByIdentifier("statistics")!),
           ),
           onChanged: (value) => openTab(value),
           tabs: [
             Tab(
-              text: Text("Appointments"),
+              text: Text(txt("appointments")),
               icon: const Icon(FluentIcons.calendar),
               closeIcon: null,
               outlineColor: Colors.grey.withOpacity(0.1),
@@ -139,7 +153,7 @@ class PageDashboard extends ObservingWidget {
               ),
             ),
             Tab(
-              text: Text("Payments"),
+              text: Text(txt("payments")),
               icon: const Icon(FluentIcons.money),
               closeIcon: null,
               outlineColor: Colors.grey.withOpacity(0.1),
@@ -179,19 +193,19 @@ class PageDashboard extends ObservingWidget {
               Colors.purple,
               FluentIcons.goto_today,
               todayAppointments.length.toString(),
-              "Appointments Today",
+              txt("appointmentsToday"),
             ),
             dashboardSquare(
               Colors.blue,
               FluentIcons.people,
               newPatientsToday.toString(),
-              "New Patients Today",
+              txt("newPatientsToday"),
             ),
             dashboardSquare(
               Colors.teal,
               FluentIcons.money,
               paymentsToday.toStringAsFixed(2),
-              "Payments Made Today",
+              txt("paymentsMadeToday"),
             ),
           ],
         ),

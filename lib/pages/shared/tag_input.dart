@@ -1,3 +1,4 @@
+import 'package:apexo/i18/index.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
 class TagInputItem extends AutoSuggestBoxItem<String> {
@@ -11,7 +12,6 @@ class TagInputWidget extends StatefulWidget {
   final int limit;
   final void Function(List<TagInputItem>) onChanged;
   final void Function(TagInputItem)? onItemTap;
-  final String noResultsMessage;
   final String placeholder;
 
   const TagInputWidget(
@@ -21,7 +21,6 @@ class TagInputWidget extends StatefulWidget {
       required this.initialValue,
       required this.strict,
       required this.limit,
-      this.noResultsMessage = "No results found",
       this.placeholder = "",
       this.onItemTap});
 
@@ -137,7 +136,7 @@ class TagInputWidgetState extends State<TagInputWidget> {
                 onChanged: _onTextChanged,
                 placeholder: widget.placeholder,
                 noResultsFoundBuilder: (context) =>
-                    Padding(padding: const EdgeInsets.all(10), child: Text(widget.noResultsMessage)),
+                    Padding(padding: const EdgeInsets.all(10), child: Text(txt("noResultsFound"))),
                 trailingIcon: GestureDetector(
                   child: const Icon(FluentIcons.grouped_descending),
                   onTap: () {

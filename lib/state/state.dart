@@ -16,10 +16,6 @@ bool isPositiveInt(int? value) {
 class State extends ObservablePersistingObject {
   State(super.identifier);
 
-  // theme related state
-  var themeMode = ThemeMode.system;
-  var themeAccentColor = Colors.blue;
-
   int isSyncing = 0;
   bool isOnline = false;
   bool proceededOffline = true;
@@ -112,15 +108,22 @@ class State extends ObservablePersistingObject {
     loginError = '';
     loadingIndicator = "Sending password reset email";
     notify();
-    await pb.admins.requestPasswordReset(emailField.text);
-    await pb.collection("users").requestPasswordReset(emailField.text);
+    try {
+      await pb.admins.requestPasswordReset(emailField.text);
+      await pb.collection("users").requestPasswordReset(emailField.text);
+    } catch (e, s) {
+      logger("Error during resetting password: $e", s);
+      loginError = "Error while resetting password: $e.";
+      loadingIndicator = "";
+      notify();
+      return;
+    }
     loadingIndicator = "";
     resetInstructionsSent = true;
     notify();
   }
 
   loginButton([bool online = true]) {
-    print(urlField.text.replaceFirst(RegExp(r'/+$'), ""));
     String url = urlField.text.replaceFirst(RegExp(r'/+$'), "");
     String email = emailField.text;
     String password = passwordField.text;
@@ -132,6 +135,7 @@ class State extends ObservablePersistingObject {
       final auth = await pb!.admins.authWithPassword(email, password);
       return auth.token;
     } catch (e) {
+      print("?????? $e $email $password");
       final auth = await pb!.collection("users").authWithPassword(email, password);
       return auth.token;
     }
@@ -175,7 +179,7 @@ class State extends ObservablePersistingObject {
         }
 
         // create database if it doesn't exist
-
+        // A. "data" database
         try {
           try {
             await pb!.collections.getOne(collectionName);
@@ -183,6 +187,28 @@ class State extends ObservablePersistingObject {
             if (isAdmin) {
               await pb!.collections.import([collectionImport]);
               await pb!.collections.update("users", body: {"createRule": null});
+            } else {
+              logger(
+                "ERROR: The needed database can not be created because the logged-in user is not admin.",
+                StackTrace.current,
+              );
+            }
+          }
+        } catch (e) {
+          throw Exception("Error while creating the collection for the first time: $e");
+        }
+        // B. "public" database
+        try {
+          try {
+            await pb!.collections.getOne(publicCollectionName);
+          } catch (e) {
+            if (isAdmin) {
+              await pb!.collections.import([publicCollectionImport]);
+            } else {
+              logger(
+                "ERROR: The needed database can not be created because the logged-in user is not admin.",
+                StackTrace.current,
+              );
             }
           }
         } catch (e) {
@@ -226,9 +252,6 @@ class State extends ObservablePersistingObject {
 
   @override
   fromJson(Map<String, dynamic> json) async {
-    themeMode = isPositiveInt(json["themeMode"]) ? ThemeMode.values[json["themeMode"]] : themeMode;
-    themeAccentColor =
-        isPositiveInt(json["themeAccentColor"]) ? Colors.accentColors[json["themeAccentColor"]] : themeAccentColor;
     url = json["url"] ?? url;
     email = json["email"] ?? email;
     imagesToDownload = json["imagesToDownload"] == null ? [] : List<String>.from(json["imagesToDownload"]);
@@ -249,8 +272,6 @@ class State extends ObservablePersistingObject {
   @override
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = {};
-    json['themeMode'] = themeMode.index;
-    json['themeAccentColor'] = Colors.accentColors.indexWhere((color) => color.value == themeAccentColor.value);
     json['url'] = url;
     json['email'] = email;
     json["loginActive"] = loginActive;

@@ -1,3 +1,4 @@
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/calendar/modal_appointment.dart';
 import 'package:apexo/pages/index.dart';
 import 'package:apexo/pages/shared/appointment_card.dart';
@@ -8,7 +9,6 @@ import 'package:apexo/state/stores/staff/staff_store.dart';
 import 'package:apexo/state/stores/staff/member_model.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
-import '../shared/archive_button.dart';
 import "../shared/tabbed_modal.dart";
 
 openSingleMember({
@@ -19,65 +19,59 @@ openSingleMember({
   required bool editing,
 }) {
   pages.openMember = Member.fromJson(json);
-  List<TabAction> actions = [
-    TabAction(
-      text: "Save",
-      icon: FluentIcons.save,
-      callback: (_) {
-        onSave(pages.openMember);
-        return true;
-      },
-    )
-  ];
-  if (editing) actions.add(archiveButton(pages.openMember, staff));
-  showTabbedModal(context: context, tabs: [
-    TabbedModal(
-      title: title,
-      icon: FluentIcons.medical,
-      closable: true,
-      content: (state) => [
-        InfoLabel(
-          label: "Doctor name:",
-          child: CupertinoTextField(
-            controller: TextEditingController(text: pages.openMember.title),
-            placeholder: "doctor name",
-            onChanged: (val) {
-              pages.openMember.title = val;
-            },
-          ),
+  final o = pages.openMember;
+  showTabbedModal(
+      context: context,
+      onArchive: o.archived != true && editing ? () => staff.set(o..archived = true) : null,
+      onRestore: o.archived == true && editing ? () => staff.set(o..archived = null) : null,
+      onSave: () => staff.set(pages.openMember),
+      tabs: [
+        TabbedModal(
+          title: title,
+          icon: FluentIcons.medical,
+          closable: true,
+          content: (state) => [
+            InfoLabel(
+              label: "${txt("doctorName")}:",
+              child: CupertinoTextField(
+                controller: TextEditingController(text: pages.openMember.title),
+                placeholder: "${txt("doctorName")}...",
+                onChanged: (val) {
+                  pages.openMember.title = val;
+                },
+              ),
+            ),
+            InfoLabel(
+              label: "${txt("doctorEmail")}:",
+              child: CupertinoTextField(
+                controller: TextEditingController(text: pages.openMember.email),
+                placeholder: "${txt("doctorEmail")}...",
+                onChanged: (val) {
+                  pages.openMember.email = val;
+                },
+              ),
+            ),
+            InfoLabel(
+              label: "${txt("dutyDays")}:",
+              child: TagInputWidget(
+                suggestions: [...allDays.map((e) => TagInputItem(value: e, label: txt(e)))],
+                onChanged: (data) {
+                  pages.openMember.dutyDays = data.map((e) => e.value ?? "").where((e) => e.isNotEmpty).toList();
+                },
+                initialValue: [...pages.openMember.dutyDays.map((e) => TagInputItem(value: e, label: txt(e)))],
+                strict: true,
+                limit: 7,
+              ),
+            ),
+          ],
         ),
-        InfoLabel(
-          label: "Doctor email:",
-          child: CupertinoTextField(
-            controller: TextEditingController(text: pages.openMember.email),
-            placeholder: "email@server.com",
-            onChanged: (val) {
-              pages.openMember.email = val;
-            },
-          ),
-        ),
-        InfoLabel(
-          label: "Duty days:",
-          child: TagInputWidget(
-            suggestions: [...allDays.map((e) => TagInputItem(value: e, label: e))],
-            onChanged: (data) {
-              pages.openMember.dutyDays = data.map((e) => e.value ?? "").where((e) => e.isNotEmpty).toList();
-            },
-            initialValue: [...pages.openMember.dutyDays.map((e) => TagInputItem(value: e, label: e))],
-            strict: true,
-            limit: 7,
-          ),
-        ),
-      ],
-      actions: actions,
-    ),
-    if (editing) upcomingAppointmentsTab(context),
-  ]);
+        if (editing) upcomingAppointmentsTab(context),
+      ]);
 }
 
 TabbedModal upcomingAppointmentsTab(BuildContext context) {
   return TabbedModal(
-    title: "Appointments",
+    title: txt("appointments"),
     icon: FluentIcons.calendar,
     closable: true,
     spacing: 0,
@@ -107,7 +101,7 @@ TabbedModal upcomingAppointmentsTab(BuildContext context) {
           ],
     actions: [
       TabAction(
-        text: "New appointment",
+        text: txt("addAppointment"),
         icon: FluentIcons.add_event,
         callback: (_) {
           openSingleAppointment(
@@ -115,7 +109,7 @@ TabbedModal upcomingAppointmentsTab(BuildContext context) {
             json: {
               "operatorsIDs": [pages.openMember.id]
             },
-            title: "New appointment",
+            title: txt("addAppointment"),
             onSave: appointments.set,
             editing: false,
           );

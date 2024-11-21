@@ -63,5 +63,10 @@
 
 	<ke>NSMicrophoneUsageDescription</key>
 	<string>To enable microphone access when recording video</string>
+
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+	</array>
 </dict>
 </plist>

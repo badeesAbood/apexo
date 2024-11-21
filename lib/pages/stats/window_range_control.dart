@@ -1,4 +1,5 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/state/charts.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
 import 'package:fluent_ui/fluent_ui.dart';
@@ -20,7 +21,7 @@ class RangeControl extends ObservingWidget {
 
   @override
   Widget build(BuildContext context) {
-    final df = localSettings.get("date_format")?.value.startsWith("d") == true ? "dd/MM" : "MM/dd";
+    final df = localSettings.dateFormat.startsWith("d") == true ? "dd/MM" : "MM/dd";
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15),
       child: Row(
@@ -41,8 +42,8 @@ class RangeControl extends ObservingWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Start", style: _textStyle),
-                    Text(DateFormat("$df/yyyy").format(chartsState.start), style: _textStyle),
+                    Text(txt("start"), style: _textStyle),
+                    Text(DateFormat("$df/yyyy", locale.s.$code).format(chartsState.start), style: _textStyle),
                   ],
                 ),
               ],
@@ -62,7 +63,7 @@ class RangeControl extends ObservingWidget {
                       color: _color,
                     ),
                     const SizedBox(width: 5),
-                    Text("${chartsState.periods.length} ${chartsState.intervalString}", style: _textStyle)
+                    Text("${chartsState.periods.length} ${txt(chartsState.intervalString)}", style: _textStyle)
                   ],
                 ),
               ],
@@ -76,8 +77,8 @@ class RangeControl extends ObservingWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text("End", style: _textStyle),
-                    Text(DateFormat("$df/yyyy").format(chartsState.end), style: _textStyle),
+                    Text(txt("end"), style: _textStyle),
+                    Text(DateFormat("$df/yyyy", locale.s.$code).format(chartsState.end), style: _textStyle),
                   ],
                 ),
                 const SizedBox(width: 10),

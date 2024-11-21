@@ -1,4 +1,5 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/calendar/modal_appointment.dart';
 import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
@@ -29,9 +30,9 @@ class Calendar extends ObservingWidget {
           ComboBox<String>(
             style: const TextStyle(overflow: TextOverflow.ellipsis),
             items: [
-              const ComboBoxItem<String>(
+              ComboBoxItem<String>(
                 value: "",
-                child: Text("All operators"),
+                child: Text(txt("allDoctors")),
               ),
               ...staff.present.values.map((e) {
                 var doctorName = e.title;
@@ -56,7 +57,7 @@ class Calendar extends ObservingWidget {
         onSelect: (item) {
           openSingleAppointment(
             context: context,
-            title: "Appointment",
+            title: txt("editAppointment"),
             json: item.toJson(),
             onSave: appointments.set,
             editing: true,
@@ -65,7 +66,7 @@ class Calendar extends ObservingWidget {
         onAddNew: (selectedDate) {
           openSingleAppointment(
             context: context,
-            title: "Add new",
+            title: txt("newAppointment"),
             json: {"date": selectedDate.millisecondsSinceEpoch},
             onSave: appointments.set,
             editing: false,

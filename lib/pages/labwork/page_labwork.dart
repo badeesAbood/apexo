@@ -1,4 +1,5 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/labwork/modal_labwork.dart';
 import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/state/stores/labworks/labwork_model.dart';
@@ -25,12 +26,12 @@ class LabworksPage extends ObservingWidget {
             callback: (_) => openSingleLabwork(
               context: context,
               json: {},
-              title: "New labwork",
+              title: txt("newLabwork"),
               onSave: labworks.set,
               editing: false,
             ),
             icon: FluentIcons.manufacturing,
-            title: "Add new",
+            title: txt("add"),
           ),
           DataTableAction(
             callback: (ids) {
@@ -39,13 +40,13 @@ class LabworksPage extends ObservingWidget {
               }
             },
             icon: FluentIcons.archive,
-            title: "Archive Selected",
+            title: txt("archiveSelected"),
           )
         ],
         furtherActions: [const SizedBox(width: 5), ArchiveToggle(notifier: labworks.notify)],
         onSelect: (item) => {
           openSingleLabwork(
-              context: context, json: item.toJson(), title: "Labwork", onSave: labworks.set, editing: true)
+              context: context, json: item.toJson(), title: txt("labwork"), onSave: labworks.set, editing: true)
         },
       ),
     );

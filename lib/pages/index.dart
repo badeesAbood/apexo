@@ -54,7 +54,7 @@ class Page {
 class Pages extends ObservableObject {
   List<Page> genAllPages() => [
         Page(
-          title: "Dashboard",
+          title: txt("dashboard"),
           identifier: "dashboard",
           icon: FluentIcons.home,
           body: PageDashboard.new,
@@ -66,7 +66,7 @@ class Pages extends ObservableObject {
           },
         ),
         Page(
-          title: "Staff",
+          title: txt("staff"),
           identifier: "staff",
           icon: FluentIcons.medical,
           body: StaffMembers.new,
@@ -76,7 +76,7 @@ class Pages extends ObservableObject {
           },
         ),
         Page(
-          title: "Patients",
+          title: txt("patients"),
           identifier: "patients",
           icon: FluentIcons.medication_admin,
           body: PatientPage.new,
@@ -86,7 +86,7 @@ class Pages extends ObservableObject {
           },
         ),
         Page(
-          title: "Appointments calendar",
+          title: txt("appointments"),
           identifier: "calendar",
           icon: FluentIcons.calendar,
           body: Calendar.new,
@@ -96,7 +96,7 @@ class Pages extends ObservableObject {
           },
         ),
         Page(
-          title: "Labworks",
+          title: txt("labworks"),
           identifier: "labworks",
           icon: FluentIcons.manufacturing,
           body: LabworksPage.new,
@@ -106,7 +106,7 @@ class Pages extends ObservableObject {
           },
         ),
         Page(
-          title: "Statistics",
+          title: txt("statistics"),
           identifier: "statistics",
           icon: FluentIcons.chart,
           body: PageStats.new,
@@ -118,7 +118,7 @@ class Pages extends ObservableObject {
           },
         ),
         Page(
-          title: locale.s.settings,
+          title: txt("settings"),
           identifier: "settings",
           icon: FluentIcons.settings,
           body: SettingsPage.new,

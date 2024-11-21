@@ -2,6 +2,7 @@ import 'package:apexo/backend/observable/observable.dart';
 import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:apexo/backend/utils/get_deterministic_item.dart';
 import 'package:apexo/backend/utils/transitions/border.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/shared/settings_list_tile.dart';
 import 'package:apexo/state/backups.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
@@ -33,7 +34,7 @@ class BackupsWindow extends ObservingWidget {
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
       child: Expander(
         leading: const Icon(FluentIcons.folder),
-        header: Text("Backups"),
+        header: Text(txt("backups")),
         contentPadding: const EdgeInsets.all(10),
         content: SizedBox(
           width: 400,
@@ -47,9 +48,9 @@ class BackupsWindow extends ObservingWidget {
   }
 
   Widget buildBackupTile(BackupFile element, BuildContext context) {
-    final df = localSettings.get("date_format")?.value.startsWith("d") == true ? "d/MM" : "MM/d";
+    final df = localSettings.dateFormat.startsWith("d") == true ? "d/MM" : "MM/d";
     return SettingsListTile(
-      title: DateFormat("$df/yy hh:mm a").format(element.date),
+      title: DateFormat("$df/yy hh:mm a", locale.s.$code).format(element.date),
       subtitle: element.key,
       actions: [
         buildDownloadButton(element, context),
@@ -78,7 +79,7 @@ class BackupsWindow extends ObservingWidget {
 
   Tooltip buildRefreshButton() {
     return Tooltip(
-      message: "Refresh",
+      message: txt("refresh"),
       child: BorderColorTransition(
         animate: backups.loading,
         child: IconButton(
@@ -101,7 +102,7 @@ class BackupsWindow extends ObservingWidget {
           children: [
             const Icon(FluentIcons.upload),
             const SizedBox(width: 10),
-            Text("Upload"),
+            Text(txt("upload")),
           ],
         ),
         onPressed: () {
@@ -123,7 +124,7 @@ class BackupsWindow extends ObservingWidget {
           children: [
             const Icon(FluentIcons.add),
             const SizedBox(width: 10),
-            Text("Create new"),
+            Text(txt("createNew")),
           ],
         ),
         onPressed: () {
@@ -136,7 +137,7 @@ class BackupsWindow extends ObservingWidget {
 
   Container buildFileSize(BackupFile element) {
     return Container(
-      padding: EdgeInsets.all(7),
+      padding: const EdgeInsets.all(7),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           color: getDeterministicItem(Colors.accentColors, element.key).withOpacity(0.1)),
@@ -146,7 +147,7 @@ class BackupsWindow extends ObservingWidget {
 
   Tooltip buildRestoreButton(BackupFile element, BuildContext context) {
     return Tooltip(
-      message: "Restore",
+      message: txt("restoreBackup"),
       child: BorderColorTransition(
         animate: backups.restoring.containsKey(element.key),
         child: IconButton(
@@ -165,15 +166,15 @@ class BackupsWindow extends ObservingWidget {
         context: context,
         builder: (BuildContext context) {
           return ContentDialog(
-            title: const Text("Restore backup"),
+            title: Text(txt("restoreBackup")),
             style: dialogStyling(true),
             content: Text(
-                "Restoring this backup will overwrite all data in the app currently. Any changes that you have made after the date of this backup (${DateFormat().format(element.date)}) will be lost.\n\nAre you sure you want to continue?"),
+                "${txt("restoreBackupWarning1")} (${DateFormat().format(element.date)}) ${txt("restoreBackupWarning2")}"),
             actions: [
               const CloseButtonInDialog(),
               FilledButton(
                 style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.red)),
-                child: const Text("Restore"),
+                child: Text(txt("restore")),
                 onPressed: () async {
                   Navigator.pop(context);
                   await backups.restore(element.key);
@@ -186,7 +187,7 @@ class BackupsWindow extends ObservingWidget {
 
   Tooltip buildDeleteButton(BackupFile element, BuildContext context) {
     return Tooltip(
-      message: "Delete",
+      message: txt("delete"),
       child: BorderColorTransition(
         animate: backups.deleting.containsKey(element.key),
         child: IconButton(
@@ -205,21 +206,21 @@ class BackupsWindow extends ObservingWidget {
         context: context,
         builder: (BuildContext context) {
           return ContentDialog(
-            title: const Text("Delete backup"),
+            title: Text(txt("delete")),
             style: dialogStyling(true),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Are you sure you want to delete the backup '${element.key}'?"),
-                Text("Backup date: ${DateFormat().format(element.date)}"),
+                Text("${txt("sureDeleteBackup")}: '${element.key}'?"),
+                Text("${txt("backupDate")}: ${DateFormat().format(element.date)}"),
               ],
             ),
             actions: [
               const CloseButtonInDialog(),
               FilledButton(
                 style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.red)),
-                child: const Text("Delete"),
+                child: Text(txt("delete")),
                 onPressed: () async {
                   Navigator.pop(context);
                   await backups.delete(element.key);
@@ -232,7 +233,7 @@ class BackupsWindow extends ObservingWidget {
 
   Tooltip buildDownloadButton(BackupFile element, BuildContext context) {
     return Tooltip(
-      message: "Download",
+      message: txt("download"),
       child: BorderColorTransition(
         animate: backups.downloading.containsKey(element.key),
         child: IconButton(
@@ -254,13 +255,13 @@ class BackupsWindow extends ObservingWidget {
         context: context,
         builder: (BuildContext context) {
           return ContentDialog(
-            title: const Text("Download backup"),
+            title: Text(txt("download")),
             style: dialogStyling(false),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Use the following link to download the backup:"),
+                Text("${txt("useTheFollowingLinkToDownloadTheBackup")}:"),
                 const SizedBox(height: 10),
                 CupertinoTextField(
                   controller: TextEditingController(text: uri.toString()),
@@ -293,7 +294,7 @@ class CloseButtonInDialog extends StatelessWidget {
       style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [Icon(FluentIcons.cancel), SizedBox(width: 10), Text("Close")],
+        children: [const Icon(FluentIcons.cancel), const SizedBox(width: 10), Text(txt("cancel"))],
       ),
       onPressed: () => Navigator.pop(context),
     );
@@ -316,6 +317,6 @@ ContentDialogThemeData dialogStyling(bool danger) {
     decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(4)),
         gradient: LinearGradient(colors: [Colors.white, danger ? Colors.errorSecondaryColor : Colors.white])),
-    titleStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+    titleStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
   );
 }

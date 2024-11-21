@@ -1,4 +1,5 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/patients/modal_patient.dart';
 import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
@@ -24,25 +25,27 @@ class PatientPage extends ObservingWidget {
         items: patients.showing.values.toList(),
         actions: [
           DataTableAction(
-              callback: (_) async {
-                openSinglePatient(
-                  context: context,
-                  json: {},
-                  editing: false,
-                  title: "Create new patient",
-                  onSave: patients.set,
-                );
-              },
-              icon: FluentIcons.add_friend,
-              title: "Add new"),
+            callback: (_) async {
+              openSinglePatient(
+                context: context,
+                json: {},
+                editing: false,
+                title: txt("addNewPatient"),
+                onSave: patients.set,
+              );
+            },
+            icon: FluentIcons.add_friend,
+            title: txt("add"),
+          ),
           DataTableAction(
-              callback: (ids) {
-                for (var id in ids) {
-                  patients.archive(id);
-                }
-              },
-              icon: FluentIcons.archive,
-              title: "Archive Selected")
+            callback: (ids) {
+              for (var id in ids) {
+                patients.archive(id);
+              }
+            },
+            icon: FluentIcons.archive,
+            title: txt("archive"),
+          )
         ],
         furtherActions: [const SizedBox(width: 5), ArchiveToggle(notifier: patients.notify)],
         onSelect: (item) {
@@ -50,7 +53,7 @@ class PatientPage extends ObservingWidget {
             context: context,
             json: item.toJson(),
             editing: true,
-            title: "Edit patient",
+            title: txt("editPatient"),
             onSave: patients.set,
           );
         },

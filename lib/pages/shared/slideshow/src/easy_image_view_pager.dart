@@ -31,13 +31,13 @@ class EasyImageViewPager extends StatefulWidget {
   /// and the [pageController] to control the initial image index to display.
   /// The optional [doubleTapZoomable] boolean defaults to false and allows double tap to zoom.
   const EasyImageViewPager({
-    Key? key,
+    super.key,
     required this.easyImageProvider,
     required this.pageController,
     this.doubleTapZoomable = false,
     this.onScaleChanged,
     this.infinitelyScrollable = false,
-  }) : super(key: key);
+  });
 
   @override
   State<EasyImageViewPager> createState() => _EasyImageViewPagerState();
@@ -133,23 +133,23 @@ class _EasyImageViewPagerState extends State<EasyImageViewPager> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                     "${((widget.pageController.page! % widget.easyImageProvider.imageCount) + 1).round()}/${widget.easyImageProvider.imageCount}",
-                    style: TextStyle(color: Colors.white, fontSize: 20)),
+                    style: const TextStyle(color: Colors.white, fontSize: 20)),
               ));
             }),
           ),
           Positioned(
             bottom: 0,
             left: 0,
-            child: Row(mainAxisSize: MainAxisSize.max, children: [
+            child: Row(mainAxisSize: MainAxisSize.max, textDirection: TextDirection.ltr, children: [
               Acrylic(
                 elevation: 20,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                 child: IconButton(
-                  icon: Icon(FluentIcons.chevron_left, color: Colors.white, size: 30),
+                  icon: const Icon(FluentIcons.chevron_left, color: Colors.white, size: 30),
                   onPressed: () {
                     widget.pageController.animateToPage(
                       widget.pageController.page!.toInt() - 1,
-                      duration: Duration(milliseconds: 200),
+                      duration: const Duration(milliseconds: 200),
                       curve: Curves.easeInOut,
                     );
                   },
@@ -164,7 +164,7 @@ class _EasyImageViewPagerState extends State<EasyImageViewPager> {
                     blurAmount: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                     child: IconButton(
-                      icon: Icon(FluentIcons.play_resume, color: Colors.grey, size: 30),
+                      icon: const Icon(FluentIcons.play_resume, color: Colors.grey, size: 30),
                       onPressed: () {
                         setState(() {
                           slideshowEnabled = !slideshowEnabled;
@@ -178,11 +178,11 @@ class _EasyImageViewPagerState extends State<EasyImageViewPager> {
                 elevation: 20,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                 child: IconButton(
-                  icon: Icon(FluentIcons.chevron_right, color: Colors.white, size: 30),
+                  icon: const Icon(FluentIcons.chevron_right, color: Colors.white, size: 30),
                   onPressed: () {
                     widget.pageController.animateToPage(
                       widget.pageController.page!.toInt() + 1,
-                      duration: Duration(milliseconds: 200),
+                      duration: const Duration(milliseconds: 200),
                       curve: Curves.easeInOut,
                     );
                   },

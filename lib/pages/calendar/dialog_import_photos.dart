@@ -3,6 +3,7 @@ import 'package:apexo/backend/observable/observable.dart';
 import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:apexo/backend/utils/hash.dart';
 import 'package:apexo/backend/utils/imgs.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/index.dart';
 import 'package:apexo/pages/settings/window_backups.dart';
 import 'package:apexo/pages/shared/tabbed_modal.dart';
@@ -26,23 +27,20 @@ class ImportDialog extends ObservingWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           InfoBar(
-            title: Text("Importing photos from link"),
-            content: Text(
-              "Use this form to import photos from share links, like google photos, or any accessible web page that contains photos you'd like to add to this appointment.",
-            ),
+            title: Text(txt("importingPhotosFromLink")),
+            content: Text(txt("useThisForm")),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           if (importResult().length > 1)
             InfoBar(
-              title: Text("Error"),
+              title: Text(txt("error")),
               content: Text(importResult()),
               severity: InfoBarSeverity.error,
             ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           InfoLabel(
-            label: "Link",
-            child: CupertinoTextField(
-                controller: importPhotosFromLinkController, placeholder: "Enter a URL that contains photos"),
+            label: txt("link"),
+            child: CupertinoTextField(controller: importPhotosFromLinkController, placeholder: txt("enterLink")),
           ),
         ],
       ),
@@ -53,7 +51,7 @@ class ImportDialog extends ObservingWidget {
           style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.blue)),
           child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [Icon(FluentIcons.save), SizedBox(width: 5), Text("Import")]),
+              children: [const Icon(FluentIcons.save), const SizedBox(width: 5), Text(txt("import"))]),
           onPressed: () async {
             importResult(".");
             state.notify();

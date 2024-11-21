@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:apexo/i18/index.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import '../../../backend/utils/colors_without_yellow.dart';
@@ -270,8 +271,9 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
   ComboBox<int> _buildSortBy() {
     return ComboBox<int>(
       items: [
-        const ComboBoxItem<int>(value: -1, child: Text("By title")),
-        ...nonNullLabels.map((l) => ComboBoxItem<int>(value: nonNullLabels.indexOf(l), child: Text("By $l")))
+        ComboBoxItem<int>(value: -1, child: Text(txt("byTitle"))),
+        ...nonNullLabels
+            .map((l) => ComboBoxItem<int>(value: nonNullLabels.indexOf(l), child: Text("${txt("by")} ${txt(l)}")))
       ],
       value: sortBy,
       onChanged: setSortBy,
@@ -280,7 +282,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
 
   Text _buildItemsNumIndicator() {
     return Text(
-      "Showing ${sortedItems.length}/${filteredItems.length}",
+      "${txt("showing")} ${sortedItems.length}/${filteredItems.length}",
       style: TextStyle(color: Colors.grey.toAccentColor().lightest, fontSize: 11, fontWeight: FontWeight.bold),
     );
   }
@@ -319,7 +321,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
               width: 165,
               child: CupertinoTextField(
                 controller: searchTerm,
-                placeholder: "search",
+                placeholder: txt("searchPlaceholder"),
                 onChanged: setSearchTerm,
               ),
             ),
@@ -331,12 +333,12 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
   }
 
   _buildNoItemsFound() {
-    return const Padding(
-      padding: EdgeInsets.all(15),
+    return Padding(
+      padding: const EdgeInsets.all(15),
       child: InfoBar(
         isIconVisible: true,
         severity: InfoBarSeverity.warning,
-        title: Text("No items found"),
+        title: Text(txt("noItemsFound")),
       ),
     );
   }
@@ -355,6 +357,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
           }
         },
         child: Row(
+          textDirection: TextDirection.ltr,
           children: [
             Acrylic(
               luminosityAlpha: 0.1,
@@ -370,7 +373,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
                 child: Wrap(
                   children: [
                     Text(
-                      l,
+                      (txt(l)),
                       style: TextStyle(
                           fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, fontSize: 11.5, color: color),
                     ),
@@ -378,7 +381,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
                     const Divider(direction: Axis.vertical, size: 10),
                     const SizedBox(width: 5),
                     Text(
-                      item.labels[l] ?? "",
+                      (item.labels[l]) ?? "",
                     ),
                   ],
                 ),

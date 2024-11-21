@@ -1,4 +1,6 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/i18/index.dart';
+import 'package:apexo/state/stores/settings/settings_store.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import "package:flutter/cupertino.dart" show CupertinoTextField;
 import '../../panel_logo.dart';
@@ -20,10 +22,29 @@ class Login extends ObservingWidget {
           ? Padding(
               padding: const EdgeInsets.only(bottom: 18.0),
               child:
-                  InfoBar(title: const Text("Error"), content: Text(state.loginError), severity: InfoBarSeverity.error),
+                  InfoBar(title: Text(txt("error")), content: Text(state.loginError), severity: InfoBarSeverity.error),
             )
           : null,
-      header: const AppLogo(),
+      header:
+          Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center, children: [
+        const AppLogo(),
+        ComboBox(
+          value: localSettings.locale,
+          items: locale.list.map((e) => ComboBoxItem(child: Text(e.$name), value: e.$code)).toList(),
+          onChanged: (code) {
+            final l = locale.list.indexWhere(
+              (element) => element.$code == code,
+            );
+            if (l != -1) {
+              locale.selectedIndex = l;
+            }
+            localSettings.locale = code ?? "en";
+            localSettings.notify();
+            state.notify();
+            locale.notify();
+          },
+        ),
+      ]),
       content: Center(
           child: SizedBox(
         width: 350,
@@ -37,7 +58,7 @@ class Login extends ObservingWidget {
             closeButtonVisibility: CloseButtonVisibilityMode.never,
             tabs: [
               Tab(
-                text: Text("Login"),
+                text: Text(txt("login")),
                 icon: const Icon(FluentIcons.authenticator_app),
                 body: buildTabContainer([
                   serverField(),
@@ -46,26 +67,28 @@ class Login extends ObservingWidget {
                 ], [
                   FilledButton(
                     onPressed: state.loginButton,
-                    child: Row(children: [const Icon(FluentIcons.forward), const SizedBox(width: 10), Text("Login")]),
+                    child:
+                        Row(children: [const Icon(FluentIcons.forward), const SizedBox(width: 10), Text(txt("login"))]),
                   ),
                   if (state.loginError.isNotEmpty)
                     FilledButton(
                       onPressed: () => state.loginButton(false),
                       style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey)),
-                      child: const Row(
-                          children: [Icon(FluentIcons.virtual_network), SizedBox(width: 10), Text("Proceed Offline")]),
+                      child: Row(children: [
+                        const Icon(FluentIcons.virtual_network),
+                        const SizedBox(width: 10),
+                        Text(txt("proceedOffline"))
+                      ]),
                     ),
                 ]),
               ),
               Tab(
-                text: Text("Reset Password"),
+                text: Text(txt("resetPassword")),
                 icon: const Icon(FluentIcons.password_field),
                 body: buildTabContainer([
                   const SizedBox(height: 1),
                   InfoBar(
-                    title: state.resetInstructionsSent
-                        ? Text("Reset link has been sent to your email.")
-                        : Text("You'll get reset link by email."),
+                    title: state.resetInstructionsSent ? Text(txt("beenSent")) : Text(txt("youLLGet")),
                     severity: state.resetInstructionsSent ? InfoBarSeverity.success : InfoBarSeverity.info,
                   ),
                   const SizedBox(height: 1),
@@ -78,7 +101,7 @@ class Login extends ObservingWidget {
                       child: Row(children: [
                         const Icon(FluentIcons.password_field),
                         const SizedBox(width: 10),
-                        Text("Reset Password")
+                        Text(txt("resetPassword"))
                       ]),
                     ),
                 ]),
@@ -125,9 +148,10 @@ class Login extends ObservingWidget {
 
   Widget serverField() {
     return InfoLabel(
-      label: "Server URL",
+      label: txt("serverUrl"),
       child: CupertinoTextField(
           controller: state.urlField,
+          textDirection: TextDirection.ltr,
           enabled: state.loadingIndicator.isEmpty,
           placeholder: "https://[pocketbase server]"),
     );
@@ -135,9 +159,10 @@ class Login extends ObservingWidget {
 
   Widget emailField() {
     return InfoLabel(
-      label: "Email",
+      label: txt("email"),
       child: CupertinoTextField(
         controller: state.emailField,
+        textDirection: TextDirection.ltr,
         enabled: state.loadingIndicator.isEmpty,
         placeholder: "email@domain.com",
       ),
@@ -146,8 +171,9 @@ class Login extends ObservingWidget {
 
   Widget passwordField() {
     return InfoLabel(
-      label: "Password",
+      label: txt("password"),
       child: CupertinoTextField(
+        textDirection: TextDirection.ltr,
         controller: state.passwordField,
         enabled: state.loadingIndicator.isEmpty,
         obscureText: true,

@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:apexo/backend/observable/observable.dart';
+import 'package:apexo/i18/index.dart' as i18;
 import 'package:apexo/state/admins.dart';
 import 'package:apexo/state/backups.dart';
 import 'package:apexo/state/permissions.dart';
@@ -87,24 +89,29 @@ class GlobalSettings extends Store<Setting> {
   }
 }
 
-class LocalSettings extends Store<Setting> {
-  Map<String, String> defaults = {
-    "locale": "english",
-    "date_format": "dd/MM/yyyy",
-  };
+class LocalSettings extends ObservablePersistingObject {
+  LocalSettings() : super(_storeNameLocal);
 
-  LocalSettings()
-      : super(
-          modeling: Setting.fromJson,
-          local: SaveLocal(_storeNameLocal),
-        ) {
-    loaded.then((_) {
-      defaults.forEach((key, value) {
-        if (has(key) == false) {
-          set(Setting.fromJson({"id": key, "value": value}));
-        }
-      });
+  String locale = "en";
+  String dateFormat = "dd/MM/yyyy";
+
+  init() {
+    observe((ev) {
+      final selectedLocaleIndex = i18.locale.list.indexWhere((l) => l.$code == locale);
+      i18.locale.selectedIndex = selectedLocaleIndex == -1 ? 0 : selectedLocaleIndex;
+      i18.locale.notify();
     });
+  }
+
+  @override
+  fromJson(Map<String, dynamic> json) {
+    locale = json["locale"] ?? locale;
+    dateFormat = json["dateFormat"] ?? dateFormat;
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {"locale": locale, "dateFormat": dateFormat};
   }
 }
 

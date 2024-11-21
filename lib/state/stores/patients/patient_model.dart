@@ -1,4 +1,7 @@
 import 'package:apexo/backend/observable/model.dart';
+import 'package:apexo/backend/utils/encode.dart';
+import 'package:apexo/i18/index.dart';
+import 'package:apexo/state/state.dart';
 import 'package:apexo/state/stores/appointments/appointment_model.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
 
@@ -62,6 +65,10 @@ class Patient extends Model {
     return imgs.isNotEmpty ? imgs.first : null;
   }
 
+  get webPageLink {
+    return "https://patient.apexo.app/${encode("$id|$title|${state.url}")}";
+  }
+
   @override
   Map<String, String> get labels {
     Map<String, String> buildingLabels = {
@@ -69,9 +76,9 @@ class Patient extends Model {
     };
 
     if (daysSinceLastAppointment == null) {
-      buildingLabels["Last visit"] = "No visits";
+      buildingLabels["Last visit"] = txt("noVisits");
     } else {
-      buildingLabels["Last visit"] = "$daysSinceLastAppointment days ago";
+      buildingLabels["Last visit"] = "$daysSinceLastAppointment ${txt("daysAgo")}";
     }
 
     if (gender == 0) {
@@ -81,11 +88,11 @@ class Patient extends Model {
     }
 
     if (outstandingPayments > 0) {
-      buildingLabels["Pay"] = "Underpaid🔻";
+      buildingLabels["Pay"] = "${txt("underpaid")}🔻";
     }
 
     if (outstandingPayments < 0) {
-      buildingLabels["Pay"] = "Overpaid🔺";
+      buildingLabels["Pay"] = "${txt("overpaid")}🔺";
     }
 
     if (paymentsMade != 0) {

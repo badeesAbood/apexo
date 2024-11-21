@@ -1,4 +1,5 @@
 import 'package:apexo/backend/observable/model.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/state/stores/patients/patient_model.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
 import 'package:apexo/state/stores/staff/member_model.dart';
@@ -10,15 +11,15 @@ class Labwork extends Model {
   get labels {
     return {
       "Laboratory": lab,
-      "Month": DateFormat("MMM yyyy").format(date),
+      "Month": DateFormat("MMM yyyy", locale.s.$code).format(date),
       "Patient": patient?.title ?? "Unknown",
-      "Paid": paid ? "Yes" : "No",
-      "operators": operators.map((e) => e.title).join(", "),
+      "Paid": paid ? txt("paid") : txt("unpaid"),
+      "doctors": operators.map((e) => e.title).join(", "),
     };
   }
 
   Patient? get patient {
-    return patients.get(patientID ?? "return null when null");
+    return patients.get(patientID ?? "");
   }
 
   List<Member> get operators {

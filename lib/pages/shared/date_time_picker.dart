@@ -1,3 +1,4 @@
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/shared/acrylic_button.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart' show showTimePicker, showDatePicker, TimeOfDay;
@@ -39,7 +40,7 @@ class DateTimePickerState extends State<DateTimePicker> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(DateFormat(widget.format).format(widget.value)),
+            Text(DateFormat(widget.format, locale.s.$code).format(widget.value)),
             AcrylicButton(icon: widget.buttonIcon, text: widget.buttonText, onPressed: pick)
           ],
         ),

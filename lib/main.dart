@@ -37,15 +37,14 @@ class MyApp extends ObservingWidget {
 
   @override
   getObservableState() {
-    return [state, pages];
+    return [state, pages, locale];
   }
 
   @override
   Widget build(BuildContext context) {
     return FluentApp(
         locale: Locale(locale.s.$code),
-        themeMode: state.themeMode,
-        theme: FluentThemeData(accentColor: state.themeAccentColor),
+        themeMode: ThemeMode.dark,
         home: Builder(
           builder: (context) => PopScope(
             canPop: false,

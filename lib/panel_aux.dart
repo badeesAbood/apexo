@@ -1,4 +1,5 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import './state/state.dart';
@@ -22,11 +23,11 @@ class AuxiliarySection extends ObservingWidget {
         const SizedBox(width: 5),
         Button(
           onPressed: state.logout,
-          child: const Row(
+          child: Row(
             children: [
-              Icon(FluentIcons.sign_out),
-              SizedBox(width: 3),
-              Text("Logout"),
+              const Icon(FluentIcons.sign_out),
+              const SizedBox(width: 3),
+              Text(txt("logout")),
             ],
           ),
         ),

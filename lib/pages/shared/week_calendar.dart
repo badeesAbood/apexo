@@ -1,11 +1,12 @@
 import 'dart:math';
 
 import 'package:apexo/backend/observable/observable.dart';
+import 'package:apexo/i18/index.dart';
 import 'package:apexo/state/stores/appointments/appointment_model.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Card;
 import 'package:flutter/material.dart' show showTimePicker, TimeOfDay, Card;
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' as intl;
 import '../../backend/observable/model.dart';
 import '../../backend/utils/colors_without_yellow.dart';
 import '../../backend/utils/round.dart';
@@ -17,7 +18,6 @@ class WeekAgendaCalendar<Item extends AgendaItem> extends StatefulWidget {
   final List<Item> items;
   final List<Widget>? actions;
   final StartingDayOfWeek startDay;
-  final String noAppointmentsMessage;
   final int initiallySelectedDay;
   final void Function(DateTime date) onAddNew;
   final void Function(Item item) onSetTime;
@@ -31,7 +31,6 @@ class WeekAgendaCalendar<Item extends AgendaItem> extends StatefulWidget {
     required this.onAddNew,
     required this.onSetTime,
     required this.onSelect,
-    this.noAppointmentsMessage = "No appointments for this day",
     this.actions,
   });
 
@@ -93,8 +92,12 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
               children: [
                 IconButton(
                     onPressed: () => widget.onAddNew(selectedDate),
-                    icon: const Row(
-                      children: [Icon(FluentIcons.add_event, size: 17), SizedBox(width: 10), Text("Add new")],
+                    icon: Row(
+                      children: [
+                        const Icon(FluentIcons.add_event, size: 17),
+                        const SizedBox(width: 10),
+                        Text(txt("add"))
+                      ],
                     )),
                 Row(
                   children: widget.actions ?? [],
@@ -138,8 +141,11 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
           calendarFormat = format;
         });
       },
-      availableCalendarFormats:
-          Map.from({CalendarFormat.twoWeeks: "2W", CalendarFormat.month: "M", CalendarFormat.week: "W"}),
+      availableCalendarFormats: Map.from({
+        CalendarFormat.twoWeeks: txt("twoWeeksAbbr"),
+        CalendarFormat.month: txt("monthAbbr"),
+        CalendarFormat.week: txt("weekAbbr")
+      }),
       eventLoader: (day) => _getItemsForDay(day),
       headerStyle: HeaderStyle(
           formatButtonShowsNext: false,
@@ -151,13 +157,18 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
               ]),
               borderRadius: BorderRadius.circular(4))),
       calendarBuilders: CalendarBuilders(
+        dowBuilder: (context, day) => Center(
+          child: Text(
+            intl.DateFormat("EE", locale.s.$code).format(day),
+          ),
+        ),
         headerTitleBuilder: (context, day) {
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Center(
                 child: Text(
-                  DateFormat('MMMM yyyy').format(day),
+                  intl.DateFormat('MMMM yyyy', locale.s.$code).format(day),
                 ),
               ),
               const Divider(size: 20, direction: Axis.vertical),
@@ -165,8 +176,8 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
                 IconButton(
                   onPressed: _goToToday,
                   iconButtonMode: IconButtonMode.large,
-                  icon: const Row(
-                    children: [Icon(FluentIcons.goto_today), SizedBox(width: 5), Text("Today")],
+                  icon: Row(
+                    children: [const Icon(FluentIcons.goto_today), const SizedBox(width: 5), Text(txt("today"))],
                   ),
                   style: ButtonStyle(
                     padding: const WidgetStatePropertyAll(EdgeInsets.all(8)),
@@ -186,9 +197,7 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
               shape: BoxShape.circle,
             ),
             child: Center(
-              child: Text(
-                day.day.toString(),
-              ),
+              child: Text(intl.DateFormat("d", locale.s.$code).format(day)),
             ),
           );
         },
@@ -204,7 +213,7 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
             ),
             child: Center(
               child: Text(
-                day.day.toString(),
+                intl.DateFormat("d", locale.s.$code).format(day),
                 style: const TextStyle(color: Colors.white),
               ),
             ),
@@ -220,7 +229,7 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
                 boxShadow: kElevationToShadow[2]),
             child: Center(
               child: Text(
-                day.day.toString(),
+                intl.DateFormat("d", locale.s.$code).format(day),
                 style: const TextStyle(color: Colors.white),
               ),
             ),
@@ -292,13 +301,13 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
       child: InfoBar(
         isIconVisible: true,
         severity: InfoBarSeverity.warning,
-        title: Text(widget.noAppointmentsMessage),
+        title: Text(txt("noAppointmentsForThisDay")),
       ),
     );
   }
 
   Widget _buildCurrentDayTitleBar() {
-    final df = localSettings.get("date_format")?.value.startsWith("d") == true ? "dd MMMM" : "MMMM dd";
+    final df = localSettings.dateFormat.startsWith("d") == true ? "dd MMMM" : "MMMM dd";
     return Acrylic(
       child: Container(
         decoration: BoxDecoration(
@@ -312,7 +321,7 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(DateFormat("$df / yyyy").format(selectedDate)),
+            Text(intl.DateFormat("$df / yyyy", locale.s.$code).format(selectedDate)),
           ],
         ),
       ),
@@ -365,7 +374,7 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
                     children: [
                       const Icon(FluentIcons.clock),
                       const SizedBox(width: 5),
-                      Text(DateFormat('hh:mm a').format(item.date())),
+                      Text(intl.DateFormat('hh:mm a', locale.s.$code).format(item.date())),
                     ],
                   ),
                 ),

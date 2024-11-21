@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/logger.dart';
+import 'package:apexo/state/state.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
 import 'model.dart';
@@ -64,21 +65,6 @@ class Store<G extends Model> {
         _processChanges();
       });
     });
-  }
-
-  void initAfterConnect() {
-    // setting up realtime
-    print("The following should not be null");
-    print(remote);
-    if (remote != null) {
-      remote?.pb.collection(collectionName).subscribe("*", (msg) {
-        print("message recieved on ${remote?.store}");
-        if (msg.record?.data["store"] == remote?.store) {
-          print("${remote?.store} will sync");
-          synchronize();
-        }
-      });
-    }
   }
 
   Future<void> loadFromLocal() async {
@@ -295,11 +281,15 @@ class Store<G extends Model> {
     // on first sync, we need to set up the realtime subscription
     if (remote != null && realtimeIsSet == false) {
       realtimeIsSet = true; // prevent multiple subscriptions
-      remote?.pb.collection(collectionName).subscribe("*", (msg) {
-        if (msg.record?.data["store"] == remote?.store) {
-          synchronize();
-        }
-      });
+      try {
+        await remote?.pb.collection(collectionName).subscribe("*", (msg) {
+          if (msg.record?.data["store"] == remote?.store) {
+            synchronize();
+          }
+        });
+      } catch (e, s) {
+        logger("Error during realtime subscription: $e", s);
+      }
     }
 
     lastProcessChanges = DateTime.now().millisecondsSinceEpoch;
@@ -337,7 +327,8 @@ class Store<G extends Model> {
   }
 
   Map<String, G> get present {
-    return Map<String, G>.fromEntries(docs.entries.where((entry) => entry.value.archived != true));
+    return Map<String, G>.fromEntries(
+        docs.entries.where((entry) => state.showArchived || entry.value.archived != true));
   }
 
   bool has(String id) {

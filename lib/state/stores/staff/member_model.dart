@@ -23,8 +23,8 @@ class Member extends Model {
   @override
   Map<String, String> get labels {
     return _labels ??= {
-      "Upcoming appointments": upcomingAppointments.length.toString(),
-      "Past appointments": pastDoneAppointments.length.toString()
+      "upcomingAppointments": upcomingAppointments.length.toString(),
+      "pastAppointments": pastDoneAppointments.length.toString()
     };
   }
 

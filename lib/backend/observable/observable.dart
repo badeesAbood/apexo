@@ -17,12 +17,6 @@ import './model.dart';
 
 typedef OEventCallback = void Function(List<OEvent>);
 
-class CustomError {
-  final String message;
-  final StackTrace stackTrace;
-  CustomError(this.message, this.stackTrace);
-}
-
 enum EventType {
   add,
   modify,
@@ -32,14 +26,9 @@ enum EventType {
 class OEvent {
   final EventType type;
   final String id;
-  final String? property;
-  OEvent.add(this.id)
-      : type = EventType.add,
-        property = null;
-  OEvent.modify(this.id, [this.property]) : type = EventType.modify;
-  OEvent.remove(this.id)
-      : type = EventType.remove,
-        property = null;
+  OEvent.add(this.id) : type = EventType.add;
+  OEvent.modify(this.id) : type = EventType.modify;
+  OEvent.remove(this.id) : type = EventType.remove;
 }
 
 /// Base observable class
@@ -50,8 +39,8 @@ class ObservableBase {
       for (var observer in _observers) {
         try {
           observer(events);
-        } catch (message, stackTrace) {
-          errors.add(CustomError(message.toString(), stackTrace));
+        } catch (e, s) {
+          logger("Error while trying to register an observer: $e", s);
         }
       }
     });
@@ -59,7 +48,6 @@ class ObservableBase {
 
   final StreamController<List<OEvent>> _controller = StreamController<List<OEvent>>.broadcast();
   final List<OEventCallback> _observers = [];
-  final List<CustomError> errors = [];
   Stream<List<OEvent>> get _stream => _controller.stream;
   double _silent = 0;
 
@@ -94,7 +82,6 @@ class ObservableBase {
       fn();
     } catch (e, s) {
       logger("Error during silent modification: $e", s);
-      errors.add(CustomError(e.toString(), s));
     }
     _silent--;
   }
@@ -118,7 +105,7 @@ class ObservableState<T> extends ObservableObject {
 }
 
 /// creates an observable class that can be composed of multiple values
-/// however, modifiers should be written as methods of this class
+/// Modifiers should be written as methods of this class
 /// and should call notify() when the value is changed
 class ObservableObject extends ObservableBase {
   void notify() {
