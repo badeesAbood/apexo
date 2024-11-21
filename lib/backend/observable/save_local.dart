@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:apexo/backend/utils/hash.dart';
+import 'package:apexo/backend/utils/imgs.dart';
 import 'package:apexo/state/state.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:path_provider/path_provider.dart';
 
 // Constants for metadata keys
 const String _versionKey = 'meta:version';
@@ -28,7 +30,9 @@ class SaveLocal {
 
   Future<Box<String>> initialize(String name) async {
     await Hive.initFlutter();
-    return Hive.openBox<String>(name + simpleHash(state.url));
+    final appDir = await getApplicationDocumentsDirectory();
+    final dir = "${appDir.path}/$baseDir";
+    return Hive.openBox<String>(name + simpleHash(state.url), path: dir);
   }
 
   // Put entries into the main box

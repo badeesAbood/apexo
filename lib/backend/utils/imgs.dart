@@ -5,9 +5,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
-const baseDir = "apexo-images";
+const baseDir = "apexo-data";
 
-Future<Directory> _createDirectory(String path) async {
+Future<Directory> createDirectory(String path) async {
   final Directory dir = Directory(path);
   if (await dir.exists()) {
     return dir;
@@ -25,7 +25,7 @@ Future<bool> _checkIfFileExists(String name) async {
 
 Future<File> _getOrCreateFile(String name) async {
   final appDir = await getApplicationDocumentsDirectory();
-  await _createDirectory("${appDir.path}/$baseDir");
+  await createDirectory("${appDir.path}/$baseDir");
   return File('${appDir.path}/$baseDir/$name');
 }
 
