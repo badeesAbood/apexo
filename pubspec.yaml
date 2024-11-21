@@ -32,6 +32,7 @@ dependencies:
   pdf: ^3.11.1
   bidi: ^2.0.12
   url_launcher: ^6.3.1
+  flutter_launcher_icons: ^0.14.1
   
 dev_dependencies:
   flutter_test:
