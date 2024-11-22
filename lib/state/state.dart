@@ -135,7 +135,6 @@ class State extends ObservablePersistingObject {
       final auth = await pb!.admins.authWithPassword(email, password);
       return auth.token;
     } catch (e) {
-      print("?????? $e $email $password");
       final auth = await pb!.collection("users").authWithPassword(email, password);
       return auth.token;
     }
