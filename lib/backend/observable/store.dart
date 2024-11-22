@@ -281,15 +281,14 @@ class Store<G extends Model> {
     // on first sync, we need to set up the realtime subscription
     if (remote != null && realtimeIsSet == false) {
       realtimeIsSet = true; // prevent multiple subscriptions
-      try {
-        await remote?.pb.collection(collectionName).subscribe("*", (msg) {
-          if (msg.record?.data["store"] == remote?.store) {
-            synchronize();
-          }
-        });
-      } catch (e, s) {
+      remote?.pb.collection(collectionName).subscribe("*", (msg) {
+        if (msg.record?.data["store"] == remote?.store) {
+          synchronize();
+        }
+      }).catchError((e, s) {
         logger("Error during realtime subscription: $e", s);
-      }
+        return () => Future<void>.value();
+      });
     }
 
     lastProcessChanges = DateTime.now().millisecondsSinceEpoch;
@@ -302,9 +301,8 @@ class Store<G extends Model> {
     }
     onSyncEnd?.call();
     return tries;
-  }
+  } //// Returns true if the local database is in sync with the remote database
 
-  //// Returns true if the local database is in sync with the remote database
   Future<bool> inSync() async {
     try {
       if (local == null || remote == null) return false;
