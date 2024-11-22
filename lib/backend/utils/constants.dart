@@ -5,6 +5,7 @@ import 'package:pocketbase/pocketbase.dart';
 const String alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
 const String collectionName = "data";
 const String publicCollectionName = "public";
+const String webImagesStore = "web-images";
 final collectionImport = CollectionModel(
   name: collectionName,
   type: "base",
