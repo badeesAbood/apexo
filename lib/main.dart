@@ -1,6 +1,7 @@
 import 'package:apexo/state/stores/labworks/labworks_store.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
 import 'package:apexo/state/stores/staff/staff_store.dart';
+import 'package:apexo/version.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:logging/logging.dart';
 import './backend/utils/transitions/rotate.dart';
@@ -63,7 +64,15 @@ class MyApp extends ObservingWidget {
                   : NavigationPane(
                       autoSuggestBox: const AuxiliarySection(),
                       autoSuggestBoxReplacement: const Icon(auxiliaryIcon),
-                      header: const AppLogo(),
+                      header: Row(
+                        children: [
+                          const AppLogo(),
+                          Text(
+                            "V $version",
+                            style: TextStyle(fontSize: 12, color: Colors.grey.withOpacity(0.3)),
+                          )
+                        ],
+                      ),
                       selected: pages.currentPageIndex,
                       displayMode: PaneDisplayMode.auto,
                       items: List<NavigationPaneItem>.from(pages.allPages.where((p) => p.onFooter != true).map(
