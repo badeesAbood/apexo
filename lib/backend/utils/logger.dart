@@ -18,5 +18,5 @@ void logger(Object msg, StackTrace stacktrace, [int importance = 0]) {
       log.severe(msg);
       break;
   }
-  log.fine(stacktrace);
+  log.info(stacktrace);
 }
