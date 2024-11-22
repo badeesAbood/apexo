@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:apexo/backend/utils/hash.dart';
 import 'package:apexo/backend/utils/imgs.dart';
 import 'package:apexo/state/state.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -30,8 +31,8 @@ class SaveLocal {
 
   Future<Box<String>> initialize(String name) async {
     await Hive.initFlutter();
-    final appDir = await getApplicationDocumentsDirectory();
-    final dir = "${appDir.path}/$baseDir";
+    final appDir = kIsWeb ? "/" : (await getApplicationDocumentsDirectory()).path;
+    final dir = "$appDir/$baseDir";
     return Hive.openBox<String>(name + simpleHash(state.url), path: dir);
   }
 

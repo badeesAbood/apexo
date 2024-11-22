@@ -4,6 +4,7 @@ import 'package:apexo/backend/utils/hash.dart';
 import 'package:apexo/backend/utils/imgs.dart';
 import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/state/state.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:path_provider/path_provider.dart';
 import './model.dart';
@@ -122,8 +123,8 @@ abstract class ObservablePersistingObject extends ObservableObject {
   ObservablePersistingObject(this.identifier) {
     box = () async {
       await Hive.initFlutter();
-      final appDir = await getApplicationDocumentsDirectory();
-      final dir = "${appDir.path}/$baseDir";
+      final appDir = kIsWeb ? "/" : (await getApplicationDocumentsDirectory()).path;
+      final dir = "$appDir/$baseDir";
       return Hive.openBox<String>(identifier + simpleHash(state.url), path: dir);
     }();
     _initialLoad();
