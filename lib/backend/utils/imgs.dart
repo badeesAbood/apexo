@@ -19,13 +19,13 @@ Future<void> createDirectory(String path) async {
   }
 }
 
-Future<bool> _checkIfFileExists(String name) async {
+Future<bool> checkIfFileExists(String name) async {
   final appDir = (await getApplicationDocumentsDirectory()).path;
   final File file = File('$appDir/$baseDir/$name');
   return await file.exists();
 }
 
-Future<File> _getOrCreateFile(String name) async {
+Future<File> getOrCreateFile(String name) async {
   final appDir = (await getApplicationDocumentsDirectory()).path;
   await createDirectory("$appDir/$baseDir");
   return File('$appDir/$baseDir/$name');
@@ -41,15 +41,15 @@ Future<ImageProvider> getImage(String name) async {
     }
   }
 
-  if (await _checkIfFileExists(name)) {
-    return Image.file(await _getOrCreateFile(name)).image;
+  if (await checkIfFileExists(name)) {
+    return Image.file(await getOrCreateFile(name)).image;
   } else {
     return const AssetImage("assets/images/missing.png");
   }
 }
 
 Future<File> savePickedImage(XFile image, String newName) async {
-  final File newImage = await _getOrCreateFile(newName);
+  final File newImage = await getOrCreateFile(newName);
   if (await newImage.exists()) return newImage;
   return await File(image.path).copy(newImage.path);
 }
@@ -64,7 +64,7 @@ Future<File> saveImageFromUrl(String imageUrl, [String? givenName]) async {
     return File(imageUrl);
   }
 
-  final File newImage = await _getOrCreateFile(imageName);
+  final File newImage = await getOrCreateFile(imageName);
   if (await newImage.exists()) return newImage;
 
   final response = await http.get(Uri.parse(imageUrl));

@@ -54,7 +54,7 @@ class ObservableBase {
   Stream<List<OEvent>> get _stream => _controller.stream;
   double _silent = 0;
 
-  void _notifyObservers(List<OEvent> events) {
+  void notifyObservers(List<OEvent> events) {
     if (_silent == 0) _controller.add(events);
   }
 
@@ -112,7 +112,7 @@ class ObservableState<T> extends ObservableObject {
 /// and should call notify() when the value is changed
 class ObservableObject extends ObservableBase {
   void notify() {
-    _notifyObservers([OEvent.modify("")]);
+    notifyObservers([OEvent.modify("")]);
   }
 }
 
@@ -167,7 +167,7 @@ class ObservableDict<G extends Model> extends ObservableBase {
   void set(G item) {
     bool isNew = !_dictionary.containsKey(item.id);
     _dictionary[item.id] = item;
-    _notifyObservers([
+    notifyObservers([
       if (isNew) OEvent.add(item.id) else OEvent.modify(item.id),
     ]);
   }
@@ -176,7 +176,7 @@ class ObservableDict<G extends Model> extends ObservableBase {
     for (var item in items) {
       _dictionary[item.id] = item;
     }
-    _notifyObservers([
+    notifyObservers([
       if (items.isNotEmpty) OEvent.add(items.first.id),
     ]);
   }
@@ -184,17 +184,17 @@ class ObservableDict<G extends Model> extends ObservableBase {
   void remove(String id) {
     if (_dictionary.containsKey(id)) {
       _dictionary.remove(id);
-      _notifyObservers([OEvent.remove(id)]);
+      notifyObservers([OEvent.remove(id)]);
     }
   }
 
   void clear() {
     _dictionary.clear();
-    _notifyObservers([OEvent.remove('')]);
+    notifyObservers([OEvent.remove('')]);
   }
 
   void notifyView() {
-    _notifyObservers([OEvent.modify('ignore')]);
+    notifyObservers([OEvent.modify('ignore')]);
   }
 
   List<G> get values => _dictionary.values.toList();
