@@ -4,7 +4,7 @@ import 'package:apexo/state/stores/staff/staff_store.dart';
 import 'package:apexo/version.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:logging/logging.dart';
-import './backend/utils/transitions/rotate.dart';
+import 'pages/shared/transitions/rotate.dart';
 import 'pages/login/page_login.dart';
 import './panel_aux.dart';
 import './panel_logo.dart';

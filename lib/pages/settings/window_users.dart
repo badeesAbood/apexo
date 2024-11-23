@@ -1,6 +1,6 @@
 import 'package:apexo/backend/observable/observable.dart';
 import 'package:apexo/backend/observable/observing_widget.dart';
-import 'package:apexo/backend/utils/transitions/border.dart';
+import 'package:apexo/pages/shared/transitions/border.dart';
 import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/shared/settings_list_tile.dart';
 import 'package:apexo/pages/settings/window_backups.dart';
