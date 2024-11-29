@@ -252,7 +252,7 @@ class En {
     "permissions": "User Permissions",
     "usersCanAccess": "Users can access",
     "permissionsNotice":
-        "The following permissions apply to the users listed above and offline access. However, adminstrators like you, have unrestricted access in the application, unless you're offline.",
+        "The following permissions apply to the users listed above and offline access. However, administrators like you, have unrestricted access in the application, unless you're offline.",
 
     // advanced settings: prod tests
     "prodTests": "Production tests",
