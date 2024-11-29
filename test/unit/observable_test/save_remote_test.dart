@@ -18,6 +18,8 @@ void main() {
     final saveRemote = SaveRemote(storeName: "test", pbInstance: pb);
 
     setUpAll(() async {
+      // TODO: this setup is taking too much time
+      // once the batch delete is implemented, we can use it here
       await pb.admins.authWithPassword(testPBEmail, testPBPassword);
       try {
         await pb.collections.delete("data");
