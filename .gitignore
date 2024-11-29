@@ -10,6 +10,8 @@
 .svn/
 migrate_working_dir/
 stest.dart
+apexo-files/
+test/secret.dart
 
 # IntelliJ related
 *.iml
