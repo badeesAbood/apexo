@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:apexo/backend/utils/safe_dir.dart';
 import 'package:apexo/backend/utils/hash.dart';
-import 'package:apexo/backend/utils/imgs.dart';
 import 'package:apexo/backend/utils/logger.dart';
+import 'package:apexo/backend/utils/safe_hive_init.dart';
 import 'package:apexo/state/state.dart';
-import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:path_provider/path_provider.dart';
 import './model.dart';
 
 /// This file introduces 5 types of observable objects
@@ -39,7 +38,7 @@ class OEvent {
 class ObservableBase {
   ObservableBase() {
     _stream.listen((events) {
-      for (var observer in _observers) {
+      for (var observer in observers) {
         try {
           observer(events);
         } catch (e, s) {
@@ -50,7 +49,7 @@ class ObservableBase {
   }
 
   final StreamController<List<OEvent>> _controller = StreamController<List<OEvent>>.broadcast();
-  final List<OEventCallback> _observers = [];
+  final List<OEventCallback> observers = [];
   Stream<List<OEvent>> get _stream => _controller.stream;
   double _silent = 0;
 
@@ -59,21 +58,21 @@ class ObservableBase {
   }
 
   int observe(OEventCallback callback) {
-    int existing = _observers.indexWhere((o) => o == callback);
+    int existing = observers.indexWhere((o) => o == callback);
     if (existing > -1) {
       return existing;
     }
-    _observers.add(callback);
-    return _observers.length - 1;
+    observers.add(callback);
+    return observers.length - 1;
   }
 
   void unObserve(OEventCallback callback) {
-    _observers.removeWhere((existing) => existing == callback);
+    observers.removeWhere((existing) => existing == callback);
   }
 
   void dispose() {
     _silent = double.maxFinite;
-    _observers.clear();
+    observers.clear();
     if (!_controller.isClosed) {
       _controller.close();
     }
@@ -112,7 +111,7 @@ class ObservableState<T> extends ObservableObject {
 /// and should call notify() when the value is changed
 class ObservableObject extends ObservableBase {
   void notify() {
-    notifyObservers([OEvent.modify("")]);
+    notifyObservers([OEvent.modify("__self__")]);
   }
 }
 
@@ -122,10 +121,8 @@ class ObservableObject extends ObservableBase {
 abstract class ObservablePersistingObject extends ObservableObject {
   ObservablePersistingObject(this.identifier) {
     box = () async {
-      await Hive.initFlutter();
-      final appDir = kIsWeb ? "/" : (await getApplicationDocumentsDirectory()).path;
-      final dir = "$appDir/$baseDir";
-      return Hive.openBox<String>(identifier + simpleHash(state.url), path: dir);
+      await safeHiveInit();
+      return Hive.openBox<String>(identifier + simpleHash(state.url), path: await filesDir());
     }();
     _initialLoad();
   }
@@ -176,9 +173,7 @@ class ObservableDict<G extends Model> extends ObservableBase {
     for (var item in items) {
       _dictionary[item.id] = item;
     }
-    notifyObservers([
-      if (items.isNotEmpty) OEvent.add(items.first.id),
-    ]);
+    notifyObservers(items.map((e) => OEvent.add(e.id)).toList());
   }
 
   void remove(String id) {
@@ -190,11 +185,11 @@ class ObservableDict<G extends Model> extends ObservableBase {
 
   void clear() {
     _dictionary.clear();
-    notifyObservers([OEvent.remove('')]);
+    notifyObservers([OEvent.remove('__removed_all__')]);
   }
 
   void notifyView() {
-    notifyObservers([OEvent.modify('ignore')]);
+    notifyObservers([OEvent.modify('__ignore_view__')]);
   }
 
   List<G> get values => _dictionary.values.toList();
