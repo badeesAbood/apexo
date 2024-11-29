@@ -28,11 +28,11 @@ class Labworks extends Store<Labwork> {
       await loaded;
 
       local = SaveLocal(_storeName);
-      await loadFromLocal();
+      await deleteMemoryAndLoadFromPersistence();
 
       remote = SaveRemote(
-        pb: state.pb!,
-        store: _storeName,
+        pbInstance: state.pb!,
+        storeName: _storeName,
         onOnlineStatusChange: (current) {
           if (state.isOnline != current) {
             state.isOnline = current;

@@ -4,6 +4,7 @@ import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/state/state.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:http/http.dart';
 
 import 'model.dart';
 import 'observable.dart';
@@ -25,6 +26,18 @@ class SyncResult {
   }
 }
 
+/// A class that represents a store of documents
+/// This implements observableDict
+/// but adds ability to persist data as well as synchronize it with a remote server
+// ignore: slash_for_doc_comments
+/**
+      ----------------                              ----------------
+      |              |                              |              |
+      |    Remote    | <----> ObservableDict <----> |    Local     |
+      |  saveRemote  |                              |  saveLocal   |
+      ----------------                              ----------------
+ */
+
 class Store<G extends Model> {
   late Future<void> loaded;
   final Function? onSyncStart;
@@ -39,23 +52,31 @@ class Store<G extends Model> {
   late ModellingFunc<G> modeling;
   bool deferredPresent = false;
   int lastProcessChanges = 0;
+  bool? manualSyncOnly;
 
-  Store({required this.modeling, this.local, this.remote, this.debounceMS = 100, this.onSyncStart, this.onSyncEnd})
-      : observableObject = ObservableDict() {
+  Store({
+    required this.modeling,
+    this.local,
+    this.remote,
+    this.debounceMS = 100,
+    this.onSyncStart,
+    this.onSyncEnd,
+    this.manualSyncOnly,
+  }) : observableObject = ObservableDict() {
     // setting up debouncer
     _debouncer = Debouncer(
       milliseconds: debounceMS,
     );
 
     // loading from local
-    loaded = loadFromLocal();
+    loaded = deleteMemoryAndLoadFromPersistence();
   }
 
   @mustCallSuper
   void init() {
     // setting up observers
     observableObject.observe((events) {
-      if (events[0].type == EventType.modify && events[0].id == "ignore") {
+      if (events[0].type == EventType.modify && events[0].id == "__ignore_view__") {
         // this is a view change not a storage change
         return;
       }
@@ -67,7 +88,10 @@ class Store<G extends Model> {
     });
   }
 
-  Future<void> loadFromLocal() async {
+  /// reloads the store from the local database
+  /// DO NOT USE THIS METHOD UNLESS YOU'RE SURE THAT THERE ARE NO CHANGES PENDING TO BE SAVED
+  /// use "reload" method instead
+  Future<void> deleteMemoryAndLoadFromPersistence() async {
     if (local == null) {
       return;
     }
@@ -133,7 +157,11 @@ class Store<G extends Model> {
         // while we have the connection lets synchronize
         // don't put "await" before synchronize() since we don't want catch the error
         // if it gets caught it means the same file will be placed in deferred
-        synchronize();
+        if (manualSyncOnly != true) {
+          // this condition is especially helpful during testing
+          // to have fine grained control over synchronization steps
+          synchronize();
+        }
         return;
       } catch (e, s) {
         logger("Error during sending (Will defer updates): $e", s);
@@ -238,7 +266,10 @@ class Store<G extends Model> {
       }
       if (toUploadFiles.isNotEmpty) {
         for (var element in toUploadFiles.entries) {
-          await remote!.uploadImages(element.key, element.value);
+          await remote!.uploadImages(
+              element.key,
+              await Future.wait(
+                  element.value.map((path) => MultipartFile.fromPath("imgs", path, filename: path.split("/").last))));
         }
       }
       if (toRemoveFiles.isNotEmpty) {
@@ -265,7 +296,7 @@ class Store<G extends Model> {
       // until the versions match
       // this is why there's another sync method below
 
-      await loadFromLocal();
+      await deleteMemoryAndLoadFromPersistence();
       return SyncResult(
           pulled: toLocalWrite.length, pushed: toRemoteWrite.length, conflicts: conflicts, exception: null);
     } catch (e, s) {
@@ -279,10 +310,10 @@ class Store<G extends Model> {
   /// Syncs the local database with the remote database
   Future<List<SyncResult>> synchronize() async {
     // on first sync, we need to set up the realtime subscription
-    if (remote != null && realtimeIsSet == false) {
+    if (remote != null && realtimeIsSet == false && manualSyncOnly != true) {
       realtimeIsSet = true; // prevent multiple subscriptions
-      remote?.pb.collection(collectionName).subscribe("*", (msg) {
-        if (msg.record?.data["store"] == remote?.store) {
+      remote?.pbInstance.collection(dataCollectionName).subscribe("*", (msg) {
+        if (msg.record?.data["store"] == remote?.storeName) {
           synchronize();
         }
       }).catchError((e, s) {
@@ -301,8 +332,9 @@ class Store<G extends Model> {
     }
     onSyncEnd?.call();
     return tries;
-  } //// Returns true if the local database is in sync with the remote database
+  }
 
+  //// Returns true if the local database is in sync with the remote database
   Future<bool> inSync() async {
     try {
       if (local == null || remote == null) return false;
@@ -316,7 +348,9 @@ class Store<G extends Model> {
 
   /// Reloads the store from the local database
   Future<void> reload() async {
-    await loadFromLocal();
+    // wait for any changes to be processed, since we're going to delete the dictionary
+    await Future.delayed(Duration(milliseconds: debounceMS + 2));
+    await deleteMemoryAndLoadFromPersistence();
   }
 
   /// Returns a list of all the documents in the local database
@@ -378,7 +412,10 @@ class Store<G extends Model> {
     if (remote!.isOnline && lastDeferred.isEmpty) {
       try {
         if (upload) {
-          await remote!.uploadImages(rowID, paths);
+          await remote!.uploadImages(
+              rowID,
+              await Future.wait(
+                  paths.map((path) => MultipartFile.fromPath("imgs", path, filename: path.split("/").last))));
         } else {
           await remote!.deleteImages(rowID, paths);
         }
@@ -407,5 +444,12 @@ class Store<G extends Model> {
   /// notifies the view that the store has changed
   void notify() {
     observableObject.notifyView();
+  }
+
+  Future<void> waitUntilChangesAreProcessed() async {
+    await Future.delayed(Duration(milliseconds: debounceMS + 2));
+    while (changes.isNotEmpty) {
+      await Future.delayed(const Duration(milliseconds: 30));
+    }
   }
 }

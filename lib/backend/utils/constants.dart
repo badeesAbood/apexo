@@ -3,11 +3,11 @@ import 'package:pocketbase/pocketbase.dart';
 /// shared constants
 
 const String alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
-const String collectionName = "data";
+const String dataCollectionName = "data";
 const String publicCollectionName = "public";
 const String webImagesStore = "web-images";
-final collectionImport = CollectionModel(
-  name: collectionName,
+final dataCollectionImport = CollectionModel(
+  name: dataCollectionName,
   type: "base",
   schema: [
     SchemaField(
@@ -25,8 +25,8 @@ final collectionImport = CollectionModel(
     }),
   ],
   indexes: [
-    "CREATE INDEX `idx_get_since` ON `$collectionName` (\n  `store`,\n  `updated`\n)",
-    "CREATE INDEX `idx_get_version` ON `$collectionName` (\n  `store`,\n  `updated` DESC\n)"
+    "CREATE INDEX `idx_get_since` ON `$dataCollectionName` (\n  `store`,\n  `updated`\n)",
+    "CREATE INDEX `idx_get_version` ON `$dataCollectionName` (\n  `store`,\n  `updated` DESC\n)"
   ],
   listRule: ruleEitherLoggedOrSettings,
   viewRule: ruleEitherLoggedOrSettings,

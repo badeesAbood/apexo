@@ -45,11 +45,11 @@ class GlobalSettings extends Store<Setting> {
       await loaded;
 
       local = SaveLocal(_storeNameGlobal);
-      await loadFromLocal();
+      await deleteMemoryAndLoadFromPersistence();
 
       remote = SaveRemote(
-        pb: state.pb!,
-        store: _storeNameGlobal,
+        pbInstance: state.pb!,
+        storeName: _storeNameGlobal,
         onOnlineStatusChange: (current) {
           if (state.isOnline != current) {
             state.isOnline = current;

@@ -1,14 +1,13 @@
 import 'dart:io';
 import 'package:apexo/backend/utils/constants.dart';
+import 'package:apexo/backend/utils/safe_dir.dart';
 import 'package:apexo/backend/utils/strip_id_from_file.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
-
-const baseDir = "apexo-data";
 
 Future<void> createDirectory(String path) async {
   final Directory dir = Directory(path);
@@ -20,15 +19,13 @@ Future<void> createDirectory(String path) async {
 }
 
 Future<bool> checkIfFileExists(String name) async {
-  final appDir = (await getApplicationDocumentsDirectory()).path;
-  final File file = File('$appDir/$baseDir/$name');
+  final File file = File(join(await filesDir(), name));
   return await file.exists();
 }
 
 Future<File> getOrCreateFile(String name) async {
-  final appDir = (await getApplicationDocumentsDirectory()).path;
-  await createDirectory("$appDir/$baseDir");
-  return File('$appDir/$baseDir/$name');
+  await createDirectory(await filesDir());
+  return File(join(await filesDir(), name));
 }
 
 Future<ImageProvider> getImage(String name) async {

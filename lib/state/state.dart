@@ -69,10 +69,9 @@ class State extends ObservablePersistingObject {
     isSyncing++;
     try {
       while (imagesToDownload.isNotEmpty) {
-        await saveImageFromUrl(imagesToDownload.first);
-        if (imagesToDownload.isNotEmpty) {
-          imagesToDownload.removeAt(0);
-        }
+        final targetURL = imagesToDownload.first;
+        await saveImageFromUrl(targetURL);
+        imagesToDownload.removeWhere((element) => element == targetURL);
         notify();
       }
     } catch (e, s) {
@@ -178,31 +177,14 @@ class State extends ObservablePersistingObject {
         }
 
         // create database if it doesn't exist
-        // A. "data" database
         try {
           try {
-            await pb!.collections.getOne(collectionName);
-          } catch (e) {
-            if (isAdmin) {
-              await pb!.collections.import([collectionImport]);
-              await pb!.collections.update("users", body: {"createRule": null});
-            } else {
-              logger(
-                "ERROR: The needed database can not be created because the logged-in user is not admin.",
-                StackTrace.current,
-              );
-            }
-          }
-        } catch (e) {
-          throw Exception("Error while creating the collection for the first time: $e");
-        }
-        // B. "public" database
-        try {
-          try {
+            await pb!.collections.getOne(dataCollectionName);
             await pb!.collections.getOne(publicCollectionName);
           } catch (e) {
             if (isAdmin) {
-              await pb!.collections.import([publicCollectionImport]);
+              await pb!.collections.import([dataCollectionImport, publicCollectionImport]);
+              await pb!.collections.update("users", body: {"createRule": null});
             } else {
               logger(
                 "ERROR: The needed database can not be created because the logged-in user is not admin.",

@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:apexo/backend/utils/safe_dir.dart';
 import 'package:apexo/backend/utils/hash.dart';
-import 'package:apexo/backend/utils/imgs.dart';
+import 'package:apexo/backend/utils/safe_hive_init.dart';
 import 'package:apexo/state/state.dart';
-import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:path_provider/path_provider.dart';
 
 // Constants for metadata keys
 const String _versionKey = 'meta:version';
@@ -18,28 +17,26 @@ typedef ClearingFunction = Future<void> Function();
 // SaveLocal class for managing local storage operations
 class SaveLocal {
   final String name;
-  late final Future<Box<String>> _mainBox;
-  late final Future<Box<String>> _metaBox;
+  late final Future<Box<String>> mainHiveBox;
+  late final Future<Box<String>> metaHiveBox;
 
   SaveLocal(this.name) {
-    _mainBox = initialize("$name-main");
-    _metaBox = initialize("$name-meta");
+    mainHiveBox = initialize("$name-main");
+    metaHiveBox = initialize("$name-meta");
     removeAllLocalData.add(() async {
       await clear();
     });
   }
 
   Future<Box<String>> initialize(String name) async {
-    await Hive.initFlutter();
-    final appDir = kIsWeb ? "/" : (await getApplicationDocumentsDirectory()).path;
-    final dir = "$appDir/$baseDir";
-    return Hive.openBox<String>(name + simpleHash(state.url), path: dir);
+    await safeHiveInit();
+    return Hive.openBox<String>(name + simpleHash(state.url), path: await filesDir());
   }
 
   // Put entries into the main box
   Future<void> put(Map<String, String> entries) async {
     try {
-      final box = await _mainBox;
+      final box = await mainHiveBox;
       await box.putAll(entries);
     } catch (e, s) {
       throw StorageException('Failed to put entries: $e', s);
@@ -49,7 +46,7 @@ class SaveLocal {
   // Get a value from the main box
   Future<String> get(String key) async {
     try {
-      final box = await _mainBox;
+      final box = await mainHiveBox;
       return box.get(key) ?? "";
     } catch (e, s) {
       throw StorageException('Failed to get value for key $key: $e', s);
@@ -59,7 +56,7 @@ class SaveLocal {
   // Get all values from the main box
   Future<Iterable<String>> getAll() async {
     try {
-      final box = await _mainBox;
+      final box = await mainHiveBox;
       return box.values;
     } catch (e, s) {
       throw StorageException('Failed to get all values: $e', s);
@@ -69,7 +66,7 @@ class SaveLocal {
   // Get version from meta box
   Future<int> getVersion() async {
     try {
-      final Box box = await _metaBox;
+      final Box box = await metaHiveBox;
       return int.parse(box.get(_versionKey) ?? "0");
     } catch (e, s) {
       throw StorageException('Failed to get version: $e', s);
@@ -79,7 +76,7 @@ class SaveLocal {
   // Put version into meta box
   Future<void> putVersion(int versionValue) async {
     try {
-      final Box box = await _metaBox;
+      final Box box = await metaHiveBox;
       await box.put(_versionKey, versionValue.toString());
     } catch (e, s) {
       throw StorageException('Failed to put version: $e', s);
@@ -89,7 +86,7 @@ class SaveLocal {
   // Get deferred data from meta box
   Future<Map<String, int>> getDeferred() async {
     try {
-      final Box box = await _metaBox;
+      final Box box = await metaHiveBox;
       final jsonString = box.get(_deferredKey) ?? "{}";
       return Map<String, int>.from(jsonDecode(jsonString));
     } catch (e, s) {
@@ -100,7 +97,7 @@ class SaveLocal {
   // Put deferred data into meta box
   Future<void> putDeferred(Map<String, int> deferred) async {
     try {
-      final Box box = await _metaBox;
+      final Box box = await metaHiveBox;
       await box.put(_deferredKey, jsonEncode(deferred));
     } catch (e, s) {
       throw StorageException('Failed to put deferred data: $e', s);
@@ -109,8 +106,10 @@ class SaveLocal {
 
   Future<void> clear() async {
     try {
-      final mainBox = await _mainBox;
-      final metaBox = await _metaBox;
+      final mainBox = await mainHiveBox;
+      final metaBox = await metaHiveBox;
+      await putVersion(0);
+      await putDeferred({});
       await mainBox.clear();
       await metaBox.clear();
     } catch (e, s) {
