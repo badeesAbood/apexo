@@ -177,6 +177,23 @@ class En {
     "unpaid": "Unpaid",
     "noSuggestions": "No suggestions",
 
+    // expenses
+    "expense": "Expense",
+    "expenses": "Expenses",
+    "receipt": "Receipt",
+    "title": "Title",
+    "cost": "Cost",
+    "issuer": "Issuer",
+    "amount": "Amount",
+    "amountIn": "Amount in",
+    "status": "Status",
+    "due": "Due",
+    "receiptTitle": "Receipt title",
+    "receiptNotes": "Receipt notes",
+    "newReceipt": "New receipt",
+    "receiptTags": "Receipt tags",
+    "receiptItems": "Receipt items",
+
     // stats
     "pickRange": "Pick range",
     "start": "Start",
@@ -186,7 +203,7 @@ class En {
     "quarters": "Quarters",
     "years": "Years",
     "appointmentsPer": "Appointments per",
-    "paymentsPer": "Payments per",
+    "paymentsAndExpensesPer": "Payments and expenses per",
     "newPatientsPer": "New patients per",
     "doneMissedPer": "Done & Missed per",
     "timeOfDay": "Time of day",

@@ -13,7 +13,7 @@ class Labwork extends Model {
       "Laboratory": lab,
       "Month": DateFormat("MMM yyyy", locale.s.$code).format(date),
       "Patient": patient?.title ?? "Unknown",
-      "Paid": paid ? txt("paid") : txt("unpaid"),
+      "Paid": paid ? txt("paid") : txt("due"),
       "doctors": operators.map((e) => e.title).join(", "),
     };
   }

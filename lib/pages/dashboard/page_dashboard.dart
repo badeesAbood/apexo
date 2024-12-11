@@ -110,7 +110,7 @@ class PageDashboard extends ObservingWidget {
           content: Text(dashboardMessage),
         ),
       ),
-      if (permissions.list[4] || state.isAdmin) ...[buildTopSquares(), buildDashboardCharts()]
+      if (permissions.list[5] || state.isAdmin) ...[buildTopSquares(), buildDashboardCharts()]
     ]);
   }
 

@@ -47,12 +47,15 @@ class PageStats extends ObservingWidget {
                   FluentIcons.date_time,
                 ),
                 chartWindow(
-                  "${txt("paymentsPer")} ${txt(chartsState.intervalString.toLowerCase())}",
+                  "${txt("paymentsAndExpensesPer")} ${txt(chartsState.intervalString.toLowerCase())}",
                   "${txt("total")}: ${chartsState.groupedPayments.reduce((v, e) => v += e)} ${globalSettings.get("currency_______")?.value} ${txt("in_Duration_")} ${chartsState.periods.length} ${txt(chartsState.intervalString.toLowerCase())}",
                   StyledLineChart(
                     labels: chartsState.periods.map((p) => p.label).toList(),
-                    datasets: [chartsState.groupedPayments.toList()],
-                    datasetLabels: ["${globalSettings.get("currency_______")?.value}"],
+                    datasets: [chartsState.groupedPayments.toList(), chartsState.groupedExpenses.toList()],
+                    datasetLabels: [
+                      "${txt("payments")} ${globalSettings.get("currency_______")?.value}",
+                      "${txt("expenses")} ${globalSettings.get("currency_______")?.value}"
+                    ],
                   ),
                   FluentIcons.currency,
                 ),

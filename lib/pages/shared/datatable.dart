@@ -26,6 +26,7 @@ class DataTable<Item extends Model> extends StatefulWidget {
   final List<DataTableAction> actions;
   final void Function(Item) onSelect;
   final List<Widget> furtherActions;
+  final bool compact;
 
   const DataTable({
     super.key,
@@ -33,6 +34,7 @@ class DataTable<Item extends Model> extends StatefulWidget {
     required this.actions,
     required this.onSelect,
     this.furtherActions = const [],
+    this.compact = false,
   });
 
   @override
@@ -87,10 +89,6 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     }
     return candidates;
   }
-
-  // TODO: make totals appear here on data table
-  // TODO: instead of labworks make "receipts"
-  // issuer: phone number
 
   List<Item> get sortedItems {
     List<Item> result = List<Item>.from(filteredItems);
@@ -203,8 +201,9 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
 
   _buildSingleItem(Item item, bool isChecked) {
     return Padding(
-      padding: const EdgeInsets.all(1.5),
+      padding: widget.compact ? EdgeInsets.zero : const EdgeInsets.symmetric(vertical: 1.5),
       child: Acrylic(
+        elevation: 1,
         child: ListTile(
           contentPadding: const EdgeInsets.all(0),
           title: Container(
@@ -214,9 +213,9 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
             ),
             child: Row(
               children: [
-                const Divider(direction: Axis.vertical, size: 45),
+                Divider(direction: Axis.vertical, size: widget.compact ? 1 : 45),
                 _buildInnerRow(item),
-                const Divider(direction: Axis.vertical, size: 45),
+                Divider(direction: Axis.vertical, size: widget.compact ? 1 : 45),
               ],
             ),
           ),
@@ -237,11 +236,11 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: widget.compact ? const EdgeInsets.all(0) : const EdgeInsets.all(8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AcrylicTitle(key: Key(item.id), radius: 20, item: item),
+              AcrylicTitle(key: Key(item.id), radius: widget.compact ? 1 : 20, item: item),
               ...nonEmptyLabels.map((labelTitle) => _buildLabelPill(
                   labelTitle, item, colorsWithoutYellow[getCycledNumber(nonEmptyLabels.indexOf(labelTitle))]))
             ],
@@ -336,11 +335,20 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
             SizedBox(
               width: 165,
               child: CupertinoTextField(
-                key: WK.dataTableSearch,
-                controller: searchTerm,
-                placeholder: txt("searchPlaceholder"),
-                onChanged: setSearchTerm,
-              ),
+                  key: WK.dataTableSearch,
+                  controller: searchTerm,
+                  placeholder: txt("searchPlaceholder"),
+                  onChanged: setSearchTerm,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      gradient: LinearGradient(
+                        end: AlignmentDirectional.topStart,
+                        begin: AlignmentDirectional.bottomEnd,
+                        colors: [
+                          Colors.white.withOpacity(0.1),
+                          Colors.white,
+                        ],
+                      ))),
             ),
             ...widget.furtherActions.map((a) => a)
           ],

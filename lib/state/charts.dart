@@ -2,6 +2,8 @@ import 'package:apexo/backend/observable/observable.dart';
 import 'package:apexo/i18/index.dart';
 import 'package:apexo/state/stores/appointments/appointment_model.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
+import 'package:apexo/state/stores/expenses/expenses_model.dart';
+import 'package:apexo/state/stores/expenses/expenses_store.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:intl/intl.dart';
@@ -37,6 +39,16 @@ class _StatsPageState extends ObservableObject {
     return res..sort((a, b) => a.date().compareTo(b.date()));
   }
 
+  List<Expense> get filteredReceipts {
+    List<Expense> res = [];
+    for (var receipt in expenses.present.values) {
+      if (receipt.date.isAfter(end)) continue;
+      if (receipt.date.isBefore(start)) continue;
+      res.add(receipt);
+    }
+    return res..sort((a, b) => a.date.compareTo(b.date));
+  }
+
   List<List<Appointment>> get groupedAppointments {
     List<List<Appointment>> res = [];
     for (var period in periods) {
@@ -61,6 +73,20 @@ class _StatsPageState extends ObservableObject {
         payment += appointment.paid;
       }
       res.add(payment);
+    }
+    return res;
+  }
+
+  List<double> get groupedExpenses {
+    List<double> res = [];
+    for (var period in periods) {
+      double expense = 0;
+      for (var receipt in filteredReceipts) {
+        if (receipt.date.isAfter(period.end)) break;
+        if (receipt.date.isBefore(period.start)) continue;
+        expense += receipt.amount;
+      }
+      res.add(expense);
     }
     return res;
   }

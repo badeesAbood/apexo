@@ -21,7 +21,7 @@ class GlobalSettings extends Store<Setting> {
   Map<String, String> defaults = {
     "currency_______": "USD",
     "phone__________": "1234567890",
-    "permissions____": jsonEncode([false, true, true, true, false]),
+    "permissions____": jsonEncode([false, true, true, true, true, false]),
     "start_day_of_wk": "monday",
   };
 

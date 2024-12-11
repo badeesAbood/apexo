@@ -11,6 +11,7 @@ class WK {
   static const calendarPage = Key("calendarPage");
   static const labworksPage = Key("labworksPage");
   static const settingsPage = Key("settingsPage");
+  static const expensesPage = Key("expensesPage");
   static const serverField = Key("serverField");
   static const emailField = Key("emailField");
   static const passwordField = Key("passwordField");
@@ -64,6 +65,14 @@ class WK {
   static const fieldLabworkPaidToggle = Key("fieldLabworkPaidToggle");
   static const fieldLabworkLabName = Key("fieldLabworkLabName");
   static const fieldLabworkPhoneNumber = Key("fieldLabworkPhoneNumber");
+  static const fieldReceiptTitle = Key("fieldReceiptTitle");
+  static const fieldReceiptDate = Key("fieldReceiptDate");
+  static const fieldReceiptNotes = Key("fieldReceiptNotes");
+  static const fieldReceiptAmount = Key("fieldReceiptAmount");
+  static const fieldReceiptPaidToggle = Key("fieldReceiptPaidToggle");
+  static const fieldReceiptIssuer = Key("fieldReceiptIssuer");
+  static const fieldReceiptTags = Key("fieldReceiptTags");
+  static const fieldReceiptItems = Key("fieldReceiptItems");
   static const acCheckBox = Key("acCheckBox");
   static const acDate = Key("acDate");
   static const acSideIcons = Key("acSideIcons");

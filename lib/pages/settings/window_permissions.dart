@@ -13,7 +13,7 @@ class PermissionsWindow extends ObservingWidget {
     super.key,
   });
 
-  List<String> permissionsTitles = const ["staff", "patients", "appointments", "labworks", "statistics"];
+  List<String> permissionsTitles = const ["staff", "patients", "appointments", "labworks", "expenses", "statistics"];
 
   @override
   Widget build(BuildContext context) {

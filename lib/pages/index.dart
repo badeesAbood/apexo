@@ -1,5 +1,6 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:apexo/pages/dashboard/page_dashboard.dart';
+import 'package:apexo/pages/expenses/page_expenses.dart';
 import 'package:apexo/pages/labwork/page_labwork.dart';
 import 'package:apexo/pages/patients/page_patients.dart';
 import 'package:apexo/pages/stats/page_stats.dart';
@@ -9,6 +10,8 @@ import 'package:apexo/state/charts.dart';
 import 'package:apexo/state/permissions.dart';
 import 'package:apexo/state/state.dart';
 import 'package:apexo/state/stores/appointments/appointment_model.dart';
+import 'package:apexo/state/stores/expenses/expenses_model.dart';
+import 'package:apexo/state/stores/expenses/expenses_store.dart';
 import 'package:apexo/state/stores/labworks/labwork_model.dart';
 import 'package:apexo/state/stores/labworks/labworks_store.dart';
 import 'package:apexo/state/stores/patients/patient_model.dart';
@@ -106,11 +109,21 @@ class Pages extends ObservableObject {
           },
         ),
         Page(
+          title: txt("expenses"),
+          identifier: "expenses",
+          icon: FluentIcons.receipt_processing,
+          body: ExpensesPage.new,
+          accessible: permissions.list[4] || state.isAdmin,
+          onSelect: () {
+            expenses.synchronize();
+          },
+        ),
+        Page(
           title: txt("statistics"),
           identifier: "statistics",
           icon: FluentIcons.chart,
           body: PageStats.new,
-          accessible: permissions.list[4] || state.isAdmin,
+          accessible: permissions.list[5] || state.isAdmin,
           onSelect: () {
             chartsState.resetSelected();
             patients.synchronize();
@@ -144,6 +157,7 @@ class Pages extends ObservableObject {
   Appointment openAppointment = Appointment.fromJson({});
   Member openMember = Member.fromJson({});
   Labwork openLabwork = Labwork.fromJson({});
+  Expense openExpense = Expense.fromJson({});
 
   int selectedTabInSheet = 0;
 

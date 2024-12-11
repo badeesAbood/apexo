@@ -87,6 +87,7 @@ class StyledLineChart extends StatelessWidget {
   }
 
   T getDeterministicItem<T>(List<T> items, String input) {
+    input = input.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
     int hash = utf8.encode(input).fold(0, (prev, element) => prev + element);
     int index = hash % items.length;
     return items[index];

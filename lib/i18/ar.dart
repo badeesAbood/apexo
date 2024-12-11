@@ -175,6 +175,23 @@ class Ar implements En {
     "unpaid": "غير مدفوع",
     "noSuggestions": "لا توجد اقتراحات",
 
+    // expenses
+    "expense": "مصروف",
+    "expenses": "مصاريف",
+    "receipt": "وصل",
+    "title": "العنوان",
+    "cost": "التكلفة",
+    "issuer": "البائع",
+    "amount": "القيمة",
+    "amountIn": "المبلغ بـ",
+    "status": "حالة الدفع",
+    "due": "مستحق",
+    "receiptTitle": "عنوان الوصل",
+    "receiptNotes": "ملاحظات الوصل",
+    "newReceipt": "وصل جديد",
+    "receiptTags": "العلامات المرتبطة بالوصل",
+    "receiptItems": "عناصر الوصل",
+
     // stats
     "pickRange": "اختيار النطاق",
     "start": "بداية",
@@ -184,7 +201,7 @@ class Ar implements En {
     "quarters": "ربع سنوي",
     "years": "سنوات",
     "appointmentsPer": "المواعيد بحسب",
-    "paymentsPer": "المدفوعات بحسب",
+    "paymentsAndExpensesPer": "المدفوعات والمصاريف بحسب",
     "newPatientsPer": "المرضى الجدد بحسب",
     "doneMissedPer": "المنجز والمفقود بحسب",
     "timeOfDay": "أوقات اليوم",

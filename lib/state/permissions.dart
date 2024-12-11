@@ -6,8 +6,8 @@ import 'package:apexo/pages/index.dart';
 import 'package:apexo/state/state.dart';
 
 class Permissions extends ObservablePersistingObject {
-  List<bool> list = [false, false, false, false, false];
-  List<bool> editingList = [false, false, false, false, false];
+  List<bool> list = [false, false, false, false, false, false];
+  List<bool> editingList = [false, false, false, false, false, false];
 
   bool get edited {
     return jsonEncode(editingList) != jsonEncode(list);
@@ -36,6 +36,7 @@ class Permissions extends ObservablePersistingObject {
   }
 
   Future<void> reloadFromRemote() async {
+    final initialNumberOfPermissions = list.length;
     if (state.pb == null || state.token.isEmpty || state.pb!.authStore.isValid == false) {
       return;
     }
@@ -43,6 +44,10 @@ class Permissions extends ObservablePersistingObject {
     try {
       list = List<bool>.from(
           jsonDecode((await state.pb!.collection("data").getOne("permissions____")).getDataValue("data")["value"]));
+      // to make things backward compatible we need to check the length and add missing permissions
+      if (list.length < initialNumberOfPermissions) {
+        list.addAll(List.generate(initialNumberOfPermissions - list.length, (index) => false));
+      }
       editingList = [...list];
     } catch (e, s) {
       logger("Error when getting full list of permissions service: $e", s);
@@ -56,7 +61,13 @@ class Permissions extends ObservablePersistingObject {
 
   @override
   fromJson(Map<String, dynamic> json) {
+    final initialNumberOfPermissions = list.length;
     list = json["list"] == null ? [] : List<bool>.from(json["list"]);
+    // to make things backward compatible we need to check the length and add missing permissions
+    if (list.length < initialNumberOfPermissions) {
+      list.addAll(List.generate(initialNumberOfPermissions - list.length, (index) => false));
+    }
+    editingList = [...list];
     pages.notify();
     reloadFromRemote();
   }

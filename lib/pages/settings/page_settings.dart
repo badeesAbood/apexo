@@ -80,7 +80,9 @@ class SettingsPage extends ObservingWidget {
               scope: Scope.app,
               options:
                   StartingDayOfWeek.values.map((e) => ComboBoxItem(value: e.name, child: Text(txt(e.name)))).toList(),
-              value: globalSettings.get("start_day_of_wk")!.value,
+              value: globalSettings
+                  .get("start_day_of_wk")!
+                  .value, // TODO: bug: run fresh, proceed offline, and move to settings page
               apply: (newVal) => globalSettings.set(Setting.fromJson({"id": "start_day_of_wk", "value": newVal})),
             ),
             SettingsItem(
