@@ -3,6 +3,7 @@ import 'package:apexo/pages/patients/modal_patient.dart';
 import 'package:apexo/pages/shared/tag_input.dart';
 import 'package:apexo/state/stores/patients/patient_model.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
 class PatientPicker extends StatelessWidget {
@@ -13,7 +14,7 @@ class PatientPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TagInputWidget(
-      key: super.key,
+      key: WK.fieldPatient,
       onItemTap: (tag) {
         Patient? tapped = patients.get(tag.value ?? "");
         Map<String, dynamic> json = tapped != null ? tapped.toJson() : {};

@@ -16,8 +16,25 @@ bool isPositiveInt(int? value) {
 class State extends ObservablePersistingObject {
   State(super.identifier);
 
+  Map<String, void Function()> onOnline = {};
+  Map<String, void Function()> onOffline = {};
+
   int isSyncing = 0;
-  bool isOnline = false;
+  bool _isOnline = false;
+  bool get isOnline => _isOnline;
+  set isOnline(bool value) {
+    _isOnline = value;
+    if (value) {
+      for (var element in onOnline.values) {
+        element();
+      }
+    } else {
+      for (var element in onOffline.values) {
+        element();
+      }
+    }
+  }
+
   bool proceededOffline = true;
 
   bool showArchived = false;
@@ -43,6 +60,14 @@ class State extends ObservablePersistingObject {
   String email = "";
   String password = "";
   String token = "";
+  String get currentUserID {
+    if (token.isEmpty) return "";
+    if (pb == null) return "";
+    if (pb!.authStore.model == null) return "";
+    if (pb!.authStore.model is AdminModel) return (pb!.authStore.model as AdminModel).id;
+    if (pb!.authStore.model is RecordModel) return (pb!.authStore.model as RecordModel).id;
+    return "";
+  }
 
   // PocketBase instance
   PocketBase? pb;
@@ -151,7 +176,7 @@ class State extends ObservablePersistingObject {
 
   /// run a series of callbacks that would require the login credentials to be active
   activate(String inputURL, List<String> credentials, bool online) async {
-    if (pb == null || pb?.baseUrl.isEmpty == true) {
+    if ((pb == null || pb?.baseUrl.isEmpty == true) || !loginActive) {
       pb = PocketBase(inputURL);
     }
 

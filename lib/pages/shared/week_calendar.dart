@@ -4,6 +4,7 @@ import 'package:apexo/backend/observable/observable.dart';
 import 'package:apexo/i18/index.dart';
 import 'package:apexo/state/stores/appointments/appointment_model.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Card;
 import 'package:flutter/material.dart' show showTimePicker, TimeOfDay, Card;
 import 'package:intl/intl.dart' as intl;
@@ -190,82 +191,21 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
           );
         },
         defaultBuilder: (context, day, focusedDay) {
-          return Container(
-            margin: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [Colors.grey.withOpacity(0.02), Colors.grey.withOpacity(0.05)]),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(intl.DateFormat("d", locale.s.$code).format(day)),
-            ),
-          );
+          return DayCell(day: day, type: DayCellType.normal);
         },
         todayBuilder: (context, day, focusedDay) {
-          return Container(
-            margin: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [
-                colorsWithoutYellow[day.weekday - 1].withOpacity(0.1),
-                colorsWithoutYellow[day.weekday - 1].withOpacity(0.2)
-              ]),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                intl.DateFormat("d", locale.s.$code).format(day),
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-          );
+          return DayCell(day: day, type: DayCellType.today);
         },
         selectedBuilder: (context, day, focusedDay) {
-          return Container(
-            margin: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [colorsWithoutYellow[day.weekday - 1], colorsWithoutYellow[day.weekday - 1].lighter]),
-                shape: BoxShape.circle,
-                boxShadow: kElevationToShadow[2]),
-            child: Center(
-              child: Text(
-                intl.DateFormat("d", locale.s.$code).format(day),
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-          );
+          return DayCell(day: day, type: DayCellType.selected);
         },
         markerBuilder: (context, day, events) {
-          return events.isEmpty ? null : _buildEventsNum(events, day);
+          return events.isEmpty ? null : AppointmentsNumberIndicator(events: events, day: day);
         },
       ),
       onDaySelected: (newDate, focusedDay) {
         setState(() => selectedDate = newDate);
       },
-    );
-  }
-
-  Text _buildEventsNum(List<Object?> events, DateTime day) {
-    return Text(
-      events.length.toString(),
-      style: TextStyle(
-        fontStyle: FontStyle.italic,
-        fontWeight: FontWeight.bold,
-        fontSize: 10,
-        color: Colors.white,
-        shadows: [
-          ...kElevationToShadow[1]!,
-          Shadow(color: Colors.black.withOpacity(0.5), blurRadius: 2, offset: const Offset(0, 0)),
-          Shadow(color: Colors.black.withOpacity(0.5), blurRadius: 15, offset: const Offset(0, 0)),
-          ...List.generate(
-            10,
-            (index) => Shadow(
-                color:
-                    colorsWithoutYellow[day.weekday - 1].withOpacity(min(roundToPrecision(events.length / 30, 2), 1)),
-                blurRadius: 1),
-          )
-        ],
-      ),
     );
   }
 
@@ -280,13 +220,15 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
           Item item = sortedItems[index];
           return Padding(
             padding: const EdgeInsets.all(1),
-            child: _buildAppointmentTile(
+            child: AppointmentCalendarTile<Item>(
+              key: WK.calendarAppointmentTile,
+              context: context,
               item: item,
-              onSetTime: (item) {
-                widget.onSetTime(item);
-              },
               onSelect: (item) {
                 widget.onSelect(item);
+              },
+              onSetTime: (item) {
+                widget.onSetTime(item);
               },
             ),
           );
@@ -327,12 +269,106 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
       ),
     );
   }
+}
 
-  _buildAppointmentTile({
-    required Item item,
-    required void Function(Item item) onSetTime,
-    required void Function(Item item) onSelect,
-  }) {
+class AppointmentsNumberIndicator extends StatelessWidget {
+  final List<Object?> events;
+  final DateTime day;
+  const AppointmentsNumberIndicator({
+    super.key,
+    required this.events,
+    required this.day,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      events.length.toString(),
+      style: TextStyle(
+        fontStyle: FontStyle.italic,
+        fontWeight: FontWeight.bold,
+        fontSize: 10,
+        color: Colors.white,
+        shadows: [
+          ...kElevationToShadow[1]!,
+          Shadow(color: Colors.black.withOpacity(0.5), blurRadius: 2, offset: const Offset(0, 0)),
+          Shadow(color: Colors.black.withOpacity(0.5), blurRadius: 15, offset: const Offset(0, 0)),
+          ...List.generate(
+            10,
+            (index) => Shadow(
+                color:
+                    colorsWithoutYellow[day.weekday - 1].withOpacity(min(roundToPrecision(events.length / 30, 2), 1)),
+                blurRadius: 1),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+enum DayCellType {
+  today,
+  selected,
+  normal,
+}
+
+class DayCell extends StatelessWidget {
+  final DateTime day;
+  final DayCellType type;
+  const DayCell({
+    super.key,
+    required this.day,
+    required this.type,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: type == DayCellType.normal
+              ? [
+                  Colors.grey.withOpacity(0.02),
+                  Colors.grey.withOpacity(0.05),
+                ]
+              : type == DayCellType.today
+                  ? [
+                      colorsWithoutYellow[day.weekday - 1].withOpacity(0.1),
+                      colorsWithoutYellow[day.weekday - 1].withOpacity(0.2),
+                    ]
+                  : [
+                      colorsWithoutYellow[day.weekday - 1],
+                      colorsWithoutYellow[day.weekday - 1].lighter,
+                    ],
+        ),
+        shape: BoxShape.circle,
+        boxShadow: type == DayCellType.selected ? kElevationToShadow[2] : null,
+      ),
+      child: Center(
+        child: Text(intl.DateFormat("d", locale.s.$code).format(day),
+            style: type == DayCellType.normal ? null : const TextStyle(color: Colors.white)),
+      ),
+    );
+  }
+}
+
+class AppointmentCalendarTile<Item extends AgendaItem> extends StatelessWidget {
+  final Item item;
+  final void Function(Item item) onSetTime;
+  final void Function(Item item) onSelect;
+  const AppointmentCalendarTile({
+    super.key,
+    required this.context,
+    required this.item,
+    required this.onSetTime,
+    required this.onSelect,
+  });
+
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
     return Acrylic(
       child: ListTile(
         title: AcrylicTitle(item: item),
@@ -351,9 +387,7 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
           const SizedBox(width: 8),
           const Divider(direction: Axis.vertical, size: 40),
         ]),
-        onPressed: () {
-          onSelect(item);
-        },
+        onPressed: () => onSelect(item),
         trailing: Row(
           children: [
             const Divider(direction: Axis.vertical, size: 40),

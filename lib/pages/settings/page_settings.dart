@@ -10,6 +10,7 @@ import 'package:apexo/state/admins.dart';
 import 'package:apexo/state/backups.dart';
 import 'package:apexo/state/state.dart' as app_state;
 import 'package:apexo/state/users.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Page;
 import 'package:flutter/cupertino.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -31,6 +32,7 @@ class SettingsPage extends ObservingWidget {
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage(
+      key: WK.settingsPage,
       content: Padding(
         padding: const EdgeInsets.only(top: 10),
         child: ListView(

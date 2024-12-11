@@ -5,6 +5,7 @@ import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
 import 'package:apexo/state/stores/patients/patient_model.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide TextBox;
 import "../shared/datatable.dart";
 
@@ -20,6 +21,7 @@ class PatientPage extends ObservingWidget {
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage(
+      key: WK.patientsPage,
       padding: EdgeInsets.zero,
       content: DataTable<Patient>(
         items: patients.showing.values.toList(),

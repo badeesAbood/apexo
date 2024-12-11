@@ -1,11 +1,11 @@
 import 'package:apexo/backend/observable/save_remote.dart';
-import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/uuid.dart';
 import 'package:apexo/state/state.dart';
 import 'package:http/http.dart';
 import 'package:pocketbase/pocketbase.dart';
 import "package:test/test.dart";
 import '../../secret.dart';
+import '../../test_utils.dart';
 
 final pb = PocketBase(testPBServer);
 
@@ -20,12 +20,7 @@ void main() {
     setUpAll(() async {
       // TODO: this setup is taking too much time
       // once the batch delete is implemented, we can use it here
-      await pb.admins.authWithPassword(testPBEmail, testPBPassword);
-      try {
-        await pb.collections.delete("data");
-        // ignore: empty_catches
-      } catch (e) {}
-      await pb.collections.import([dataCollectionImport]);
+      TestUtils.resetRemoteData();
     });
 
     test("checkOnline", () async {

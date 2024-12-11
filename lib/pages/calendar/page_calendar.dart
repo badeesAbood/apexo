@@ -5,6 +5,7 @@ import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
 import 'package:apexo/state/stores/staff/staff_store.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../shared/week_calendar.dart';
@@ -23,6 +24,7 @@ class Calendar extends ObservingWidget {
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage(
+      key: WK.calendarPage,
       padding: EdgeInsets.zero,
       content: WeekAgendaCalendar<Appointment>(
         items: appointments.filtered.values.toList(),

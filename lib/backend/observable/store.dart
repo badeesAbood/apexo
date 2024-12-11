@@ -46,7 +46,7 @@ class Store<G extends Model> {
   final Set<String> changes = {};
   SaveLocal? local;
   SaveRemote? remote;
-  bool realtimeIsSet = false;
+  Future<void> Function()? realtimeSub;
   final int debounceMS;
   late Debouncer _debouncer;
   late ModellingFunc<G> modeling;
@@ -310,16 +310,27 @@ class Store<G extends Model> {
   /// Syncs the local database with the remote database
   Future<List<SyncResult>> synchronize() async {
     // on first sync, we need to set up the realtime subscription
-    if (remote != null && realtimeIsSet == false && manualSyncOnly != true) {
-      realtimeIsSet = true; // prevent multiple subscriptions
-      remote?.pbInstance.collection(dataCollectionName).subscribe("*", (msg) {
-        if (msg.record?.data["store"] == remote?.storeName) {
+    if (remote != null && realtimeSub == null && manualSyncOnly != true) {
+      try {
+        realtimeSub = await remote?.pbInstance.collection(dataCollectionName).subscribe("*", (msg) {
+          if (msg.record?.data["store"] == remote?.storeName) {
+            synchronize();
+          }
+        });
+        state.onOnline[remote!.storeName] = () {
           synchronize();
-        }
-      }).catchError((e, s) {
+        };
+        state.onOffline[remote!.storeName] = () {
+          if (realtimeSub != null) {
+            // cancel the subscription once we go offline
+            realtimeSub!();
+            // and set this to null so that we get to subscribe again when we go online
+            realtimeSub = null;
+          }
+        };
+      } catch (e, s) {
         logger("Error during realtime subscription: $e", s);
-        return () => Future<void>.value();
-      });
+      }
     }
 
     lastProcessChanges = DateTime.now().millisecondsSinceEpoch;
@@ -359,8 +370,8 @@ class Store<G extends Model> {
   }
 
   Map<String, G> get present {
-    return Map<String, G>.fromEntries(
-        docs.entries.where((entry) => state.showArchived || entry.value.archived != true));
+    return Map<String, G>.fromEntries(docs.entries
+        .where((entry) => (state.showArchived || entry.value.archived != true) && entry.value.locked != true));
   }
 
   bool has(String id) {

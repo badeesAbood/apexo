@@ -1,15 +1,12 @@
-import 'package:apexo/state/stores/labworks/labworks_store.dart';
-import 'package:apexo/state/stores/patients/patients_store.dart';
-import 'package:apexo/state/stores/staff/staff_store.dart';
+import 'package:apexo/backend/utils/init_stores.dart';
 import 'package:apexo/version.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:logging/logging.dart';
 import 'pages/shared/transitions/rotate.dart';
 import 'pages/login/page_login.dart';
 import './panel_aux.dart';
 import './panel_logo.dart';
-import './state/stores/appointments/appointments_store.dart';
-import './state/stores/settings/settings_store.dart';
 import 'i18/index.dart';
 import 'i18/en.dart';
 import 'global_actions.dart';
@@ -23,18 +20,13 @@ void main() {
     print('>>> ${record.level.name}: ${record.time}: ${record.message}');
   });
 
-  staff.init();
-  patients.init();
-  appointments.init();
-  globalSettings.init();
-  localSettings.init();
-  labworks.init();
+  initializeStores();
 
-  runApp(const MyApp());
+  runApp(const ApexoApp());
 }
 
-class MyApp extends ObservingWidget {
-  const MyApp({super.key});
+class ApexoApp extends ObservingWidget {
+  const ApexoApp({super.key});
 
   @override
   getObservableState() {
@@ -44,30 +36,33 @@ class MyApp extends ObservingWidget {
   @override
   Widget build(BuildContext context) {
     return FluentApp(
+        key: WK.fluentApp,
         locale: Locale(locale.s.$code),
         themeMode: ThemeMode.dark,
         home: Builder(
+          key: WK.builder,
           builder: (context) => PopScope(
             canPop: false,
             onPopInvoked: (_) => pages.goBack(),
             child: NavigationView(
               appBar: NavigationAppBar(
                 automaticallyImplyLeading: false,
-                title: state.loginActive ? Text(pages.currentPage.title) : const Text("Login"),
-                leading: pages.history.isEmpty ? null : const BackButton(),
+                title: state.loginActive ? Text(pages.currentPage.title) : Text(txt("login")),
+                leading: pages.history.isEmpty ? null : const BackButton(key: WK.backButton),
                 // ignore: prefer_const_constructors
-                actions: GlobalActions(),
+                actions: GlobalActions(key: WK.globalActions),
               ),
-              content: state.loginActive ? null : const Login(),
+              content: state.loginActive ? null : const Login(key: WK.loginPage),
               pane: state.loginActive != true
                   ? null
                   : NavigationPane(
-                      autoSuggestBox: const AuxiliarySection(),
+                      autoSuggestBox: const AuxiliarySection(key: WK.auxSection),
                       autoSuggestBoxReplacement: const Icon(auxiliaryIcon),
                       header: Row(
                         children: [
                           const AppLogo(),
                           Text(
+                            key: WK.version,
                             "V $version",
                             style: TextStyle(fontSize: 12, color: Colors.grey.withOpacity(0.3)),
                           )
@@ -77,6 +72,7 @@ class MyApp extends ObservingWidget {
                       displayMode: PaneDisplayMode.auto,
                       items: List<NavigationPaneItem>.from(pages.allPages.where((p) => p.onFooter != true).map(
                             (page) => PaneItem(
+                                key: Key("${page.identifier}_page_button"),
                                 icon: page.accessible ? Icon(page.icon) : const Icon(FluentIcons.lock),
                                 body: page.accessible ? (page.body)() : const SizedBox(),
                                 title: Text(page.title),

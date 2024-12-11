@@ -1,5 +1,4 @@
 import 'package:apexo/backend/observable/save_remote.dart';
-import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/uuid.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:apexo/backend/observable/store.dart';
@@ -7,6 +6,7 @@ import 'package:apexo/backend/observable/model.dart';
 import 'package:apexo/backend/observable/save_local.dart';
 import 'package:pocketbase/pocketbase.dart';
 import '../../secret.dart';
+import '../../test_utils.dart';
 
 class Person extends Model {
   String name = 'alex';
@@ -243,7 +243,6 @@ void main() {
     final PocketBase pb = PocketBase(testPBServer);
 
     setUpAll(() async {
-      await pb.admins.authWithPassword(testPBEmail, testPBPassword);
       local = SaveLocal("sync");
       remote = SaveRemote(storeName: "sync", pbInstance: pb);
     });
@@ -252,13 +251,8 @@ void main() {
       // TODO: this setup is taking too much time
       // once the batch delete is implemented, we can use it here
       await local.clear();
-      try {
-        await pb.collections.delete("data");
-      } catch (e) {
-        // ignore: avoid_print
-        print("couldn't delete data collection, maybe it doesn't exist");
-      }
-      await pb.collections.import([dataCollectionImport]);
+
+      TestUtils.resetRemoteData();
 
       store = Store<Person>(
         modeling: Person.fromJson,

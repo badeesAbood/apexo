@@ -66,6 +66,7 @@ class En {
     "doctorEmail": "Doctor email",
     "dutyDays": "Duty days",
     "addAppointment": "Add Appointment",
+    "lockToUsers": "Only the following users can view/edit this doctor's data and appointments",
 
     // days and months
     "monday": "Monday",

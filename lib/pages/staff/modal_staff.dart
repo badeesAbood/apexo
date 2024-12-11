@@ -4,9 +4,12 @@ import 'package:apexo/pages/index.dart';
 import 'package:apexo/pages/shared/appointment_card.dart';
 import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/pages/shared/tag_input.dart';
+import 'package:apexo/state/state.dart' as appState;
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
 import 'package:apexo/state/stores/staff/staff_store.dart';
 import 'package:apexo/state/stores/staff/member_model.dart';
+import 'package:apexo/state/users.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import "../shared/tabbed_modal.dart";
@@ -25,6 +28,7 @@ openSingleMember({
       onArchive: o.archived != true && editing ? () => staff.set(o..archived = true) : null,
       onRestore: o.archived == true && editing ? () => staff.set(o..archived = null) : null,
       onSave: () => staff.set(pages.openMember),
+      key: Key(o.id),
       tabs: [
         TabbedModal(
           title: title,
@@ -34,6 +38,7 @@ openSingleMember({
             InfoLabel(
               label: "${txt("doctorName")}:",
               child: CupertinoTextField(
+                key: WK.fieldDoctorName,
                 controller: TextEditingController(text: pages.openMember.title),
                 placeholder: "${txt("doctorName")}...",
                 onChanged: (val) {
@@ -44,6 +49,7 @@ openSingleMember({
             InfoLabel(
               label: "${txt("doctorEmail")}:",
               child: CupertinoTextField(
+                key: WK.fieldDoctorEmail,
                 controller: TextEditingController(text: pages.openMember.email),
                 placeholder: "${txt("doctorEmail")}...",
                 onChanged: (val) {
@@ -54,6 +60,7 @@ openSingleMember({
             InfoLabel(
               label: "${txt("dutyDays")}:",
               child: TagInputWidget(
+                key: WK.fieldDutyDays,
                 suggestions: [...allDays.map((e) => TagInputItem(value: e, label: txt(e)))],
                 onChanged: (data) {
                   pages.openMember.dutyDays = data.map((e) => e.value ?? "").where((e) => e.isNotEmpty).toList();
@@ -63,6 +70,23 @@ openSingleMember({
                 limit: 7,
               ),
             ),
+            if (appState.state.isAdmin)
+              InfoLabel(
+                label: "${txt("lockToUsers")}:",
+                child: TagInputWidget(
+                  suggestions: [...users.list.map((e) => TagInputItem(value: e.id, label: e.data["email"]))],
+                  onChanged: (data) {
+                    pages.openMember.lockToUserIDs = data.map((e) => e.value ?? "").where((e) => e.isNotEmpty).toList();
+                  },
+                  initialValue: [
+                    ...pages.openMember.lockToUserIDs.map((e) => TagInputItem(
+                        value: e,
+                        label: users.list.where((u) => u.id == e).firstOrNull?.data["email"] ?? "NOT FOUND: $e")),
+                  ],
+                  strict: true,
+                  limit: 9999,
+                ),
+              ),
           ],
         ),
         if (editing) upcomingAppointmentsTab(context),

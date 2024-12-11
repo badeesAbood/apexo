@@ -7,6 +7,7 @@ import 'package:apexo/pages/shared/patient_picker.dart';
 import 'package:apexo/state/stores/labworks/labwork_model.dart';
 import 'package:apexo/state/stores/labworks/labworks_store.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import "../shared/tabbed_modal.dart";
@@ -24,6 +25,7 @@ openSingleLabwork({
 
   final o = pages.openLabwork;
   showTabbedModal(
+      key: Key(o.id),
       context: context,
       onArchive: o.archived != true && editing ? () => labworks.set(o..archived = true) : null,
       onRestore: o.archived == true && editing ? () => labworks.set(o..archived = null) : null,
@@ -38,6 +40,7 @@ openSingleLabwork({
             InfoLabel(
               label: "${txt("labworkTitle")}:",
               child: CupertinoTextField(
+                  key: WK.fieldLabworkTitle,
                   controller: TextEditingController(text: o.title),
                   placeholder: "${txt("labworkTitle")}...",
                   onChanged: (val) {
@@ -47,6 +50,7 @@ openSingleLabwork({
             InfoLabel(
               label: "${txt("date")}:",
               child: DateTimePicker(
+                key: WK.fieldLabworkDate,
                 value: o.date,
                 onChange: (d) => o.date = d,
                 buttonText: txt("changeDate"),
@@ -73,6 +77,7 @@ openSingleLabwork({
             InfoLabel(
               label: "${txt("orderNotes")}:",
               child: CupertinoTextField(
+                key: WK.fieldLabworkOrderNotes,
                 controller: TextEditingController(text: o.note),
                 placeholder: "${txt("orderNotes")}...",
                 onChanged: (val) {
@@ -88,6 +93,7 @@ openSingleLabwork({
                   child: InfoLabel(
                     label: "${txt("priceIn")} ${globalSettings.get("currency_______")?.value}",
                     child: NumberBox(
+                      key: WK.fieldLabworkPrice,
                       style: textFieldTextStyle(),
                       clearButton: false,
                       mode: SpinButtonPlacementMode.inline,
@@ -100,6 +106,7 @@ openSingleLabwork({
                 Padding(
                   padding: const EdgeInsets.only(top: 22.5),
                   child: ToggleSwitch(
+                    key: WK.fieldLabworkPaidToggle,
                     checked: o.paid,
                     onChanged: (n) {
                       o.paid = n;
@@ -117,6 +124,7 @@ openSingleLabwork({
                   child: InfoLabel(
                     label: "${txt("laboratory")}:",
                     child: AutoSuggestBox<String>(
+                      key: WK.fieldLabworkLabName,
                       style: textFieldTextStyle(),
                       decoration: textFieldDecoration(),
                       clearButtonEnabled: false,
@@ -145,6 +153,7 @@ openSingleLabwork({
                   child: InfoLabel(
                     label: "${txt("phone")}:",
                     child: AutoSuggestBox<String>(
+                      key: WK.fieldLabworkPhoneNumber,
                       style: textFieldTextStyle(),
                       decoration: textFieldDecoration(),
                       clearButtonEnabled: false,

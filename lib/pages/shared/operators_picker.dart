@@ -3,6 +3,7 @@ import 'package:apexo/pages/staff/modal_staff.dart';
 import 'package:apexo/pages/shared/tag_input.dart';
 import 'package:apexo/state/stores/staff/member_model.dart';
 import 'package:apexo/state/stores/staff/staff_store.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
 class OperatorsPicker extends StatelessWidget {
@@ -13,6 +14,7 @@ class OperatorsPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TagInputWidget(
+      key: WK.fieldOperators,
       suggestions: staff.present.values.map((staff) => TagInputItem(value: staff.id, label: staff.title)).toList(),
       onChanged: (s) {
         onChanged(s.where((x) => x.value != null).map((x) => x.value!).toList());
@@ -24,7 +26,7 @@ class OperatorsPicker extends StatelessWidget {
         openSingleMember(
           context: context,
           json: json,
-          title: "Staff member Details",
+          title: txt("doctor"),
           onSave: staff.set,
           editing: true,
         );

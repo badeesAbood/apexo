@@ -48,7 +48,7 @@ class Labwork extends Model {
     /* 1 */ operatorsIDs = List<String>.from(json["operatorsIDs"] ?? operatorsIDs);
     /* 2 */ patientID = json["patientID"] ?? patientID;
     /* 3 */ note = json["note"] ?? note;
-    /* 4 */ price = json["price"] ?? price;
+    /* 4 */ price = double.parse((json["price"] ?? price).toString());
     /* 5 */ paid = json["paid"] ?? paid;
     /* 6 */ date = json["date"] != null ? DateTime.fromMillisecondsSinceEpoch(json["date"]) : date;
     /* 7 */ lab = json["lab"] ?? lab;

@@ -17,6 +17,7 @@ import 'package:apexo/state/stores/appointments/appointment_model.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -33,6 +34,7 @@ openSingleAppointment({
   pages.openAppointment = Appointment.fromJson(json); // reset
   final o = pages.openAppointment;
   showTabbedModal(
+      key: Key(o.id),
       context: context,
       onArchive: o.archived != true && editing ? () => appointments.set(o..archived = true) : null,
       onRestore: o.archived == true && editing ? () => appointments.set(o..archived = null) : null,
@@ -90,6 +92,7 @@ openSingleAppointment({
                 InfoLabel(
                   label: "${txt("date")}:",
                   child: DateTimePicker(
+                    key: WK.fieldAppointmentDate,
                     value: pages.openAppointment.date(),
                     onChange: (d) {
                       pages.openAppointment.date(d);
@@ -113,6 +116,7 @@ openSingleAppointment({
             InfoLabel(
               label: "${txt("time")}:",
               child: DateTimePicker(
+                key: WK.fieldAppointmentTime,
                 value: pages.openAppointment.date(),
                 onChange: (d) => pages.openAppointment.date(d),
                 buttonText: txt("changeTime"),
@@ -124,6 +128,7 @@ openSingleAppointment({
             InfoLabel(
               label: "${txt("preOperativeNotes")}:",
               child: CupertinoTextField(
+                key: WK.fieldAppointmentPreOpNotes,
                 expands: true,
                 maxLines: null,
                 controller: TextEditingController(text: pages.openAppointment.preOpNotes),
@@ -141,6 +146,7 @@ openSingleAppointment({
             InfoLabel(
               label: "${txt("postOperativeNotes")}:",
               child: CupertinoTextField(
+                key: WK.fieldAppointmentPostOpNotes,
                 expands: true,
                 maxLines: null,
                 controller: TextEditingController(text: pages.openAppointment.postOpNotes),
@@ -151,6 +157,7 @@ openSingleAppointment({
             InfoLabel(
               label: "${txt("prescription")}:",
               child: TagInputWidget(
+                key: WK.fieldAppointmentPrescriptions,
                 suggestions: appointments.allPrescriptions.map((p) => TagInputItem(value: p, label: p)).toList(),
                 onChanged: (s) {
                   pages.openAppointment.prescriptions = s.where((x) => x.value != null).map((x) => x.value!).toList();
@@ -189,6 +196,7 @@ openSingleAppointment({
                   child: InfoLabel(
                     label: "${txt("priceIn")} ${globalSettings.get("currency_______")?.value}",
                     child: NumberBox(
+                      key: WK.fieldAppointmentPrice,
                       value: pages.openAppointment.price,
                       onChanged: (v) => pages.openAppointment.price = v ?? 0,
                       placeholder: txt("price"),
@@ -200,6 +208,7 @@ openSingleAppointment({
                   child: InfoLabel(
                     label: "${txt("paidIn")} ${globalSettings.get("currency_______")?.value}",
                     child: NumberBox(
+                      key: WK.fieldAppointmentPayment,
                       value: pages.openAppointment.paid,
                       onChanged: (v) => pages.openAppointment.paid = v ?? 0,
                       placeholder: txt("paid"),

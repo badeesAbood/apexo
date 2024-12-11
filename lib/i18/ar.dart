@@ -64,6 +64,7 @@ class Ar implements En {
     "doctorEmail": "بريد الطبيب الإلكتروني",
     "dutyDays": "أيام العمل",
     "addAppointment": "إضافة موعد",
+    "lockToUsers": "يمكن فقط للمستخدمين التاليين الوصول لمعلومات ومواعيد الطبيب وتعديلها",
 
     // days and months
     "monday": "الاثنين",

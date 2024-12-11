@@ -3,6 +3,7 @@ import '../utils/uuid.dart';
 class Model {
   String id;
   bool? archived;
+  bool get locked => false;
   String title;
   String? get avatar {
     return null;
@@ -22,11 +23,9 @@ class Model {
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    final d = Model.fromJson({});
-
     json['id'] = id;
-    if (archived != d.archived) json['archived'] = archived;
-    if (title != d.title) json["title"] = title;
+    if (archived != null) json['archived'] = archived;
+    if (title != "") json["title"] = title;
     return json;
   }
 }

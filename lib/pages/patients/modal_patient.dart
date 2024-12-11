@@ -10,6 +10,7 @@ import 'package:apexo/pages/shared/tag_input.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
 import 'package:apexo/state/stores/patients/patient_model.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide TextBox;
 import 'package:flutter/cupertino.dart';
 import "../shared/tabbed_modal.dart";
@@ -25,6 +26,7 @@ openSinglePatient({
 
   final o = pages.openPatient;
   showTabbedModal(
+      key: Key(o.id),
       context: context,
       onArchive: o.archived != true && editing ? () => patients.set(o..archived = true) : null,
       onRestore: o.archived == true && editing ? () => patients.set(o..archived = null) : null,
@@ -39,6 +41,7 @@ openSinglePatient({
               label: "${txt("name")}:",
               isHeader: true,
               child: CupertinoTextField(
+                key: WK.fieldPatientName,
                 placeholder: "${txt("name")}...",
                 controller: TextEditingController(text: pages.openPatient.title),
                 onChanged: (value) => pages.openPatient.title = value,
@@ -50,6 +53,7 @@ openSinglePatient({
                   label: "${txt("birthYear")}:",
                   isHeader: true,
                   child: CupertinoTextField(
+                    key: WK.fieldPatientYOB,
                     placeholder: "${txt("birthYear")}...",
                     controller: TextEditingController(text: pages.openPatient.birth.toString()),
                     onChanged: (value) => pages.openPatient.birth = int.tryParse(value) ?? pages.openPatient.birth,
@@ -62,15 +66,16 @@ openSinglePatient({
                   label: "${txt("gender")}:",
                   isHeader: true,
                   child: ComboBox<int>(
+                    key: WK.fieldPatientGender,
                     isExpanded: true,
                     items: [
                       ComboBoxItem<int>(
                         value: 1,
-                        child: Text(txt("male")),
+                        child: Text("♂️ ${txt("male")}"),
                       ),
                       ComboBoxItem<int>(
                         value: 0,
-                        child: Text(txt("female")),
+                        child: Text("♀️ ${txt("female")}"),
                       )
                     ],
                     value: pages.openPatient.gender,
@@ -88,6 +93,7 @@ openSinglePatient({
                   label: "${txt("phone")}:",
                   isHeader: true,
                   child: CupertinoTextField(
+                    key: WK.fieldPatientPhone,
                     placeholder: "${txt("phone")}...",
                     controller: TextEditingController(text: pages.openPatient.phone),
                     onChanged: (value) => pages.openPatient.phone = value,
@@ -101,6 +107,7 @@ openSinglePatient({
                   label: "${txt("email")}:",
                   isHeader: true,
                   child: CupertinoTextField(
+                    key: WK.fieldPatientEmail,
                     placeholder: "${txt("email")}...",
                     controller: TextEditingController(text: pages.openPatient.email),
                     onChanged: (value) => pages.openPatient.email = value,
@@ -112,6 +119,7 @@ openSinglePatient({
               label: "${txt("address")}:",
               isHeader: true,
               child: CupertinoTextField(
+                key: WK.fieldPatientAddress,
                 controller: TextEditingController(text: pages.openPatient.address),
                 onChanged: (value) => pages.openPatient.address = value,
                 placeholder: "${txt("address")}...",
@@ -121,6 +129,7 @@ openSinglePatient({
               label: "${txt("notes")}:",
               isHeader: true,
               child: CupertinoTextField(
+                key: WK.fieldPatientNotes,
                 controller: TextEditingController(text: pages.openPatient.notes),
                 onChanged: (value) => pages.openPatient.notes = value,
                 maxLines: null,
@@ -131,6 +140,7 @@ openSinglePatient({
               label: "${txt("patientTags")}:",
               isHeader: true,
               child: TagInputWidget(
+                key: WK.fieldPatientTags,
                 suggestions: patients.allTags.map((t) => TagInputItem(value: t, label: t)).toList(),
                 onChanged: (tags) {
                   pages.openPatient.tags = List<String>.from(tags.map((e) => e.value).where((e) => e != null));

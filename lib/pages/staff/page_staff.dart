@@ -4,6 +4,7 @@ import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/pages/staff/modal_staff.dart';
 import 'package:apexo/state/stores/staff/staff_store.dart';
 import 'package:apexo/state/stores/staff/member_model.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import "../shared/datatable.dart";
 
@@ -18,6 +19,7 @@ class StaffMembers extends ObservingWidget {
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage(
+      key: WK.staffPage,
       padding: EdgeInsets.zero,
       content: DataTable<Member>(
         items: staff.showing.values.toList(),

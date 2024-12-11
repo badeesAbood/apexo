@@ -1,6 +1,7 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:apexo/i18/index.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import "package:flutter/cupertino.dart" show CupertinoTextField;
 import '../../panel_logo.dart';
@@ -21,16 +22,20 @@ class Login extends ObservingWidget {
       bottomBar: state.loginError.isNotEmpty
           ? Padding(
               padding: const EdgeInsets.only(bottom: 18.0),
-              child:
-                  InfoBar(title: Text(txt("error")), content: Text(state.loginError), severity: InfoBarSeverity.error),
+              child: InfoBar(
+                  key: WK.loginErr,
+                  title: Text(txt("error")),
+                  content: Text(state.loginError),
+                  severity: InfoBarSeverity.error),
             )
           : null,
       header:
           Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center, children: [
         const AppLogo(),
         ComboBox(
+          key: WK.loginLangComboBox,
           value: localSettings.locale,
-          items: locale.list.map((e) => ComboBoxItem(child: Text(e.$name), value: e.$code)).toList(),
+          items: locale.list.map((e) => ComboBoxItem(value: e.$code, key: Key(e.$code), child: Text(e.$name))).toList(),
           onChanged: (code) {
             final l = locale.list.indexWhere(
               (element) => element.$code == code,
@@ -58,6 +63,7 @@ class Login extends ObservingWidget {
             closeButtonVisibility: CloseButtonVisibilityMode.never,
             tabs: [
               Tab(
+                key: WK.loginTab,
                 text: Text(txt("login")),
                 icon: const Icon(FluentIcons.authenticator_app),
                 body: buildTabContainer([
@@ -66,12 +72,14 @@ class Login extends ObservingWidget {
                   passwordField(),
                 ], [
                   FilledButton(
+                    key: WK.btnLogin,
                     onPressed: state.loginButton,
                     child:
                         Row(children: [const Icon(FluentIcons.forward), const SizedBox(width: 10), Text(txt("login"))]),
                   ),
                   if (state.loginError.isNotEmpty)
                     FilledButton(
+                      key: WK.btnProceedOffline,
                       onPressed: () => state.loginButton(false),
                       style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey)),
                       child: Row(children: [
@@ -83,12 +91,15 @@ class Login extends ObservingWidget {
                 ]),
               ),
               Tab(
+                key: WK.forgotPasswordTab,
                 text: Text(txt("resetPassword")),
                 icon: const Icon(FluentIcons.password_field),
                 body: buildTabContainer([
                   const SizedBox(height: 1),
                   InfoBar(
-                    title: state.resetInstructionsSent ? Text(txt("beenSent")) : Text(txt("youLLGet")),
+                    title: state.resetInstructionsSent
+                        ? Text(key: WK.msgSentReset, txt("beenSent"))
+                        : Text(key: WK.msgWillSendReset, txt("youLLGet")),
                     severity: state.resetInstructionsSent ? InfoBarSeverity.success : InfoBarSeverity.info,
                   ),
                   const SizedBox(height: 1),
@@ -97,6 +108,7 @@ class Login extends ObservingWidget {
                 ], [
                   if (state.resetInstructionsSent == false)
                     FilledButton(
+                      key: WK.btnResetPassword,
                       onPressed: state.resetButton,
                       child: Row(children: [
                         const Icon(FluentIcons.password_field),
@@ -150,6 +162,7 @@ class Login extends ObservingWidget {
     return InfoLabel(
       label: txt("serverUrl"),
       child: CupertinoTextField(
+          key: WK.serverField,
           controller: state.urlField,
           textDirection: TextDirection.ltr,
           enabled: state.loadingIndicator.isEmpty,
@@ -161,6 +174,7 @@ class Login extends ObservingWidget {
     return InfoLabel(
       label: txt("email"),
       child: CupertinoTextField(
+        key: WK.emailField,
         controller: state.emailField,
         textDirection: TextDirection.ltr,
         enabled: state.loadingIndicator.isEmpty,
@@ -173,6 +187,7 @@ class Login extends ObservingWidget {
     return InfoLabel(
       label: txt("password"),
       child: CupertinoTextField(
+        key: WK.passwordField,
         textDirection: TextDirection.ltr,
         controller: state.passwordField,
         enabled: state.loadingIndicator.isEmpty,

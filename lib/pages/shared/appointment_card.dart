@@ -14,6 +14,7 @@ import 'package:apexo/state/stores/appointments/appointments_store.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
 import 'package:apexo/state/stores/staff/staff_store.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:intl/intl.dart' as intl;
 
@@ -43,6 +44,7 @@ class AppointmentCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Column(
+                key: WK.acSideIcons,
                 children: [
                   _doneCheckBox(),
                   if (appointment.archived == true) ...[
@@ -180,6 +182,7 @@ class AppointmentCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 2),
       child: Checkbox(
+        key: WK.acCheckBox,
         checked: appointment.isDone(),
         onChanged: (checked) {
           appointment.isDone(checked);
@@ -205,10 +208,7 @@ class AppointmentCard extends StatelessWidget {
       children: [
         _spacerIcon(1),
         _horizontalSpacing(),
-        Text(
-          difference!,
-          style: TextStyle(fontSize: 12, color: Colors.grey.withOpacity(0.5), fontWeight: FontWeight.bold),
-        ),
+        TimeDifference(difference: difference),
         _horizontalSpacing(),
         _spacerIcon(-1),
       ],
@@ -240,41 +240,9 @@ class AppointmentCard extends StatelessWidget {
     );
   }
 
-  Acrylic _paymentPill(String title, String amount, [Color? color, Color? textColor]) {
+  PaymentPill _paymentPill(String title, String amount, [Color? color, Color? textColor]) {
     final Color finalTextColor = textColor ?? (color == null ? Colors.grey : Colors.white);
-    return Acrylic(
-      luminosityAlpha: 1,
-      tintAlpha: 1,
-      blurAmount: 100,
-      elevation: 20,
-      tint: color,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
-        child: Wrap(
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.bold,
-                fontSize: 11.5,
-                color: finalTextColor,
-              ),
-            ),
-            const SizedBox(width: 5),
-            const Divider(direction: Axis.vertical, size: 10),
-            const SizedBox(width: 5),
-            Text(
-              amount,
-              style: TextStyle(color: finalTextColor, fontSize: 12),
-            ),
-          ],
-        ),
-      ),
-    );
+    return PaymentPill(finalTextColor: finalTextColor, amount: amount, title: title, color: color);
   }
 
   List<Widget> get _betweenSections {
@@ -401,6 +369,75 @@ class AppointmentCard extends StatelessWidget {
           width: 5,
         ),
       ),
+    );
+  }
+}
+
+class PaymentPill extends StatelessWidget {
+  const PaymentPill({
+    super.key,
+    required this.finalTextColor,
+    required this.title,
+    required this.amount,
+    this.color,
+  });
+
+  final Color finalTextColor;
+  final String title;
+  final String amount;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Acrylic(
+      luminosityAlpha: 1,
+      tintAlpha: 1,
+      blurAmount: 100,
+      elevation: 20,
+      tint: color,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+        child: Wrap(
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.bold,
+                fontSize: 11.5,
+                color: finalTextColor,
+              ),
+            ),
+            const SizedBox(width: 5),
+            const Divider(direction: Axis.vertical, size: 10),
+            const SizedBox(width: 5),
+            Text(
+              amount,
+              style: TextStyle(color: finalTextColor, fontSize: 12),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TimeDifference extends StatelessWidget {
+  const TimeDifference({
+    super.key,
+    required this.difference,
+  });
+
+  final String? difference;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      difference!,
+      style: TextStyle(fontSize: 12, color: Colors.grey.withOpacity(0.5), fontWeight: FontWeight.bold),
     );
   }
 }

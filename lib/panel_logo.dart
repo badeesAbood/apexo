@@ -1,3 +1,4 @@
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -8,6 +9,7 @@ class AppLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
+      key: WK.appLogo,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Image.asset(

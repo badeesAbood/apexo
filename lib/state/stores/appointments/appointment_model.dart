@@ -1,3 +1,4 @@
+import 'package:apexo/state/state.dart';
 import 'package:apexo/state/stores/patients/patient_model.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
 import 'package:apexo/state/stores/staff/member_model.dart';
@@ -22,6 +23,13 @@ class Appointment extends AgendaItem {
 
   Patient? get patient {
     return patients.get(patientID ?? "return null when null");
+  }
+
+  @override
+  bool get locked {
+    if (operators.isEmpty) return false;
+    if (state.isAdmin) return false;
+    return operators.every((element) => element.locked);
   }
 
   List<Member> get operators {

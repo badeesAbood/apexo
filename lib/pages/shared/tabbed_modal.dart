@@ -1,5 +1,6 @@
 import 'package:apexo/i18/en.dart';
 import 'package:apexo/i18/index.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
@@ -9,7 +10,7 @@ class _Sheet extends StatefulWidget {
   Function? onSave;
   Function? onArchive;
   Function? onRestore;
-  _Sheet(this.tabs, this.onSave, this.onArchive, this.onRestore);
+  _Sheet(this.tabs, this.onSave, this.onArchive, this.onRestore, {super.key});
 
   @override
   State<StatefulWidget> createState() => SheetState();
@@ -58,12 +59,12 @@ class SheetState extends State<_Sheet> {
                                 ]
                               ],
                             ),
-                            icon: Icon(tab.icon),
+                            icon: Icon(key: Key("${tab.title}_icon"), tab.icon),
                             onClosed: () {
                               Navigator.pop(context);
                             },
                             closeIcon: (tab.closable && widget.tabs.indexOf(tab) == selectedTab)
-                                ? const Icon(FluentIcons.clear)
+                                ? const Icon(key: WK.closeModal, FluentIcons.clear)
                                 : null,
                             backgroundColor: const Color.fromARGB(255, 225, 225, 225),
                             selectedBackgroundColor: const Color.fromARGB(255, 245, 245, 245),
@@ -108,6 +109,7 @@ class SheetState extends State<_Sheet> {
                           children: [
                             selectedTab != 0
                                 ? IconButton(
+                                    key: WK.tabbedModalBack,
                                     icon: Icon(locale.s.$direction == Direction.ltr
                                         ? FluentIcons.chevron_left
                                         : FluentIcons.chevron_right),
@@ -175,6 +177,7 @@ class SheetState extends State<_Sheet> {
                               ),
                             widget.tabs.length - 1 > selectedTab
                                 ? IconButton(
+                                    key: WK.tabbedModalNext,
                                     icon: Icon(locale.s.$direction == Direction.ltr
                                         ? FluentIcons.chevron_right
                                         : FluentIcons.chevron_left),
@@ -265,10 +268,11 @@ void showTabbedModal({
   Function()? onSave,
   Function()? onArchive,
   Function()? onRestore,
+  Key? key,
 }) async {
   assert(debugCheckHasMediaQuery(context));
   await Navigator.of(context, rootNavigator: true).push(ModalSheetRoute(
-    builder: (_) => _Sheet(tabs, onSave, onArchive, onRestore),
+    builder: (_) => _Sheet(tabs, onSave, onArchive, onRestore, key: key),
     containerBuilder: (_, animation, child) => ScaffoldPage(
       padding: EdgeInsets.zero,
       content: LayoutBuilder(builder: (context, constraints) {

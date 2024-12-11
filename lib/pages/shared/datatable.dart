@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:apexo/i18/index.dart';
+import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import '../../../backend/utils/colors_without_yellow.dart';
@@ -76,11 +77,20 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
   }
 
   List<Item> get filteredItems {
-    return widget.items.where((item) {
-      return item.title.toLowerCase().contains(searchTerm.text.toLowerCase()) ||
-          jsonEncode(item.labels.values.toList()).toLowerCase().contains(searchTerm.text);
-    }).toList();
+    final words = searchTerm.text.toLowerCase().split(" ");
+    final List<Item> candidates = [];
+    for (var item in widget.items) {
+      final searchIn = (item.title + jsonEncode(item.labels.values.toList())).toLowerCase();
+      final bool allTermsFound =
+          words.map((word) => searchIn.contains(word)).where((x) => x == true).length == words.length;
+      if (allTermsFound) candidates.add(item);
+    }
+    return candidates;
   }
+
+  // TODO: make totals appear here on data table
+  // TODO: instead of labworks make "receipts"
+  // issuer: phone number
 
   List<Item> get sortedItems {
     List<Item> result = List<Item>.from(filteredItems);
@@ -159,6 +169,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
             if (filteredItems.isEmpty) _buildNoItemsFound(),
             Expanded(
               child: ListView.builder(
+                key: WK.dataTableListView,
                 itemCount: filteredItems.length > sortedItems.length ? sortedItems.length + 1 : sortedItems.length,
                 itemBuilder: (context, index) =>
                     filteredItems.length > sortedItems.length && index == sortedItems.length
@@ -203,7 +214,6 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
             ),
             child: Row(
               children: [
-                //_buildCheckBox(isChecked, item),
                 const Divider(direction: Axis.vertical, size: 45),
                 _buildInnerRow(item),
                 const Divider(direction: Axis.vertical, size: 45),
@@ -221,7 +231,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     return (num - 1) % 7;
   }
 
-  Expanded _buildInnerRow(item) {
+  Expanded _buildInnerRow(Item item) {
     var nonEmptyLabels = labels.where((l) => item.labels[l] != null).toList();
     return Expanded(
       child: SingleChildScrollView(
@@ -232,8 +242,8 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AcrylicTitle(key: Key(item.id), radius: 20, item: item),
-              ...nonEmptyLabels
-                  .map((l) => _buildLabelPill(l, item, colorsWithoutYellow[getCycledNumber(nonEmptyLabels.indexOf(l))]))
+              ...nonEmptyLabels.map((labelTitle) => _buildLabelPill(
+                  labelTitle, item, colorsWithoutYellow[getCycledNumber(nonEmptyLabels.indexOf(labelTitle))]))
             ],
           ),
         ),
@@ -241,8 +251,12 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     );
   }
 
-  _buildCheckBox(bool isChecked, item) {
-    return Checkbox(checked: isChecked, onChanged: (checked) => itemSelectToggle(item, checked));
+  _buildCheckBox(bool isChecked, Item item) {
+    return Checkbox(
+      key: Key("dt_cb_${item.id}"),
+      checked: isChecked,
+      onChanged: (checked) => itemSelectToggle(item, checked),
+    );
   }
 
   Padding _buildListController() {
@@ -263,6 +277,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
 
   IconButton _buildSortDirectionToggle() {
     return IconButton(
+      key: WK.toggleSortDirection,
       icon: sortDirection > 0 ? const Icon(FluentIcons.sort_up) : const Icon(FluentIcons.sort_down),
       onPressed: toggleSortDirection,
     );
@@ -270,6 +285,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
 
   ComboBox<int> _buildSortBy() {
     return ComboBox<int>(
+      key: WK.dataTableSortBy,
       items: [
         ComboBoxItem<int>(value: -1, child: Text(txt("byTitle"))),
         ...nonNullLabels
@@ -320,6 +336,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
             SizedBox(
               width: 165,
               child: CupertinoTextField(
+                key: WK.dataTableSearch,
                 controller: searchTerm,
                 placeholder: txt("searchPlaceholder"),
                 onChanged: setSearchTerm,
@@ -356,57 +373,77 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
             setSearchTerm((item.labels[l] ?? "").toLowerCase());
           }
         },
-        child: Row(
-          textDirection: TextDirection.ltr,
-          children: [
-            Acrylic(
-              luminosityAlpha: 0.1,
-              elevation: 0,
-              tint: color,
-              shape: RoundedRectangleBorder(
-                borderRadius: (selected == false)
-                    ? BorderRadius.circular(5)
-                    : const BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5)),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
-                child: Wrap(
-                  children: [
-                    Text(
-                      (txt(l)),
-                      style: TextStyle(
-                          fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, fontSize: 11.5, color: color),
-                    ),
-                    const SizedBox(width: 5),
-                    const Divider(direction: Axis.vertical, size: 10),
-                    const SizedBox(width: 5),
-                    Text(
-                      (item.labels[l]) ?? "",
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            if (selected)
-              Acrylic(
-                tint: Colors.grey,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(5), bottomRight: Radius.circular(5)),
-                ),
-                luminosityAlpha: 0.1,
-                child: SizedBox(
-                  height: 35,
-                  child: IconButton(
-                    icon: const Icon(FluentIcons.check_mark, size: 10),
-                    onPressed: () {
-                      setSearchTerm("");
-                    },
-                  ),
-                ),
-              ),
-          ],
+        child: DataTablePill(
+          selected: selected,
+          color: color,
+          title: l,
+          content: item.labels[l] ?? "",
         ),
       ),
+    );
+  }
+}
+
+class DataTablePill extends StatelessWidget {
+  const DataTablePill({
+    super.key,
+    required this.selected,
+    required this.color,
+    required this.title,
+    required this.content,
+  });
+
+  final bool selected;
+  final Color color;
+  final String title;
+  final String content;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      textDirection: TextDirection.ltr,
+      children: [
+        Acrylic(
+          luminosityAlpha: 0.1,
+          elevation: 0,
+          tint: color,
+          shape: RoundedRectangleBorder(
+            borderRadius: (selected == false)
+                ? BorderRadius.circular(5)
+                : const BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+            child: Wrap(
+              children: [
+                Text(
+                  (txt(title)),
+                  style:
+                      TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, fontSize: 11.5, color: color),
+                ),
+                const SizedBox(width: 5),
+                const Divider(direction: Axis.vertical, size: 10),
+                const SizedBox(width: 5),
+                Text(
+                  (content),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (selected)
+          const Acrylic(
+            tint: Colors.grey,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(topRight: Radius.circular(5), bottomRight: Radius.circular(5)),
+            ),
+            luminosityAlpha: 0.1,
+            child: SizedBox(
+              height: 35,
+              child: Icon(FluentIcons.check_mark, size: 10),
+            ),
+          ),
+      ],
     );
   }
 }
