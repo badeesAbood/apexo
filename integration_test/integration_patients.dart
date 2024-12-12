@@ -125,9 +125,9 @@ class PatientsIntegrationTest extends IntegrationTestBase {
           }
         },
         "03: Filtering by pills": () async {
-          await tester.tap(find.byKey(const Key('staff_page_button')));
+          await tester.tap(find.byKey(const Key('doctors_page_button')));
           await tester.pumpAndSettle();
-          expect(find.byKey(WK.staffPage), findsOneWidget);
+          expect(find.byKey(WK.doctorsPage), findsOneWidget);
 
           await tester.tap(find.byKey(const Key('patients_page_button')));
           await tester.pumpAndSettle();

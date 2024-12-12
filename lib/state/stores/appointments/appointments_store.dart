@@ -49,20 +49,20 @@ class Appointments extends Store<Appointment> {
     };
   }
 
-  String staffId = "";
+  String doctorId = "";
 
   Map<String, Appointment> get filtered {
-    if (staffId.isEmpty) return present;
+    if (doctorId.isEmpty) return present;
     return Map<String, Appointment>.fromEntries(
-        present.entries.where((entry) => entry.value.operatorsIDs.contains(staffId)));
+        present.entries.where((entry) => entry.value.operatorsIDs.contains(doctorId)));
   }
 
   List<String> get allPrescriptions {
     return Set<String>.from(present.values.expand((doc) => doc.prescriptions)).toList();
   }
 
-  filterByStaff(String? value) {
-    staffId = value ?? "";
+  filterByDoctor(String? value) {
+    doctorId = value ?? "";
     notify();
   }
 }

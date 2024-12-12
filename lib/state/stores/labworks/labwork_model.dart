@@ -2,8 +2,8 @@ import 'package:apexo/backend/observable/model.dart';
 import 'package:apexo/i18/index.dart';
 import 'package:apexo/state/stores/patients/patient_model.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
-import 'package:apexo/state/stores/staff/member_model.dart';
-import 'package:apexo/state/stores/staff/staff_store.dart';
+import 'package:apexo/state/stores/doctors/doctor_model.dart';
+import 'package:apexo/state/stores/doctors/doctors_store.dart';
 import 'package:intl/intl.dart';
 
 class Labwork extends Model {
@@ -22,10 +22,10 @@ class Labwork extends Model {
     return patients.get(patientID ?? "");
   }
 
-  List<Member> get operators {
-    List<Member> foundOperators = [];
+  List<Doctor> get operators {
+    List<Doctor> foundOperators = [];
     for (var id in operatorsIDs) {
-      var found = staff.get(id);
+      var found = doctors.get(id);
       if (found != null) {
         foundOperators.add(found);
       }

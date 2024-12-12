@@ -6,7 +6,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 final allDays = StartingDayOfWeek.values.map((e) => e.name).toList();
 
-class Member extends Model {
+class Doctor extends Model {
   List<Appointment> get allAppointments {
     return appointments.present.values.where((x) => x.operatorsIDs.contains(id)).toList();
   }
@@ -44,7 +44,7 @@ class Member extends Model {
   // TODO: lockToUserIDs editing GUI, should only available to admins while online
 
   @override
-  Member.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
+  Doctor.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
     /* 1 */ dutyDays = List<String>.from(json['dutyDays'] ?? dutyDays);
     /* 2 */ email = json["email"] ?? email;
     /* 3 */ lockToUserIDs = List<String>.from(json['lockToUserIDs'] ?? lockToUserIDs);
@@ -52,7 +52,7 @@ class Member extends Model {
   @override
   Map<String, dynamic> toJson() {
     final json = super.toJson();
-    final d = Member.fromJson({});
+    final d = Doctor.fromJson({});
     /* 1 */ if (dutyDays.toString() != d.dutyDays.toString()) json['dutyDays'] = dutyDays;
     /* 2 */ if (email != d.email) json["email"] = email;
     /* 3 */ if (lockToUserIDs.toString() != d.lockToUserIDs.toString()) json["lockToUserIDs"] = lockToUserIDs;

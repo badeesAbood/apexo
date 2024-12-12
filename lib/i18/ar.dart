@@ -25,7 +25,7 @@ class Ar implements En {
     "dashboard": "الرئيسية",
     "appointments": "مواعيد",
     "patients": "مرضى",
-    "staff": "الطاقم",
+    "doctors": "الاطباء",
     "labworks": "أعمال المختبر",
     "statistics": "إحصائيات",
 
@@ -90,7 +90,6 @@ class Ar implements En {
     // appointment card
     "appointment": "موعد",
     "patient": "مريض",
-    "doctors": "أطباء",
     "photos": "صور",
     "pre-opNotes": "ملاحظات ما قبل العملية",
     "post-opNotes": "ملاحظات ما بعد العملية",

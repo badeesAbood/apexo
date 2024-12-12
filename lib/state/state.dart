@@ -1,8 +1,8 @@
 import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/imgs.dart';
 import 'package:apexo/backend/utils/logger.dart';
-import 'package:apexo/state/stores/staff/member_model.dart';
-import 'package:apexo/state/stores/staff/staff_store.dart';
+import 'package:apexo/state/stores/doctors/doctor_model.dart';
+import 'package:apexo/state/stores/doctors/doctors_store.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Locale;
 import '../backend/observable/observable.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -72,8 +72,8 @@ class State extends ObservablePersistingObject {
   // PocketBase instance
   PocketBase? pb;
 
-  Member? get currentMember {
-    return staff.getByEmail(email);
+  Doctor? get currentMember {
+    return doctors.getByEmail(email);
   }
 
   /// means we checked and verified that it works

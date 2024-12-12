@@ -26,7 +26,7 @@ class En {
     "dashboard": "Dashboard",
     "appointments": "Appointments",
     "patients": "Patients",
-    "staff": "Staff",
+    "doctors": "Doctors",
     "labworks": "Labworks",
     "statistics": "Statistics",
 
@@ -92,7 +92,6 @@ class En {
     // appointment card
     "appointment": "Appointment",
     "patient": "Patient",
-    "doctors": "Doctors",
     "photos": "Photos",
     "pre-opNotes": "Pre-op notes",
     "post-opNotes": "Post-op notes",

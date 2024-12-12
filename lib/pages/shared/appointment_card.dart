@@ -8,17 +8,17 @@ import 'package:apexo/pages/calendar/modal_appointment.dart';
 import 'package:apexo/pages/patients/modal_patient.dart';
 import 'package:apexo/pages/shared/acrylic_title.dart';
 import 'package:apexo/pages/shared/grid_gallery.dart';
-import 'package:apexo/pages/staff/modal_staff.dart';
+import 'package:apexo/pages/doctors/modal_doctor.dart';
 import 'package:apexo/state/stores/appointments/appointment_model.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
-import 'package:apexo/state/stores/staff/staff_store.dart';
+import 'package:apexo/state/stores/doctors/doctors_store.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:intl/intl.dart' as intl;
 
-enum AppointmentSections { patient, staff, photos, preNotes, postNotes, prescriptions, pay }
+enum AppointmentSections { patient, doctors, photos, preNotes, postNotes, prescriptions, pay }
 
 // ignore: must_be_immutable
 class AppointmentCard extends StatelessWidget {
@@ -88,7 +88,7 @@ class AppointmentCard extends StatelessWidget {
                             FluentIcons.medical,
                           ),
                         ],
-                        if (appointment.operators.isNotEmpty && !hide.contains(AppointmentSections.staff)) ...[
+                        if (appointment.operators.isNotEmpty && !hide.contains(AppointmentSections.doctors)) ...[
                           ..._betweenSections,
                           _buildSection(
                             txt("doctors"),
@@ -96,11 +96,11 @@ class AppointmentCard extends StatelessWidget {
                               children: appointment.operators
                                   .map((e) => GestureDetector(
                                       onTap: () {
-                                        openSingleMember(
+                                        openSingleDoctor(
                                           context: context,
                                           json: e.toJson(),
                                           title: txt("doctor"),
-                                          onSave: staff.set,
+                                          onSave: doctors.set,
                                           editing: true,
                                         );
                                       },

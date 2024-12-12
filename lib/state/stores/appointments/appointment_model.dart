@@ -1,8 +1,8 @@
 import 'package:apexo/state/state.dart';
 import 'package:apexo/state/stores/patients/patient_model.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
-import 'package:apexo/state/stores/staff/member_model.dart';
-import 'package:apexo/state/stores/staff/staff_store.dart';
+import 'package:apexo/state/stores/doctors/doctor_model.dart';
+import 'package:apexo/state/stores/doctors/doctors_store.dart';
 import '../../../pages/shared/week_calendar.dart';
 
 class Appointment extends AgendaItem {
@@ -32,10 +32,10 @@ class Appointment extends AgendaItem {
     return operators.every((element) => element.locked);
   }
 
-  List<Member> get operators {
-    List<Member> foundOperators = [];
+  List<Doctor> get operators {
+    List<Doctor> foundOperators = [];
     for (var id in operatorsIDs) {
-      var found = staff.get(id);
+      var found = doctors.get(id);
       if (found != null) {
         foundOperators.add(found);
       }
@@ -55,7 +55,7 @@ class Appointment extends AgendaItem {
   @override
   String get subtitleLine2 {
     if (operatorsIDs.isEmpty) return "";
-    return "👨‍⚕️ ${operatorsIDs.map((id) => staff.get(id)?.title).join(", ")}";
+    return "👨‍⚕️ ${operatorsIDs.map((id) => doctors.get(id)?.title).join(", ")}";
   }
 
   bool get fullPaid {

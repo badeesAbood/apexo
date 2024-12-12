@@ -6,28 +6,28 @@ import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/pages/shared/tag_input.dart';
 import 'package:apexo/state/state.dart' as appState;
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
-import 'package:apexo/state/stores/staff/staff_store.dart';
-import 'package:apexo/state/stores/staff/member_model.dart';
+import 'package:apexo/state/stores/doctors/doctors_store.dart';
+import 'package:apexo/state/stores/doctors/doctor_model.dart';
 import 'package:apexo/state/users.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import "../shared/tabbed_modal.dart";
 
-openSingleMember({
+openSingleDoctor({
   required BuildContext context,
   required Map<String, dynamic> json,
   required String title,
-  required void Function(Member) onSave,
+  required void Function(Doctor) onSave,
   required bool editing,
 }) {
-  pages.openMember = Member.fromJson(json);
+  pages.openMember = Doctor.fromJson(json);
   final o = pages.openMember;
   showTabbedModal(
       context: context,
-      onArchive: o.archived != true && editing ? () => staff.set(o..archived = true) : null,
-      onRestore: o.archived == true && editing ? () => staff.set(o..archived = null) : null,
-      onSave: () => staff.set(pages.openMember),
+      onArchive: o.archived != true && editing ? () => doctors.set(o..archived = true) : null,
+      onRestore: o.archived == true && editing ? () => doctors.set(o..archived = null) : null,
+      onSave: () => doctors.set(pages.openMember),
       key: Key(o.id),
       tabs: [
         TabbedModal(
@@ -119,7 +119,7 @@ TabbedModal upcomingAppointmentsTab(BuildContext context) {
                 key: Key(appointment.id),
                 appointment: appointment,
                 difference: difference,
-                hide: const [AppointmentSections.staff],
+                hide: const [AppointmentSections.doctors],
               );
             })
           ],

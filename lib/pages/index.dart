@@ -16,13 +16,13 @@ import 'package:apexo/state/stores/labworks/labwork_model.dart';
 import 'package:apexo/state/stores/labworks/labworks_store.dart';
 import 'package:apexo/state/stores/patients/patient_model.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
-import 'package:apexo/state/stores/staff/member_model.dart';
-import 'package:apexo/state/stores/staff/staff_store.dart';
+import 'package:apexo/state/stores/doctors/doctor_model.dart';
+import 'package:apexo/state/stores/doctors/doctors_store.dart';
 import 'package:apexo/state/users.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Page;
 import '../i18/index.dart';
 import 'calendar/page_calendar.dart';
-import 'staff/page_staff.dart';
+import 'doctors/page_doctors.dart';
 import 'settings/page_settings.dart';
 import '../backend/observable/observable.dart';
 import "../state/stores/appointments/appointments_store.dart";
@@ -69,13 +69,13 @@ class Pages extends ObservableObject {
           },
         ),
         Page(
-          title: txt("staff"),
-          identifier: "staff",
+          title: txt("doctors"),
+          identifier: "doctors",
           icon: FluentIcons.medical,
-          body: StaffMembers.new,
+          body: DoctorsPage.new,
           accessible: permissions.list[0] || state.isAdmin,
           onSelect: () {
-            staff.synchronize();
+            doctors.synchronize();
           },
         ),
         Page(
@@ -155,7 +155,7 @@ class Pages extends ObservableObject {
   // bottom sheets
   Patient openPatient = Patient.fromJson({});
   Appointment openAppointment = Appointment.fromJson({});
-  Member openMember = Member.fromJson({});
+  Doctor openMember = Doctor.fromJson({});
   Labwork openLabwork = Labwork.fromJson({});
   Expense openExpense = Expense.fromJson({});
 

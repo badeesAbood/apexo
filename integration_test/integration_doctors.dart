@@ -2,15 +2,15 @@ import 'package:apexo/pages/index.dart';
 import 'package:apexo/pages/shared/acrylic_title.dart';
 import 'package:apexo/pages/shared/appointment_card.dart';
 import 'package:apexo/pages/shared/archive_toggle.dart';
-import 'package:apexo/state/stores/staff/staff_store.dart';
+import 'package:apexo/state/stores/doctors/doctors_store.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'base.dart';
 
-class StaffPageIntegrationTest extends IntegrationTestBase {
-  StaffPageIntegrationTest({required super.tester});
+class doctorsPageIntegrationTest extends IntegrationTestBase {
+  doctorsPageIntegrationTest({required super.tester});
 
   @override
   String get name => 'staff';
@@ -20,7 +20,7 @@ class StaffPageIntegrationTest extends IntegrationTestBase {
         "01: Should move to staff page++": () async {
           await tester.tap(find.byKey(const Key('staff_page_button')));
           await tester.pumpAndSettle();
-          expect(find.byKey(WK.staffPage), findsOneWidget);
+          expect(find.byKey(WK.doctorsPage), findsOneWidget);
         },
         "02: should add staff++": () async {
           await tester.tap(find.widgetWithText(GestureDetector, 'Add'));
@@ -46,8 +46,8 @@ class StaffPageIntegrationTest extends IntegrationTestBase {
           expect(find.widgetWithText(AcrylicTitle, 'Alia A. Saleem'), findsOneWidget);
         },
         "03: Archive selected": () async {
-          final id1 = staff.getByEmail("alielselawi@gmail.com")!.id;
-          final id2 = staff.getByEmail("aliasaleem@gmail.com")!.id;
+          final id1 = doctors.getByEmail("alielselawi@gmail.com")!.id;
+          final id2 = doctors.getByEmail("aliasaleem@gmail.com")!.id;
           await tester.tap(find.byKey(Key('dt_cb_$id1')));
           await tester.tap(find.byKey(Key('dt_cb_$id2')));
           await tester.tap(find.widgetWithText(GestureDetector, 'Archive Selected'));

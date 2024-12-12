@@ -106,7 +106,7 @@ class CalendarIntegrationTest extends IntegrationTestBase {
               break;
             }
           }
-          await tester.tap(find.byKey(const Key('staff_page_button')));
+          await tester.tap(find.byKey(const Key('doctors_page_button')));
           await tester.pumpAndSettle();
           await tester.tap(find.byKey(const Key('calendar_page_button')));
           await tester.pumpAndSettle();
@@ -182,7 +182,7 @@ class CalendarIntegrationTest extends IntegrationTestBase {
         },
         "09: Calendar tiles": () async {
           // just to reset the selected date to today
-          await tester.tap(find.byKey(const Key('staff_page_button')));
+          await tester.tap(find.byKey(const Key('doctors_page_button')));
           await tester.pumpAndSettle();
           await tester.tap(find.byKey(const Key('calendar_page_button')));
           await tester.pumpAndSettle();

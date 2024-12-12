@@ -20,7 +20,7 @@ class Period {
 }
 
 class _StatsPageState extends ObservableObject {
-  String staffID = "";
+  String doctorID = "";
   DateTime start = DateTime.now().subtract(const Duration(days: 15));
   DateTime end = DateTime.now().add(const Duration(days: 15));
   StatsInterval interval = StatsInterval.days;
@@ -33,7 +33,7 @@ class _StatsPageState extends ObservableObject {
     for (var appointment in appointments.present.values) {
       if (appointment.date().isAfter(end)) continue;
       if (appointment.date().isBefore(start)) continue;
-      if (staffID.isNotEmpty && !appointment.operatorsIDs.contains(staffID)) continue;
+      if (doctorID.isNotEmpty && !appointment.operatorsIDs.contains(doctorID)) continue;
       res.add(appointment);
     }
     return res..sort((a, b) => a.date().compareTo(b.date()));
@@ -358,8 +358,8 @@ class _StatsPageState extends ObservableObject {
     notify();
   }
 
-  void filterByStaff(String? value) {
-    staffID = value ?? "";
+  void filterByDoctor(String? value) {
+    doctorID = value ?? "";
     notify();
   }
 

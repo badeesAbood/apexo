@@ -4,7 +4,7 @@ import 'package:apexo/pages/calendar/modal_appointment.dart';
 import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
-import 'package:apexo/state/stores/staff/staff_store.dart';
+import 'package:apexo/state/stores/doctors/doctors_store.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -36,7 +36,7 @@ class Calendar extends ObservingWidget {
                 value: "",
                 child: Text(txt("allDoctors")),
               ),
-              ...staff.present.values.map((e) {
+              ...doctors.present.values.map((e) {
                 var doctorName = e.title;
                 if (doctorName.length > 20) {
                   doctorName = "${doctorName.substring(0, 17)}...";
@@ -44,8 +44,8 @@ class Calendar extends ObservingWidget {
                 return ComboBoxItem(value: e.id, child: Text(doctorName));
               }),
             ],
-            onChanged: appointments.filterByStaff,
-            value: appointments.staffId,
+            onChanged: appointments.filterByDoctor,
+            value: appointments.doctorId,
           ),
           const SizedBox(width: 5),
           ArchiveToggle(notifier: appointments.notify)

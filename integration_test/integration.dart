@@ -10,7 +10,7 @@ import 'integration_calendar.dart';
 import 'integration_labworks.dart';
 import 'integration_login.dart';
 import 'integration_patients.dart';
-import 'integration_staff.dart';
+import 'integration_doctors.dart';
 import '../test/test_utils.dart';
 import 'base.dart';
 
@@ -33,7 +33,7 @@ void main() async {
         await LoginPageIntegrationTest(tester: tester).run();
         // there's no PB here, so this cuts of the connectivity for faster tests
         state.pb!.baseUrl = "https://apexo.app";
-        await StaffPageIntegrationTest(tester: tester).run();
+        await doctorsPageIntegrationTest(tester: tester).run();
         await PatientsIntegrationTest(tester: tester).run();
         await AppointmentsIntegrationTest(tester: tester).run();
         await CalendarIntegrationTest(tester: tester).run();

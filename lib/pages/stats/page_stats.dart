@@ -9,7 +9,7 @@ import 'package:apexo/pages/stats/reusable_styled_charts/stacked.dart';
 import 'package:apexo/pages/stats/window_range_control.dart';
 import 'package:apexo/state/charts.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
-import 'package:apexo/state/stores/staff/staff_store.dart';
+import 'package:apexo/state/stores/doctors/doctors_store.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:intl/intl.dart';
 
@@ -238,7 +238,7 @@ class PageStats extends ObservingWidget {
           value: "",
           child: Text(txt("allDoctors")),
         ),
-        ...staff.present.values.map((e) {
+        ...doctors.present.values.map((e) {
           var doctorName = e.title;
           if (doctorName.length > 20) {
             doctorName = "${doctorName.substring(0, 17)}...";
@@ -246,8 +246,8 @@ class PageStats extends ObservingWidget {
           return ComboBoxItem(value: e.id, child: Text(doctorName));
         }),
       ],
-      onChanged: chartsState.filterByStaff,
-      value: chartsState.staffID,
+      onChanged: chartsState.filterByDoctor,
+      value: chartsState.doctorID,
     );
   }
 

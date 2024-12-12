@@ -1,16 +1,16 @@
-import './member_model.dart';
+import 'doctor_model.dart';
 import '../../state.dart';
 import '../../../backend/observable/save_local.dart';
 import '../../../backend/observable/save_remote.dart';
 import '../../../global_actions.dart';
 import '../../../backend/observable/store.dart';
 
-const _storeName = "staff";
+const _storeName = "doctors";
 
-class Staff extends Store<Member> {
-  Staff()
+class Doctors extends Store<Doctor> {
+  Doctors()
       : super(
-          modeling: Member.fromJson,
+          modeling: Doctor.fromJson,
           onSyncStart: () {
             state.isSyncing++;
             state.notify();
@@ -41,7 +41,7 @@ class Staff extends Store<Member> {
         },
       );
 
-      state.setLoadingIndicator("Synchronizing staff members");
+      state.setLoadingIndicator("Synchronizing doctors");
       await synchronize();
 
       globalActions.syncCallbacks[_storeName] = synchronize;
@@ -49,12 +49,12 @@ class Staff extends Store<Member> {
     };
   }
 
-  Map<String, Member> get showing {
+  Map<String, Doctor> get showing {
     if (state.showArchived) return docs;
     return present;
   }
 
-  Member? getByEmail(String email) {
+  Doctor? getByEmail(String email) {
     for (var member in present.values) {
       if (member.email == email) return member;
     }
@@ -62,5 +62,5 @@ class Staff extends Store<Member> {
   }
 }
 
-final staff = Staff();
+final doctors = Doctors();
 // don't forget to initialize it in main.dart
