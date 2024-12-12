@@ -54,7 +54,8 @@ class _AcrylicTitleState extends State<AcrylicTitle> {
             ),
             luminosityAlpha: 0.3,
             child: Container(
-              constraints: BoxConstraints(minWidth: 100, maxWidth: widget.maxWidth),
+              constraints:
+                  BoxConstraints(minWidth: widget.maxWidth < 100 ? widget.maxWidth : 100, maxWidth: widget.maxWidth),
               padding: const EdgeInsets.fromLTRB(12, 5, 12, 5),
               child: Text(
                 widget.item.title,
