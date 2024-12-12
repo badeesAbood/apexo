@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 Map<String, List<String>> passedTests = {};
 
-enum VerbosityLevel {
-  verbose, // run all tests including skipped (--) tests
+enum WhichTests {
+  all, // run all tests including skipped (--) tests
   onlyRequired, // run only important tests (++)
   regular, // run regular and important tests (++)
 }
@@ -17,34 +17,34 @@ abstract class IntegrationTestBase {
 
   IntegrationTestBase({required this.tester});
 
-  run([VerbosityLevel verbosityLevel = VerbosityLevel.regular]) async {
-    final verbosityFile = (await File("./integration_test/verbosity").readAsString());
-    late VerbosityLevel verbosity;
+  run([WhichTests level = WhichTests.regular]) async {
+    final modeFile = (await File("./integration_test/mode").readAsString());
+    late WhichTests whichTests;
 
-    // verbosity has been defined for all groups
-    if (verbosityFile == "--onlyRequired") {
-      verbosity = VerbosityLevel.onlyRequired;
-    } else if (verbosityFile == "--verbose") {
-      verbosity = VerbosityLevel.verbose;
-    } else if (verbosityFile == "--regular") {
-      verbosity = VerbosityLevel.regular;
+    // mode has been defined for all groups
+    if (modeFile == "--onlyRequired") {
+      whichTests = WhichTests.onlyRequired;
+    } else if (modeFile == "--all") {
+      whichTests = WhichTests.all;
+    } else if (modeFile == "--regular") {
+      whichTests = WhichTests.regular;
     }
-    // a specific group is being run verbosely
-    else if (verbosityFile == name) {
-      verbosity = VerbosityLevel.verbose;
+    // a specific group is being run all tests
+    else if (modeFile == name) {
+      whichTests = WhichTests.all;
     } else {
-      verbosity = VerbosityLevel.onlyRequired;
+      whichTests = WhichTests.onlyRequired;
     }
 
     List<String> sortedTests = tests.keys.toList()..sort((a, b) => a.compareTo(b));
-    if (verbosity == VerbosityLevel.onlyRequired) {
+    if (whichTests == WhichTests.onlyRequired) {
       sortedTests = sortedTests.where((t) => t.endsWith("++")).toList();
     }
-    if (verbosity == VerbosityLevel.regular) {
+    if (whichTests == WhichTests.regular) {
       sortedTests = sortedTests.where((t) => !t.endsWith("--")).toList();
     }
     logger(
-        "⭐ Starting test group: $name, in $verbosity mode, will run ${sortedTests.length} out of ${tests.keys.length}",
+        "⭐ Starting test group: $name, in $whichTests mode, will run ${sortedTests.length} out of ${tests.keys.length}",
         null,
         3);
     for (var testName in sortedTests) {

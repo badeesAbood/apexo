@@ -13,16 +13,16 @@ class doctorsPageIntegrationTest extends IntegrationTestBase {
   doctorsPageIntegrationTest({required super.tester});
 
   @override
-  String get name => 'staff';
+  String get name => 'doctors';
 
   @override
   Map<String, Future<Null> Function()> get tests => {
-        "01: Should move to staff page++": () async {
-          await tester.tap(find.byKey(const Key('staff_page_button')));
+        "01: Should move to doctors page++": () async {
+          await tester.tap(find.byKey(const Key('doctors_page_button')));
           await tester.pumpAndSettle();
           expect(find.byKey(WK.doctorsPage), findsOneWidget);
         },
-        "02: should add staff++": () async {
+        "02: should add doctors++": () async {
           await tester.tap(find.widgetWithText(GestureDetector, 'Add'));
           await tester.pumpAndSettle();
           await tester.enterText(find.byKey(WK.fieldDoctorName), "Ali A. Saleem");

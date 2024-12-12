@@ -17,17 +17,45 @@ class SettingsIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           expect(find.byKey(WK.settingsPage), findsOneWidget);
         },
-
-        // "02: should change currency"
-        // "03: should change language"
-        // "04: should change date format"
-        // "05: should starting day of week"
-        // "06: should create a new backup"
-        // "07: should delete a backup"
-        // "08: should create an admin"
-        // "09: should delete an admin"
-        // "10: should create a user"
-        // "11: should delete a user"
-        // "12: should change permissions for a user"
+        "02: Should be able to change currency": () async {
+          await tester.tap(find.widgetWithText(GestureDetector, 'Currency'));
+          await tester.pumpAndSettle();
+          await tester.enterText(find.byKey(const Key("currency_text_field")), "CCH");
+          await tester.pump(const Duration(seconds: 1));
+          await tester.tap(find.text("Save"));
+          await tester.pump(const Duration(seconds: 1));
+          await tester.tap(find.byKey(const Key('calendar_page_button')));
+          await tester.pump(const Duration(seconds: 1));
+          expect(find.byKey(WK.calendarPage), findsOneWidget);
+          await tester.tap(find.widgetWithText(GestureDetector, 'Add'));
+          await tester.pump(const Duration(seconds: 1));
+          expect(find.text("New Patient"), findsOneWidget);
+          await tester.pump(const Duration(seconds: 1));
+          await tester.tap(find.byKey(const Key('Operative Details_icon')));
+          await tester.pump(const Duration(seconds: 1));
+          expect(find.text("Price in CCH"), findsOneWidget);
+          await tester.tap(find.text("Cancel"));
+          await tester.pump(const Duration(seconds: 1));
+          await tester.tap(find.byKey(const Key('settings_page_button')));
+          await tester.pump(const Duration(seconds: 1));
+        },
+        "03: should change language": () async {
+          await tester.tap(find.widgetWithText(GestureDetector, 'Language'));
+          await tester.pump(const Duration(seconds: 1));
+          await tester.tap(find.byKey(Key("language_combo")));
+          await tester.pump(const Duration(seconds: 1));
+          await tester.tap(find.text("العربية"));
+          await tester.pump(const Duration(seconds: 1));
+          await tester.tap(find.text("Save"));
+          await tester.pump(const Duration(seconds: 4));
+          expect(find.text("اللغة"), findsOneWidget);
+          await tester.tap(find.byKey(Key("language_combo")));
+          await tester.pump(const Duration(seconds: 1));
+          await tester.tap(find.text("English"));
+          await tester.pump(const Duration(seconds: 1));
+          await tester.tap(find.text("حفظ"));
+          await tester.pump(const Duration(seconds: 1));
+          expect(find.text("Language"), findsOneWidget);
+        },
       };
 }

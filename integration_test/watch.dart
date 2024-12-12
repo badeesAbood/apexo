@@ -68,9 +68,9 @@ class ProcessManager {
 }
 
 void main(List<String> args) async {
-  final verbosity = args.firstOrNull ?? "--regular";
-  final file = File("./integration_test/verbosity");
-  await file.writeAsString(verbosity);
+  final mode = args.firstOrNull ?? "--regular";
+  final file = File("./integration_test/mode");
+  await file.writeAsString(mode);
 
   final processManager = ProcessManager();
   final watcher = Directory("${Directory.current.path}/integration_test")

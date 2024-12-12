@@ -16,10 +16,21 @@ The following instructions should help you write more tests
 - Run the tests in the terminal using the following command:
     - `flutter test integration_test/integration.dart -d windows`
 - Run the integration in watch mode: `dart integration_test/watch.dart` (Tested on windows, might need a bit of adjustments)
-- Run all tests in verbose mode (include skipped -- tests): `dart integration_test/watch.dart --verbose`
-- Run all tests in regular mode (skip skipped -- tests): `dart integration_test/watch.dart`
-- Run all tests in onlyRequired mode (include only required ++ tests): `dart integration_test/watch.dart --onlyRequired`
+- Run all tests in `all` mode (include skipped -- tests): `dart integration_test/watch.dart --all`
+- Run all tests in `regular` mode (skip skipped -- tests): `dart integration_test/watch.dart`
+- Run all tests in `onlyRequired` mode (include only required ++ tests): `dart integration_test/watch.dart --onlyRequired`
 - Run specific group (all tests for specific group, but important only for others): `dart integration_test/watch.dart doctors`
+
+You may run into unknown errors while running the test in `--all` mode. it's best to run them sequentially.
+```
+dart integration_test/watch.dart login
+dart integration_test/watch.dart doctors
+dart integration_test/watch.dart patients
+dart integration_test/watch.dart appointments
+dart integration_test/watch.dart calendar
+dart integration_test/watch.dart labworks
+dart integration_test/watch.dart settings
+```
 
 
 ### Why my own way?

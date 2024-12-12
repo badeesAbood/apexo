@@ -40,6 +40,7 @@ class SettingsPage extends ObservingWidget {
             if (app_state.state.isAdmin)
               SettingsItem(
                 title: txt("currency"),
+                identifier: "currency",
                 description: txt("currency_desc"),
                 icon: FluentIcons.all_currency,
                 inputType: InputType.text,
@@ -50,6 +51,7 @@ class SettingsPage extends ObservingWidget {
             if (app_state.state.isAdmin)
               SettingsItem(
                 title: txt("phone"),
+                identifier: "phone",
                 description: txt("phone_desc"),
                 icon: FluentIcons.phone,
                 inputType: InputType.text,
@@ -59,6 +61,7 @@ class SettingsPage extends ObservingWidget {
               ),
             SettingsItem(
               title: txt("language"),
+              identifier: "language",
               description: txt("language_desc"),
               icon: FluentIcons.locale_language,
               inputType: InputType.dropDown,
@@ -74,6 +77,7 @@ class SettingsPage extends ObservingWidget {
             ),
             SettingsItem(
               title: txt("startingDayOfWeek"),
+              identifier: "startingDayOfWeek",
               description: txt("startingDayOfWeek_desc"),
               icon: FluentIcons.hazy_day,
               inputType: InputType.dropDown,
@@ -87,6 +91,7 @@ class SettingsPage extends ObservingWidget {
             ),
             SettingsItem(
               title: txt("dateFormat"),
+              identifier: "dateFormat",
               description: txt("dateFormat_desc"),
               icon: FluentIcons.calendar_settings,
               inputType: InputType.dropDown,
@@ -127,6 +132,7 @@ class SettingsItem extends StatefulWidget {
   final String description;
   final IconData icon;
   final InputType inputType;
+  final String identifier;
   final Scope scope;
   final List<ComboBoxItem<String>> options;
   String value;
@@ -134,6 +140,7 @@ class SettingsItem extends StatefulWidget {
 
   SettingsItem({
     super.key,
+    required this.identifier,
     required this.title,
     required this.description,
     required this.icon,
@@ -171,11 +178,13 @@ class SettingsItemState extends State<SettingsItem> {
             children: [
               if (widget.inputType == InputType.text)
                 CupertinoTextField(
+                  key: Key("${widget.identifier}_text_field"),
                   controller: _controller,
                   onChanged: (value) => setState(() => _controller.text = value),
                 )
               else
                 ComboBox<String>(
+                  key: Key("${widget.identifier}_combo"),
                   items: widget.options,
                   onChanged: (value) => setState(() => value != null ? _controller.text = value : null),
                   value: _controller.text,

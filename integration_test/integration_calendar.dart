@@ -22,6 +22,8 @@ class CalendarIntegrationTest extends IntegrationTestBase {
         "01: Should move to calendar page": () async {
           await tester.tap(find.byKey(const Key('calendar_page_button')));
           await tester.pumpAndSettle();
+          await tester.tap(find.byKey(const Key('calendar_page_button')));
+          await tester.pumpAndSettle();
           expect(find.byKey(WK.calendarPage), findsOneWidget);
           expect(find.text(DateFormat("dd MMMM / yyyy").format(DateTime.now())), findsOneWidget);
         },

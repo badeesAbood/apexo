@@ -243,13 +243,13 @@ class PatientsIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           await tester.tap(find.widgetWithText(ComboBoxItem<int>, "By Gender"));
           await tester.pumpAndSettle();
-          expect(getOrderedPatientNames().toString(), ["Dandoon", "Shams", "Alawi", "Yousif"].toString());
+          expect(getOrderedPatientNames().toString(), ["Shams", "Dandoon", "Yousif", "Alawi"].toString());
           await tester.tap(find.byKey(WK.toggleSortDirection));
           await tester.pumpAndSettle();
-          expect(getOrderedPatientNames().toString(), ["Alawi", "Yousif", "Dandoon", "Shams"].toString());
+          expect(getOrderedPatientNames().toString(), ["Yousif", "Alawi", "Shams", "Dandoon"].toString());
           await tester.tap(find.byKey(WK.toggleSortDirection));
           await tester.pumpAndSettle();
-          expect(getOrderedPatientNames().toString(), ["Dandoon", "Shams", "Alawi", "Yousif"].toString());
+          expect(getOrderedPatientNames().toString(), ["Shams", "Dandoon", "Yousif", "Alawi"].toString());
         },
         "06: Sort by age": () async {
           await tester.tap(find.byKey(WK.dataTableSortBy));

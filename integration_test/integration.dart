@@ -13,6 +13,7 @@ import 'integration_patients.dart';
 import 'integration_doctors.dart';
 import '../test/test_utils.dart';
 import 'base.dart';
+import 'integration_settings.dart';
 
 void main() async {
   TestUtils.integrationLoggerInit();
@@ -32,12 +33,16 @@ void main() async {
         // ------ being integration tests //
         await LoginPageIntegrationTest(tester: tester).run();
         // there's no PB here, so this cuts of the connectivity for faster tests
+        final baseURL = state.pb!.baseUrl;
         state.pb!.baseUrl = "https://apexo.app";
         await doctorsPageIntegrationTest(tester: tester).run();
         await PatientsIntegrationTest(tester: tester).run();
         await AppointmentsIntegrationTest(tester: tester).run();
         await CalendarIntegrationTest(tester: tester).run();
         await LabworksIntegrationTest(tester: tester).run();
+        // we need connectivity for settings
+        state.pb!.baseUrl = baseURL;
+        await SettingsIntegrationTest(tester: tester).run();
         // ------ end integration tests //
 
         logger('\x1B[32m---------------------------------------------\x1B[0m', null, 3);
