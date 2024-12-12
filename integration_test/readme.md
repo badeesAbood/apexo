@@ -21,7 +21,8 @@ The following instructions should help you write more tests
 - Run all tests in `onlyRequired` mode (include only required ++ tests): `dart integration_test/watch.dart --onlyRequired`
 - Run specific group (all tests for specific group, but important only for others): `dart integration_test/watch.dart doctors`
 
-You may run into unknown errors while running the test in `--all` mode. it's best to run them sequentially.
+You may run into unknown errors while running the test in `--all` mode. it's best to run them sequentially:
+
 ```
 dart integration_test/watch.dart login
 dart integration_test/watch.dart doctors
