@@ -30,7 +30,10 @@ openSinglePatient({
       context: context,
       onArchive: o.archived != true && editing ? () => patients.set(o..archived = true) : null,
       onRestore: o.archived == true && editing ? () => patients.set(o..archived = null) : null,
-      onSave: () => patients.set(pages.openPatient),
+      onSave: () {
+        patients.set(pages.openPatient);
+        onSave(pages.openPatient);
+      },
       tabs: [
         TabbedModal(
           title: title,
