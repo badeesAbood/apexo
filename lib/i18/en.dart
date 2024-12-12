@@ -35,6 +35,7 @@ class En {
     "fullStats": "Full stats",
     "payments": "Payments",
     "appointmentsToday": "Appointments today",
+    "patientsToday": "Patients today",
     "newPatientsToday": "New patients today",
     "paymentsMadeToday": "Payments made today",
     "modeAdmin": "ADMIN",

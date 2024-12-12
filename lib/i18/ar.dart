@@ -34,6 +34,7 @@ class Ar implements En {
     "fullStats": "إحصائيات كاملة",
     "payments": "مدفوعات",
     "appointmentsToday": "المواعيد اليوم",
+    "patientsToday": "المرضى اليوم",
     "newPatientsToday": "مرضى جدد اليوم",
     "paymentsMadeToday": "المدفوعات اليوم",
     "modeAdmin": "مسؤول",

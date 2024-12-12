@@ -2,6 +2,7 @@ import 'package:apexo/backend/observable/observable.dart';
 import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/index.dart';
+import 'package:apexo/pages/shared/acrylic_title.dart';
 import 'package:apexo/pages/stats/reusable_styled_charts/bar.dart';
 import 'package:apexo/pages/stats/reusable_styled_charts/line.dart';
 import 'package:apexo/state/charts.dart';
@@ -101,7 +102,7 @@ class PageDashboard extends ObservingWidget {
           ],
         ),
       ),
-      const Divider(size: 1300),
+      const Divider(),
       Padding(
         padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
         child: InfoBar(
@@ -110,7 +111,24 @@ class PageDashboard extends ObservingWidget {
           content: Text(dashboardMessage),
         ),
       ),
-      if (permissions.list[5] || state.isAdmin) ...[buildTopSquares(), buildDashboardCharts()]
+      if (permissions.list[5] || state.isAdmin) ...[
+        buildTopSquares(),
+        buildDashboardCharts()
+      ] else if (permissions.list[2] && todayAppointments.isNotEmpty) ...[
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+          child: Text(txt("patientsToday")),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+          height: 50,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: todayAppointments.map((e) => AcrylicTitle(item: e)).toList(),
+          ),
+        )
+      ]
     ]);
   }
 
