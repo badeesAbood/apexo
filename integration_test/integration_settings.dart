@@ -1,7 +1,6 @@
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../test/test_utils.dart';
 import 'base.dart';
 
 class SettingsIntegrationTest extends IntegrationTestBase {
