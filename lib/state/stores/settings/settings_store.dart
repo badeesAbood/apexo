@@ -59,6 +59,7 @@ class GlobalSettings extends Store<Setting> {
         },
       );
 
+      return () async {
       state.setLoadingIndicator("Synchronizing settings");
       await Future.wait([loaded, synchronize()]).then((_) {
         defaults.forEach((key, value) {
@@ -67,7 +68,6 @@ class GlobalSettings extends Store<Setting> {
           }
         });
       });
-
       globalActions.syncCallbacks[_storeNameGlobal] = () async {
         await Future.wait([
           synchronize(),
@@ -78,7 +78,6 @@ class GlobalSettings extends Store<Setting> {
         ]);
       };
       globalActions.reconnectCallbacks[_storeNameGlobal] = remote!.checkOnline;
-
       // setting services
       await Future.wait([
         admins.reloadFromRemote(),
@@ -86,6 +85,7 @@ class GlobalSettings extends Store<Setting> {
         users.reloadFromRemote(),
         permissions.reloadFromRemote()
       ]);
+      };
     };
   }
 }

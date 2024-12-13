@@ -26,7 +26,6 @@ class Doctors extends Store<Doctor> {
     super.init();
     state.activators[_storeName] = () async {
       await loaded;
-
       local = SaveLocal(_storeName);
       await deleteMemoryAndLoadFromPersistence();
 
@@ -41,11 +40,12 @@ class Doctors extends Store<Doctor> {
         },
       );
 
-      state.setLoadingIndicator("Synchronizing doctors");
-      await synchronize();
-
-      globalActions.syncCallbacks[_storeName] = synchronize;
-      globalActions.reconnectCallbacks[_storeName] = remote!.checkOnline;
+      return () async {
+        state.setLoadingIndicator("Synchronizing doctors");
+        await synchronize();
+        globalActions.syncCallbacks[_storeName] = synchronize;
+        globalActions.reconnectCallbacks[_storeName] = remote!.checkOnline;
+      };
     };
   }
 

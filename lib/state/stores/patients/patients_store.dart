@@ -41,11 +41,12 @@ class Patients extends Store<Patient> {
         },
       );
 
-      state.setLoadingIndicator("Synchronizing patients");
-      await synchronize();
-
-      globalActions.syncCallbacks[_storeName] = synchronize;
-      globalActions.reconnectCallbacks[_storeName] = remote!.checkOnline;
+      return () async {
+        state.setLoadingIndicator("Synchronizing patients");
+        await synchronize();
+        globalActions.syncCallbacks[_storeName] = synchronize;
+        globalActions.reconnectCallbacks[_storeName] = remote!.checkOnline;
+      };
     };
   }
 

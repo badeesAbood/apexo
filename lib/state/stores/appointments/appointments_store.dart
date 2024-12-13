@@ -29,7 +29,6 @@ class Appointments extends Store<Appointment> {
 
       local = SaveLocal(_storeName);
       await deleteMemoryAndLoadFromPersistence();
-
       remote = SaveRemote(
         pbInstance: state.pb!,
         storeName: _storeName,
@@ -41,11 +40,12 @@ class Appointments extends Store<Appointment> {
         },
       );
 
-      state.setLoadingIndicator("Synchronizing appointments");
-      await synchronize();
-
-      globalActions.syncCallbacks[_storeName] = synchronize;
-      globalActions.reconnectCallbacks[_storeName] = remote!.checkOnline;
+      return () async {
+        state.setLoadingIndicator("Synchronizing appointments");
+        await synchronize();
+        globalActions.syncCallbacks[_storeName] = synchronize;
+        globalActions.reconnectCallbacks[_storeName] = remote!.checkOnline;
+      };
     };
   }
 

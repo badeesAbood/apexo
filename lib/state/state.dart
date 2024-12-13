@@ -1,4 +1,5 @@
 import 'package:apexo/backend/utils/constants.dart';
+import 'package:apexo/backend/utils/encode.dart';
 import 'package:apexo/backend/utils/imgs.dart';
 import 'package:apexo/backend/utils/init_pocketbase.dart';
 import 'package:apexo/backend/utils/logger.dart';
@@ -192,6 +193,10 @@ class State extends ObservablePersistingObject {
     setLoadingIndicator("Connecting to the server");
     loginError = "";
 
+    if (url.isNotEmpty) {
+      url = inputURL;
+    }
+
     if (online) {
       try {
         // email and password authentication
@@ -249,20 +254,24 @@ class State extends ObservablePersistingObject {
 
     /// if we reached here it means it was a successful login
 
-    if (online) {
-      for (var callback in activators.values) {
-        try {
-          await callback();
-        } catch (e, s) {
-          logger("Error during running activators: $e", s);
-        }
+    for (var callback in activators.values) {
+      try {
+        final secondStage = await callback();
+        if (online) await secondStage();
+      } catch (e, s) {
+        logger("Error during running activators: $e", s);
       }
     }
+
     loginActive = true;
     return finishedLoginProcess();
   }
 
-  Map<String, Future Function()> activators = {};
+  /// activators are a series of callbacks that run after a successful login
+  /// each activator function would first connect to local storage then return another callback
+  /// the second callback (would be called only when online) connects to the server
+  /// and synchronizes the local storage with the server
+  Map<String, Future<Future<void> Function()> Function()> activators = {};
 
   @override
   fromJson(Map<String, dynamic> json) async {
