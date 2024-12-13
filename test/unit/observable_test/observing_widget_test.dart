@@ -14,7 +14,7 @@ class TestObservable extends ObservableBase {
 final TestObservable target = TestObservable();
 
 class TestObservingWidget extends ObservingWidget {
-  TestObservingWidget({Key? key}) : super(key: key);
+  const TestObservingWidget({super.key});
 
   @override
   List<ObservableBase> getObservableState() => [target];
@@ -32,7 +32,7 @@ void main() {
     });
 
     testWidgets('ObservingWidget rebuilds when observable changes', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(
+      await tester.pumpWidget(const MaterialApp(
         home: TestObservingWidget(),
       ));
 
@@ -47,7 +47,7 @@ void main() {
     });
 
     testWidgets('ObservingWidget does not rebuild when disposed', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(
+      await tester.pumpWidget(const MaterialApp(
         home: TestObservingWidget(),
       ));
 
@@ -68,7 +68,7 @@ void main() {
     });
 
     testWidgets('ObservingWidget rebuilds correctly after multiple changes', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(
+      await tester.pumpWidget(const MaterialApp(
         home: TestObservingWidget(),
       ));
 
@@ -83,7 +83,7 @@ void main() {
     });
 
     testWidgets('ObservingWidget does not rebuild if no changes', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(
+      await tester.pumpWidget(const MaterialApp(
         home: TestObservingWidget(),
       ));
 
@@ -96,7 +96,7 @@ void main() {
     });
 
     testWidgets('ObservingWidget displays correct initial state', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(
+      await tester.pumpWidget(const MaterialApp(
         home: TestObservingWidget(),
       ));
 
