@@ -1,3 +1,4 @@
+import 'package:apexo/backend/observable/observable.dart';
 import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:apexo/i18/index.dart';
 import 'package:apexo/state/stores/settings/settings_store.dart';
@@ -12,7 +13,7 @@ class Login extends ObservingWidget {
 
   @override
   getObservableState() {
-    return [state];
+    return [state, obscureText];
   }
 
   @override
@@ -187,12 +188,25 @@ class Login extends ObservingWidget {
     return InfoLabel(
       label: txt("password"),
       child: CupertinoTextField(
-        key: WK.passwordField,
-        textDirection: TextDirection.ltr,
-        controller: state.passwordField,
-        enabled: state.loadingIndicator.isEmpty,
-        obscureText: true,
-      ),
+          key: WK.passwordField,
+          textDirection: TextDirection.ltr,
+          controller: state.passwordField,
+          enabled: state.loadingIndicator.isEmpty,
+          obscureText: obscureText(),
+          suffix: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: IconButton(
+              onPressed: () => obscureText(!obscureText()),
+              icon: const Icon(FluentIcons.red_eye, size: 18),
+              style: !obscureText()
+                  ? ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(Colors.grey.withOpacity(0.1)),
+                    )
+                  : null,
+            ),
+          )),
     );
   }
 }
+
+final obscureText = ObservableState(true);
