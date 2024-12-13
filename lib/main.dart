@@ -72,12 +72,13 @@ class ApexoApp extends ObservingWidget {
                       displayMode: PaneDisplayMode.auto,
                       items: List<NavigationPaneItem>.from(pages.allPages.where((p) => p.onFooter != true).map(
                             (page) => PaneItem(
-                                key: Key("${page.identifier}_page_button"),
-                                icon: page.accessible ? Icon(page.icon) : const Icon(FluentIcons.lock),
-                                body: page.accessible ? (page.body)() : const SizedBox(),
-                                title: Text(page.title),
-                                onTap: () => page.accessible ? pages.navigate(page) : null,
-                                enabled: page.accessible),
+                              key: Key("${page.identifier}_page_button"),
+                              icon: page.accessible ? Icon(page.icon) : const Icon(FluentIcons.lock),
+                              body: page.accessible ? (page.body)() : const SizedBox(),
+                              title: Text(page.title),
+                              onTap: () => page.accessible ? pages.navigate(page) : null,
+                              enabled: page.accessible,
+                            ),
                           )),
                       footerItems: [
                         ...pages.allPages.where((p) => p.onFooter == true).map(
