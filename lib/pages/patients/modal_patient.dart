@@ -221,7 +221,7 @@ TabbedModal webPageTab(BuildContext context) {
               title: Text(txt("patientCanUseTheFollowing")),
             ),
             Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(color: Colors.grey),
