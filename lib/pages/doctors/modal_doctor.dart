@@ -4,7 +4,7 @@ import 'package:apexo/pages/index.dart';
 import 'package:apexo/pages/shared/appointment_card.dart';
 import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/pages/shared/tag_input.dart';
-import 'package:apexo/state/state.dart' as appState;
+import 'package:apexo/state/state.dart' as app_state;
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
 import 'package:apexo/state/stores/doctors/doctors_store.dart';
 import 'package:apexo/state/stores/doctors/doctor_model.dart';
@@ -70,7 +70,7 @@ openSingleDoctor({
                 limit: 7,
               ),
             ),
-            if (appState.state.isAdmin)
+            if (app_state.state.isAdmin)
               InfoLabel(
                 label: "${txt("lockToUsers")}:",
                 child: TagInputWidget(
