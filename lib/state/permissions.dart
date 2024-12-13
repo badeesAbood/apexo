@@ -42,8 +42,8 @@ class Permissions extends ObservablePersistingObject {
     }
     notify();
     try {
-      list = List<bool>.from(
-          jsonDecode((await state.pb!.collection("data").getOne("permissions____")).getDataValue("data")["value"]));
+      list = List<bool>.from(jsonDecode(
+          (await state.pb!.collection("data").getOne("permissions____")).get<Map<String, dynamic>>("data")["value"]));
       // to make things backward compatible we need to check the length and add missing permissions
       if (list.length < initialNumberOfPermissions) {
         list.addAll(List.generate(initialNumberOfPermissions - list.length, (index) => false));
