@@ -61,6 +61,7 @@ class State extends ObservablePersistingObject {
   String email = "";
   String password = "";
   String token = "";
+  String adminCollectionId = "";
   String get currentUserID {
     if (token.isEmpty) return "";
     if (pb == null) return "";
@@ -79,6 +80,11 @@ class State extends ObservablePersistingObject {
   bool loginActive = false;
 
   bool get isAdmin {
+    final tokenSegments = token.split(".");
+    if (tokenSegments.length == 3 && decode(tokenSegments[1]).contains(adminCollectionId)) {
+      return true;
+    }
+
     if (pb == null) return false;
     if (pb!.authStore.isValid == false) return false;
     if (pb!.authStore.record == null) return false;
@@ -158,6 +164,7 @@ class State extends ObservablePersistingObject {
   Future<String> authenticateWithPassword(String email, String password) async {
     try {
       final auth = await pb!.collection("_superusers").authWithPassword(email, password);
+      adminCollectionId = auth.record.collectionId;
       return auth.token;
     } catch (e) {
       final auth = await pb!.collection("users").authWithPassword(email, password);
@@ -168,6 +175,7 @@ class State extends ObservablePersistingObject {
   Future<String> authenticateWithToken(String token) async {
     try {
       final auth = await pb!.collection("_superusers").authRefresh();
+      adminCollectionId = auth.record.collectionId;
       return auth.token;
     } catch (e) {
       final auth = await pb!.collection("users").authRefresh();
@@ -262,7 +270,7 @@ class State extends ObservablePersistingObject {
     email = json["email"] ?? email;
     imagesToDownload = json["imagesToDownload"] == null ? [] : List<String>.from(json["imagesToDownload"]);
     token = json["token"] ?? token;
-
+    adminCollectionId = json["adminCollectionId"] ?? adminCollectionId;
     urlField.text = url;
     emailField.text = email;
 
@@ -283,6 +291,7 @@ class State extends ObservablePersistingObject {
     json["loginActive"] = loginActive;
     json["imagesToDownload"] = imagesToDownload;
     json["token"] = token;
+    json["adminCollectionId"] = adminCollectionId;
     return json;
   }
 }
