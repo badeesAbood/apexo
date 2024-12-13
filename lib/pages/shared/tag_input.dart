@@ -66,11 +66,10 @@ class TagInputWidgetState extends State<TagInputWidget> {
     // Refresh the AutoSuggestBox suggestions by slightly altering the input value
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_controller.text.isNotEmpty) {
-        _controller.text = _controller.text; // Force refresh by setting the same value
-        _controller.selection = TextSelection.fromPosition(
-          TextPosition(offset: _controller.text.length),
-        );
-        _focusNode.requestFocus(); // Ensure the text field remains focused
+        final currentPosition = _controller.selection;
+        _controller.text = _controller.text;
+        _controller.selection = currentPosition;
+        _focusNode.requestFocus();
       }
     });
   }

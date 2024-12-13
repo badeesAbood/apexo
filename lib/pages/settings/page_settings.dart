@@ -188,10 +188,14 @@ class SettingsItemState extends State<SettingsItem> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (widget.inputType == InputType.text || widget.inputType == InputType.multiline)
-                TextBox(
+                CupertinoTextField(
                   key: Key("${widget.identifier}_text_field"),
                   controller: _controller,
-                  onChanged: (value) => setState(() => _controller.text = value),
+                  onChanged: (value) {
+                    final currentPosition = _controller.selection;
+                    setState(() => _controller.text = value);
+                    _controller.selection = currentPosition;
+                  },
                   maxLines: widget.inputType == InputType.multiline ? 1 : null,
                 )
               else

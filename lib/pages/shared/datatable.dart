@@ -46,7 +46,6 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
   int sortBy = -1;
   int sortDirection = 1;
   int slice = 10;
-  TextEditingController searchTerm = TextEditingController();
 
   /// labels must be cached since this computation would
   /// occur too many times on every rebuild
@@ -79,7 +78,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
   }
 
   List<Item> get filteredItems {
-    final words = searchTerm.text.toLowerCase().split(" ");
+    final words = _searchValue.toLowerCase().split(" ");
     final List<Item> candidates = [];
     for (var item in widget.items) {
       final searchIn = (item.title + jsonEncode(item.labels.values.toList())).toLowerCase();
@@ -119,9 +118,12 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     });
   }
 
+  String _searchValue = '';
+
   setSearchTerm(String value) {
     setState(() {
-      searchTerm.text = value;
+      // Don't modify the controller directly, just use the value for filtering
+      _searchValue = value;
     });
   }
 
@@ -332,23 +334,9 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
               ),
             ),
             const Divider(size: 20, direction: Axis.vertical),
-            SizedBox(
-              width: 165,
-              child: CupertinoTextField(
-                  key: WK.dataTableSearch,
-                  controller: searchTerm,
-                  placeholder: txt("searchPlaceholder"),
-                  onChanged: setSearchTerm,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      gradient: LinearGradient(
-                        end: AlignmentDirectional.topStart,
-                        begin: AlignmentDirectional.bottomEnd,
-                        colors: [
-                          Colors.white.withOpacity(0.1),
-                          Colors.white,
-                        ],
-                      ))),
+            DataTableSearchField(
+              onChanged: setSearchTerm,
+              placeholder: _searchValue,
             ),
             ...widget.furtherActions.map((a) => a)
           ],
@@ -369,7 +357,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
   }
 
   Widget _buildLabelPill(String l, Item item, [Color? color]) {
-    var selected = searchTerm.text.toLowerCase() == item.labels[l]?.toLowerCase();
+    var selected = _searchValue.toLowerCase() == item.labels[l]?.toLowerCase();
     color = color ?? colorsWithoutYellow[((labels.indexOf(l) / labels.length) * colorsWithoutYellow.length).floor()];
     return Padding(
       padding: const EdgeInsets.all(2),
@@ -452,6 +440,38 @@ class DataTablePill extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+class DataTableSearchField extends StatelessWidget {
+  final ValueChanged<String> onChanged;
+  final String placeholder;
+
+  const DataTableSearchField({
+    super.key,
+    required this.onChanged,
+    this.placeholder = "",
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 165,
+      child: CupertinoTextField(
+          key: WK.dataTableSearch,
+          placeholder: placeholder.isEmpty ? txt("searchPlaceholder") : "${txt("filter")}: ${placeholder}",
+          onChanged: onChanged,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              gradient: LinearGradient(
+                end: AlignmentDirectional.topStart,
+                begin: AlignmentDirectional.bottomEnd,
+                colors: [
+                  Colors.white.withOpacity(0.1),
+                  Colors.white,
+                ],
+              ))),
     );
   }
 }
