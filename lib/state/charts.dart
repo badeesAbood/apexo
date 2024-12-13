@@ -194,7 +194,7 @@ class _StatsPageState extends ObservableObject {
 
   int _daysSinceWeekStart(DateTime date) {
     int adjustedWeekday = (date.weekday -
-            StartingDayOfWeek.values.indexWhere((e) => e.name == globalSettings.get("start_day_of_wk")?.value) -
+            StartingDayOfWeek.values.indexWhere((e) => e.name == globalSettings.get("start_day_of_wk").value) -
             1) %
         7;
     return adjustedWeekday;

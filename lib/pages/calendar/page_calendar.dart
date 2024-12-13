@@ -50,7 +50,7 @@ class Calendar extends ObservingWidget {
           const SizedBox(width: 5),
           ArchiveToggle(notifier: appointments.notify)
         ],
-        startDay: StartingDayOfWeek.values.firstWhere((v) => v.name == globalSettings.get("start_day_of_wk")?.value,
+        startDay: StartingDayOfWeek.values.firstWhere((v) => v.name == globalSettings.get("start_day_of_wk").value,
             orElse: () => StartingDayOfWeek.monday),
         initiallySelectedDay: DateTime.now().millisecondsSinceEpoch,
         onSetTime: (item) {

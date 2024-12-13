@@ -194,7 +194,7 @@ openSingleAppointment({
               children: [
                 Expanded(
                   child: InfoLabel(
-                    label: "${txt("priceIn")} ${globalSettings.get("currency_______")?.value}",
+                    label: "${txt("priceIn")} ${globalSettings.get("currency_______").value}",
                     child: NumberBox(
                       key: WK.fieldAppointmentPrice,
                       value: pages.openAppointment.price,
@@ -206,7 +206,7 @@ openSingleAppointment({
                 ),
                 Expanded(
                   child: InfoLabel(
-                    label: "${txt("paidIn")} ${globalSettings.get("currency_______")?.value}",
+                    label: "${txt("paidIn")} ${globalSettings.get("currency_______").value}",
                     child: NumberBox(
                       key: WK.fieldAppointmentPayment,
                       value: pages.openAppointment.paid,

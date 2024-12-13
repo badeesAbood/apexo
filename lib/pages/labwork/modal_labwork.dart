@@ -91,7 +91,7 @@ openSingleLabwork({
               children: [
                 Expanded(
                   child: InfoLabel(
-                    label: "${txt("priceIn")} ${globalSettings.get("currency_______")?.value}",
+                    label: "${txt("priceIn")} ${globalSettings.get("currency_______").value}",
                     child: NumberBox(
                       key: WK.fieldLabworkPrice,
                       style: textFieldTextStyle(),

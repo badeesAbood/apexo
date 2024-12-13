@@ -45,7 +45,7 @@ class SettingsPage extends ObservingWidget {
                 icon: FluentIcons.all_currency,
                 inputType: InputType.text,
                 scope: Scope.app,
-                value: globalSettings.get("currency_______")!.value,
+                value: globalSettings.get("currency_______").value,
                 apply: (newVal) => globalSettings.set(Setting.fromJson({"id": "currency_______", "value": newVal})),
               ),
             if (app_state.state.isAdmin)
@@ -56,7 +56,7 @@ class SettingsPage extends ObservingWidget {
                 icon: FluentIcons.footer,
                 inputType: InputType.text,
                 scope: Scope.app,
-                value: globalSettings.get("prescriptionFot")!.value,
+                value: globalSettings.get("prescriptionFot").value,
                 apply: (newVal) => globalSettings.set(Setting.fromJson({"id": "prescriptionFot", "value": newVal})),
               ),
             if (app_state.state.isAdmin)
@@ -67,7 +67,7 @@ class SettingsPage extends ObservingWidget {
                 icon: FluentIcons.phone,
                 inputType: InputType.multiline,
                 scope: Scope.app,
-                value: globalSettings.get("phone__________")!.value,
+                value: globalSettings.get("phone__________").value,
                 apply: (newVal) => globalSettings.set(Setting.fromJson({"id": "phone__________", "value": newVal})),
               ),
             SettingsItem(
@@ -86,20 +86,19 @@ class SettingsPage extends ObservingWidget {
                 globalActions.resync();
               },
             ),
-            SettingsItem(
-              title: txt("startingDayOfWeek"),
-              identifier: "startingDayOfWeek",
-              description: txt("startingDayOfWeek_desc"),
-              icon: FluentIcons.hazy_day,
-              inputType: InputType.dropDown,
-              scope: Scope.app,
-              options:
-                  StartingDayOfWeek.values.map((e) => ComboBoxItem(value: e.name, child: Text(txt(e.name)))).toList(),
-              value: globalSettings
-                  .get("start_day_of_wk")!
-                  .value, // TODO: bug: run fresh, proceed offline, and move to settings page
-              apply: (newVal) => globalSettings.set(Setting.fromJson({"id": "start_day_of_wk", "value": newVal})),
-            ),
+            if (app_state.state.isAdmin)
+              SettingsItem(
+                title: txt("startingDayOfWeek"),
+                identifier: "startingDayOfWeek",
+                description: txt("startingDayOfWeek_desc"),
+                icon: FluentIcons.hazy_day,
+                inputType: InputType.dropDown,
+                scope: Scope.app,
+                options:
+                    StartingDayOfWeek.values.map((e) => ComboBoxItem(value: e.name, child: Text(txt(e.name)))).toList(),
+                value: globalSettings.get("start_day_of_wk").value,
+                apply: (newVal) => globalSettings.set(Setting.fromJson({"id": "start_day_of_wk", "value": newVal})),
+              ),
             SettingsItem(
               title: txt("dateFormat"),
               identifier: "dateFormat",

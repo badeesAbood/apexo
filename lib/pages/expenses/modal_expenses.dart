@@ -88,7 +88,7 @@ openSingleReceipt({
               children: [
                 Expanded(
                   child: InfoLabel(
-                    label: "${txt("amountIn")} ${globalSettings.get("currency_______")?.value}",
+                    label: "${txt("amountIn")} ${globalSettings.get("currency_______").value}",
                     child: NumberBox(
                       key: WK.fieldReceiptAmount,
                       style: textFieldTextStyle(),

@@ -189,7 +189,7 @@ class PageDashboard extends ObservingWidget {
                         child: StyledLineChart(
                       labels: chartsState.periods.map((p) => p.label).toList(),
                       datasets: [chartsState.groupedPayments.toList()],
-                      datasetLabels: ["Payments in ${globalSettings.get("currency_______")?.value}"],
+                      datasetLabels: ["Payments in ${globalSettings.get("currency_______").value}"],
                     ))
                   ]),
                 ),

@@ -159,7 +159,7 @@ class AppointmentCard extends StatelessWidget {
                         if (appointment.price != 0 && !hide.contains(AppointmentSections.pay)) ...[
                           ..._betweenSections,
                           _buildSection(
-                            "${txt("pay")}\n${globalSettings.get("currency_______")?.value}",
+                            "${txt("pay")}\n${globalSettings.get("currency_______").value}",
                             _paymentPills(),
                             FluentIcons.money,
                           ),

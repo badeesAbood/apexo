@@ -26,6 +26,11 @@ class GlobalSettings extends Store<Setting> {
     "start_day_of_wk": "monday",
   };
 
+  @override
+  Setting get(String id) {
+    return super.get(id) ?? Setting.fromJson({"id": id, "value": defaults[id]});
+  }
+
   GlobalSettings()
       : super(
           modeling: Setting.fromJson,
@@ -60,31 +65,31 @@ class GlobalSettings extends Store<Setting> {
       );
 
       return () async {
-      state.setLoadingIndicator("Synchronizing settings");
-      await Future.wait([loaded, synchronize()]).then((_) {
-        defaults.forEach((key, value) {
-          if (has(key) == false) {
-            set(Setting.fromJson({"id": key, "value": value}));
-          }
+        state.setLoadingIndicator("Synchronizing settings");
+        await Future.wait([loaded, synchronize()]).then((_) {
+          defaults.forEach((key, value) {
+            if (has(key) == false) {
+              set(Setting.fromJson({"id": key, "value": value}));
+            }
+          });
         });
-      });
-      globalActions.syncCallbacks[_storeNameGlobal] = () async {
+        globalActions.syncCallbacks[_storeNameGlobal] = () async {
+          await Future.wait([
+            synchronize(),
+            admins.reloadFromRemote(),
+            backups.reloadFromRemote(),
+            users.reloadFromRemote(),
+            permissions.reloadFromRemote()
+          ]);
+        };
+        globalActions.reconnectCallbacks[_storeNameGlobal] = remote!.checkOnline;
+        // setting services
         await Future.wait([
-          synchronize(),
           admins.reloadFromRemote(),
           backups.reloadFromRemote(),
           users.reloadFromRemote(),
           permissions.reloadFromRemote()
         ]);
-      };
-      globalActions.reconnectCallbacks[_storeNameGlobal] = remote!.checkOnline;
-      // setting services
-      await Future.wait([
-        admins.reloadFromRemote(),
-        backups.reloadFromRemote(),
-        users.reloadFromRemote(),
-        permissions.reloadFromRemote()
-      ]);
       };
     };
   }
