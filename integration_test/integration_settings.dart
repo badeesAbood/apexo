@@ -41,14 +41,14 @@ class SettingsIntegrationTest extends IntegrationTestBase {
         "03: should change language": () async {
           await tester.tap(find.widgetWithText(GestureDetector, 'Language'));
           await tester.pump(const Duration(seconds: 1));
-          await tester.tap(find.byKey(Key("language_combo")));
+          await tester.tap(find.byKey(const Key("language_combo")));
           await tester.pump(const Duration(seconds: 1));
           await tester.tap(find.text("العربية"));
           await tester.pump(const Duration(seconds: 1));
           await tester.tap(find.text("Save"));
           await tester.pump(const Duration(seconds: 4));
           expect(find.text("اللغة"), findsOneWidget);
-          await tester.tap(find.byKey(Key("language_combo")));
+          await tester.tap(find.byKey(const Key("language_combo")));
           await tester.pump(const Duration(seconds: 1));
           await tester.tap(find.text("English"));
           await tester.pump(const Duration(seconds: 1));
