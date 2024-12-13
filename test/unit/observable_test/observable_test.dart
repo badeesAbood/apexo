@@ -41,9 +41,9 @@ void main() {
         final observable = ObservableBase();
         bool notified = false;
 
-        final observer = (List<OEvent> events) {
+        observer(List<OEvent> events) {
           notified = true;
-        };
+        }
 
         observable.observe(observer);
         observable.unObserve(observer);
