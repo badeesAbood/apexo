@@ -224,6 +224,8 @@ class En {
     "currency": "Currency",
     "currency_desc": "Currency code to be used across the application (e.g. USD, EUR, IQD).",
     "phone_desc": "The phone number will be displayed in prints and patients web page.",
+    "prescriptionFooter": "Prescription footer",
+    "prescriptionFooter_desc": "This text will be displayed at the bottom of the prescription.",
     "language": "Language",
     "language_desc": "The interface language for the menus, buttons, and info used across the app.",
     "startingDayOfWeek": "Starting day of week",

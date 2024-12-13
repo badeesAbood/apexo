@@ -34,9 +34,9 @@ Future<void> printingPrescription(
           width: 150,
           height: 150,
           fit: pw.BoxFit.cover,
-        ))
+        )),
       ],
     ),
-    "Prescription printed on ${DateFormat(localSettings.dateFormat).format(DateTime.now())}.\nFor more information: please contact ${globalSettings.get("phone__________")!.value}.",
+    "${String.fromCharCodes(bidi.logicalToVisual(globalSettings.get("prescriptionFot")!.value))}\nPrescription printed on ${DateFormat(localSettings.dateFormat).format(DateTime.now())}.\nFor more information: please contact ${globalSettings.get("phone__________")!.value}.",
   );
 }

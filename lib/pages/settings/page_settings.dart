@@ -17,7 +17,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../state/stores/settings/settings_model.dart';
 import '../../state/stores/settings/settings_store.dart';
 
-enum InputType { text, dropDown }
+enum InputType { text, multiline, dropDown }
 
 enum Scope { device, app }
 
@@ -50,11 +50,22 @@ class SettingsPage extends ObservingWidget {
               ),
             if (app_state.state.isAdmin)
               SettingsItem(
+                title: txt("prescriptionFooter"),
+                identifier: "prescriptionFot",
+                description: txt("prescriptionFooter_desc"),
+                icon: FluentIcons.footer,
+                inputType: InputType.text,
+                scope: Scope.app,
+                value: globalSettings.get("prescriptionFot")!.value,
+                apply: (newVal) => globalSettings.set(Setting.fromJson({"id": "prescriptionFot", "value": newVal})),
+              ),
+            if (app_state.state.isAdmin)
+              SettingsItem(
                 title: txt("phone"),
                 identifier: "phone",
                 description: txt("phone_desc"),
                 icon: FluentIcons.phone,
-                inputType: InputType.text,
+                inputType: InputType.multiline,
                 scope: Scope.app,
                 value: globalSettings.get("phone__________")!.value,
                 apply: (newVal) => globalSettings.set(Setting.fromJson({"id": "phone__________", "value": newVal})),
@@ -176,11 +187,12 @@ class SettingsItemState extends State<SettingsItem> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (widget.inputType == InputType.text)
-                CupertinoTextField(
+              if (widget.inputType == InputType.text || widget.inputType == InputType.multiline)
+                TextBox(
                   key: Key("${widget.identifier}_text_field"),
                   controller: _controller,
                   onChanged: (value) => setState(() => _controller.text = value),
+                  maxLines: widget.inputType == InputType.multiline ? 1 : null,
                 )
               else
                 ComboBox<String>(
