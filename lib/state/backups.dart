@@ -51,7 +51,7 @@ class Backups extends ObservableObject {
     final token = await state.pb!.files.getToken();
     downloading.remove(key);
     notify();
-    return state.pb!.backups.getDownloadUrl(token, key);
+    return state.pb!.backups.getDownloadURL(token, key);
   }
 
   Future<void> restore(String key) async {
@@ -80,10 +80,10 @@ class Backups extends ObservableObject {
     }
     final file = filePickerRes.files.first;
     final multipartFile = MultipartFile(
-      "file",
+      "file+",
       file.readStream!,
       file.size,
-      filename: "uploaded-${DateTime.now().millisecondsSinceEpoch}-" + file.name,
+      filename: "uploaded-${DateTime.now().millisecondsSinceEpoch}-${file.name}",
       contentType: MediaType("application", "zip"),
     );
     uploading = true;

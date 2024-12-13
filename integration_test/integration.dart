@@ -18,7 +18,7 @@ import 'integration_settings.dart';
 void main() async {
   TestUtils.integrationLoggerInit();
   await TestUtils.removeLocalData();
-  await TestUtils.resetRemoteData();
+  await TestUtils.resetServer();
   initializeStores();
 
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -33,15 +33,15 @@ void main() async {
         // ------ being integration tests //
         await LoginPageIntegrationTest(tester: tester).run();
         // there's no PB here, so this cuts of the connectivity for faster tests
-        final baseURL = state.pb!.baseUrl;
-        state.pb!.baseUrl = "https://apexo.app";
+        final baseURL = state.pb!.baseURL;
+        state.pb!.baseURL = "https://apexo.app";
         await doctorsPageIntegrationTest(tester: tester).run();
         await PatientsIntegrationTest(tester: tester).run();
         await AppointmentsIntegrationTest(tester: tester).run();
         await CalendarIntegrationTest(tester: tester).run();
         await LabworksIntegrationTest(tester: tester).run();
         // we need connectivity for settings
-        state.pb!.baseUrl = baseURL;
+        state.pb!.baseURL = baseURL;
         await SettingsIntegrationTest(tester: tester).run();
         // ------ end integration tests //
 

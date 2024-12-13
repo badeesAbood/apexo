@@ -220,124 +220,125 @@ openSingleAppointment({
             )
           ],
         ),
-        TabbedModal(
-          title: txt("gallery"),
-          icon: FluentIcons.camera,
-          closable: true,
-          padding: 0,
-          spacing: 0,
-          actions: kIsWeb
-              ? [
-                  /// TODO: uploading images from the web is not supported
-                  /// currently we're not supporting uploading images from the web
-                  /// if we're planning to support it, we should clean the images uploading functions first
-                  /// - should they accept an array?
-                  /// - should they accept a single image?
-                  /// - XFile vs File?
-                  /// - Http.MultipartFile.fromPath while we already had an XFile/File!! this doesn't seem right!
-                  /// - also how are we going to approach deferred image uploading in the web! given that we're dealing with a blob that gets revoked!
-                  /// - we should have testing ready for image uploading scenarios before making changes, I think it's very fragile!
-                  ///
-                  /// There's a lot of details to be considered before we can tackle this
-                  ///
-                  /// Why we should support uploading images from the web?
-                  /// This decision should be based on whether the application is going to be published in the iOS app store or not.
-                  ///
-                  /// Note: Image viewing and deleting is supported!
-                ]
-              : [
-                  TabAction(
-                    text: txt("link"),
-                    icon: FluentIcons.link,
-                    callback: (state) {
-                      () async {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return ImportDialog(state: state);
-                            });
-                      }();
-                      return false;
-                    },
-                  ),
-                  TabAction(
-                    text: txt("upload"),
-                    callback: (state) {
-                      () async {
-                        List<XFile> res =
-                            await ImagePicker().pickMultiImage(limit: 50 - pages.openAppointment.imgs.length);
-                        state.startProgress();
-                        try {
-                          for (var img in res) {
-                            // copy
-                            final newFileName = simpleHash(img.path) + path.extension(img.path);
-                            final savedFile = await savePickedImage(img, newFileName);
-                            // upload
-                            await appointments.uploadImgs(pages.openAppointment.id, [savedFile.path]);
-                            // update model
-                            if (pages.openAppointment.imgs.contains(newFileName) == false) {
-                              pages.openAppointment.imgs.add(newFileName);
-                              appointments.set(pages.openAppointment);
-                            }
-                          }
-                        } catch (e, s) {
-                          logger("Error during file upload: $e", s);
-                        }
-                        state.endProgress();
-                      }();
-                      return false;
-                    },
-                    icon: FluentIcons.photo2_add,
-                  ),
-                  if (ImagePicker().supportsImageSource(ImageSource.camera))
+        if (editing)
+          TabbedModal(
+            title: txt("gallery"),
+            icon: FluentIcons.camera,
+            closable: true,
+            padding: 0,
+            spacing: 0,
+            actions: kIsWeb
+                ? [
+                    /// TODO: uploading images from the web is not supported
+                    /// currently we're not supporting uploading images from the web
+                    /// if we're planning to support it, we should clean the images uploading functions first
+                    /// - should they accept an array?
+                    /// - should they accept a single image?
+                    /// - XFile vs File?
+                    /// - Http.MultipartFile.fromPath while we already had an XFile/File!! this doesn't seem right!
+                    /// - also how are we going to approach deferred image uploading in the web! given that we're dealing with a blob that gets revoked!
+                    /// - we should have testing ready for image uploading scenarios before making changes, I think it's very fragile!
+                    ///
+                    /// There's a lot of details to be considered before we can tackle this
+                    ///
+                    /// Why we should support uploading images from the web?
+                    /// This decision should be based on whether the application is going to be published in the iOS app store or not.
+                    ///
+                    /// Note: Image viewing and deleting is supported!
+                  ]
+                : [
                     TabAction(
-                      text: txt("camera"),
+                      text: txt("link"),
+                      icon: FluentIcons.link,
                       callback: (state) {
                         () async {
-                          XFile? res = await ImagePicker().pickImage(source: ImageSource.camera);
-                          if (res == null) return;
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return ImportDialog(state: state);
+                              });
+                        }();
+                        return false;
+                      },
+                    ),
+                    TabAction(
+                      text: txt("upload"),
+                      callback: (state) {
+                        () async {
+                          List<XFile> res =
+                              await ImagePicker().pickMultiImage(limit: 50 - pages.openAppointment.imgs.length);
                           state.startProgress();
                           try {
-                            // copy
-                            final newFileName = simpleHash(res.path) + path.extension(res.path);
-                            final file = await savePickedImage(res, newFileName);
-                            // upload image
-                            await appointments.uploadImgs(pages.openAppointment.id, [file.path]);
-                            // update the model
-                            if (pages.openAppointment.imgs.contains(newFileName) == false) {
-                              pages.openAppointment.imgs.add(newFileName);
-                              appointments.set(pages.openAppointment);
+                            for (var img in res) {
+                              // copy
+                              final newFileName = simpleHash(img.path) + path.extension(img.path);
+                              final savedFile = await savePickedImage(img, newFileName);
+                              // upload
+                              await appointments.uploadImgs(pages.openAppointment.id, [savedFile.path]);
+                              // update model
+                              if (pages.openAppointment.imgs.contains(newFileName) == false) {
+                                pages.openAppointment.imgs.add(newFileName);
+                                appointments.set(pages.openAppointment);
+                              }
                             }
                           } catch (e, s) {
-                            logger("Error during uploading camera capture: $e", s);
+                            logger("Error during file upload: $e", s);
                           }
                           state.endProgress();
                         }();
                         return false;
                       },
-                      icon: FluentIcons.camera,
+                      icon: FluentIcons.photo2_add,
                     ),
-                ],
-          content: (state) => [
-            pages.openAppointment.imgs.isEmpty
-                ? InfoBar(title: Text(txt("emptyGallery")), content: Text(txt("noPhotos")))
-                : SingleChildScrollView(
-                    child: GridGallery(
-                      imgs: pages.openAppointment.imgs,
-                      onPressDelete: (img) async {
-                        state.startProgress();
-                        try {
-                          await appointments.uploadImgs(pages.openAppointment.id, [img], false);
-                          pages.openAppointment.imgs.remove(img);
-                          appointments.set(pages.openAppointment);
-                        } catch (e, s) {
-                          logger("Error during deleting image: $e", s);
-                        }
-                        state.endProgress();
-                      },
-                    ),
-                  )
-          ],
-        )
+                    if (ImagePicker().supportsImageSource(ImageSource.camera))
+                      TabAction(
+                        text: txt("camera"),
+                        callback: (state) {
+                          () async {
+                            XFile? res = await ImagePicker().pickImage(source: ImageSource.camera);
+                            if (res == null) return;
+                            state.startProgress();
+                            try {
+                              // copy
+                              final newFileName = simpleHash(res.path) + path.extension(res.path);
+                              final file = await savePickedImage(res, newFileName);
+                              // upload image
+                              await appointments.uploadImgs(pages.openAppointment.id, [file.path]);
+                              // update the model
+                              if (pages.openAppointment.imgs.contains(newFileName) == false) {
+                                pages.openAppointment.imgs.add(newFileName);
+                                appointments.set(pages.openAppointment);
+                              }
+                            } catch (e, s) {
+                              logger("Error during uploading camera capture: $e", s);
+                            }
+                            state.endProgress();
+                          }();
+                          return false;
+                        },
+                        icon: FluentIcons.camera,
+                      ),
+                  ],
+            content: (state) => [
+              pages.openAppointment.imgs.isEmpty
+                  ? InfoBar(title: Text(txt("emptyGallery")), content: Text(txt("noPhotos")))
+                  : SingleChildScrollView(
+                      child: GridGallery(
+                        imgs: pages.openAppointment.imgs,
+                        onPressDelete: (img) async {
+                          state.startProgress();
+                          try {
+                            await appointments.uploadImgs(pages.openAppointment.id, [img], false);
+                            pages.openAppointment.imgs.remove(img);
+                            appointments.set(pages.openAppointment);
+                          } catch (e, s) {
+                            logger("Error during deleting image: $e", s);
+                          }
+                          state.endProgress();
+                        },
+                      ),
+                    )
+            ],
+          )
       ]);
 }

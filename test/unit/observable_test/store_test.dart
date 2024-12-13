@@ -1,5 +1,4 @@
 import 'package:apexo/backend/observable/save_remote.dart';
-import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/uuid.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:apexo/backend/observable/store.dart';
@@ -32,11 +31,7 @@ class Person extends Model {
 void main() {
   group('Store Tests', () {
     late Store<Person> store;
-    late SaveLocal local;
-
-    setUpAll(() async {
-      local = SaveLocal("test");
-    });
+    final SaveLocal local = TestUtils.local;
 
     setUp(() async {
       await local.clear();
@@ -238,18 +233,18 @@ void main() {
 
   group('Store synchronization tests', () {
     late Store<Person> store;
-    late SaveLocal local;
-    late SaveRemote remote;
-    late PocketBase pb;
+    late SaveLocal local = TestUtils.local;
+    late SaveRemote remote = TestUtils.remote;
+    final PocketBase pb = TestUtils.pb;
+
+    setUpAll(() async {
+      await TestUtils.resetServer();
+    });
 
     setUp(() async {
-      // TODO: this setup is taking too much time
-      // once the batch delete is implemented, we can use it here
       await local.clear();
-
-      pb = await TestUtils.resetRemoteData();
-      await pb.collections.import([dataCollectionImport]);
-      remote = SaveRemote(storeName: "test", pbInstance: pb);
+      await pb.collections.truncate("data");
+      expect((await remote.getSince(version: 0)).rows, isEmpty);
 
       store = Store<Person>(
         modeling: Person.fromJson,
@@ -267,13 +262,8 @@ void main() {
       await Future.delayed(const Duration(milliseconds: 200));
       expect(store.docs.length, equals(0));
       expect(await store.local!.getVersion(), 0);
+      expect((await local.getAll()), isEmpty);
       store.init();
-    });
-
-    setUpAll(() async {
-      pb = await TestUtils.resetRemoteData();
-      local = SaveLocal("sync");
-      remote = SaveRemote(storeName: "sync", pbInstance: pb);
     });
 
     test("deferredPresent is true when there are deferred updates", () async {
@@ -579,6 +569,7 @@ void main() {
 
       remote.isOnline = false;
       store.set(Person.fromJson({"id": id0}));
+      await Future.delayed(const Duration(seconds: 1));
 
       await store.waitUntilChangesAreProcessed();
 
@@ -615,7 +606,7 @@ void main() {
         RowToWriteRemotely(id: id2, data: '{"id": "$id2", "name": "name2", "age": 12}'),
         RowToWriteRemotely(id: id3, data: '{"id": "$id3", "name": "name3", "age": 13}'),
       ]);
-
+      await Future.delayed(const Duration(seconds: 1));
       await store.waitUntilChangesAreProcessed();
       remote.isOnline = false;
       store.set(Person.fromJson({"id": id2, "name": "modified-name", "age": 0}));
@@ -645,6 +636,7 @@ void main() {
       store.set(Person.fromJson({"id": id1, "age": 11}));
       await store.waitUntilChangesAreProcessed();
 
+      await Future.delayed(const Duration(seconds: 1));
       await remote.put([
         RowToWriteRemotely(id: id1, data: '{"id": "$id1", "name": "name1", "age": 111}'),
         RowToWriteRemotely(id: id2, data: '{"id": "$id2", "name": "name2", "age": 12}'),
@@ -674,7 +666,7 @@ void main() {
       final id4 = uuid();
       store.set(Person.fromJson({"id": id1, "name": "local-1"}));
       await store.waitUntilChangesAreProcessed();
-
+      await Future.delayed(const Duration(seconds: 1));
       await remote.put([
         RowToWriteRemotely(id: id1, data: '{"id": "$id1", "name": "remote-1", "age": 111}'),
         RowToWriteRemotely(id: id2, data: '{"id": "$id2", "name": "remote-2", "age": 12}'),
@@ -714,6 +706,7 @@ void main() {
         RowToWriteRemotely(id: id2, data: '{"id": "$id2", "name": "name2", "age": 12}'),
         RowToWriteRemotely(id: id3, data: '{"id": "$id3", "name": "name3", "age": 13}'),
       ]);
+      await Future.delayed(const Duration(seconds: 1));
       expect(await store.inSync(), equals(false));
       await store.synchronize();
       expect(await store.inSync(), equals(true));

@@ -9,20 +9,79 @@ const String webImagesStore = "web-images";
 final dataCollectionImport = CollectionModel(
   name: dataCollectionName,
   type: "base",
-  schema: [
-    SchemaField(
-      name: "data",
-      type: "json",
-      options: {"maxSize": 2000000},
-    ),
-    SchemaField(
-      name: "store",
-      type: "text",
-    ),
-    SchemaField(name: "imgs", type: "file", options: {
-      "maxSelect": 99,
-      "maxSize": 1048576 * 15, // 15MB
+  fields: [
+    CollectionField({
+      "autogeneratePattern": "[a-z0-9]{15}",
+      "hidden": false,
+      "id": "text3208210256",
+      "max": 15,
+      "min": 15,
+      "name": "id",
+      "pattern": "^[a-zA-Z0-9_]+\$",
+      "presentable": false,
+      "primaryKey": true,
+      "required": true,
+      "system": true,
+      "type": "text"
     }),
+    CollectionField({
+      "hidden": false,
+      "id": "eq0qodeh",
+      "maxSize": 2000000,
+      "name": "data",
+      "presentable": false,
+      "required": false,
+      "system": false,
+      "type": "json"
+    }),
+    CollectionField({
+      "autogeneratePattern": "",
+      "hidden": false,
+      "id": "iyjaaxrg",
+      "max": 0,
+      "min": 0,
+      "name": "store",
+      "pattern": "",
+      "presentable": false,
+      "primaryKey": false,
+      "required": false,
+      "system": false,
+      "type": "text"
+    }),
+    CollectionField({
+      "hidden": false,
+      "id": "20mvabus",
+      "maxSelect": 99,
+      "maxSize": 15728640,
+      "mimeTypes": null,
+      "name": "imgs",
+      "presentable": false,
+      "protected": false,
+      "required": false,
+      "system": false,
+      "thumbs": null,
+      "type": "file"
+    }),
+    CollectionField({
+      "hidden": false,
+      "id": "autodate2990389176",
+      "name": "created",
+      "onCreate": true,
+      "onUpdate": false,
+      "presentable": false,
+      "system": false,
+      "type": "autodate"
+    }),
+    CollectionField({
+      "hidden": false,
+      "id": "autodate3332085495",
+      "name": "updated",
+      "onCreate": true,
+      "onUpdate": true,
+      "presentable": false,
+      "system": false,
+      "type": "autodate"
+    })
   ],
   indexes: [
     "CREATE INDEX `idx_get_since` ON `$dataCollectionName` (\n  `store`,\n  `updated`\n)",
@@ -43,10 +102,8 @@ final publicCollectionImport = CollectionModel(
   createRule: null,
   updateRule: null,
   deleteRule: null,
-  options: {
-    "query":
-        "SELECT\n    data.id,\n    imgs,\n    json_extract(data.data, '\$.patientID') AS pid,\n    json_extract(data.data, '\$.date') AS date,\n    json_extract(data.data, '\$.prescriptions') AS prescriptions,\n    json_extract(data.data, '\$.price') AS price,\n    json_extract(data.data, '\$.paid') AS paid\nFROM data\nWHERE data.store = 'appointments';"
-  },
+  viewQuery:
+      "SELECT\n    data.id,\n    imgs,\n    json_extract(data.data, '\$.patientID') AS pid,\n    json_extract(data.data, '\$.date') AS date,\n    json_extract(data.data, '\$.prescriptions') AS prescriptions,\n    json_extract(data.data, '\$.price') AS price,\n    json_extract(data.data, '\$.paid') AS paid\nFROM data\nWHERE data.store = 'appointments';",
 );
 
 const ruleLoggedUsersExceptForSettings = "@request.auth.id != \"\" && store != \"settings_global\"";

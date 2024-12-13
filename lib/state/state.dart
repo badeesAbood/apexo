@@ -1,5 +1,6 @@
 import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/imgs.dart';
+import 'package:apexo/backend/utils/init_pocketbase.dart';
 import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/state/stores/doctors/doctor_model.dart';
 import 'package:apexo/state/stores/doctors/doctors_store.dart';
@@ -63,10 +64,8 @@ class State extends ObservablePersistingObject {
   String get currentUserID {
     if (token.isEmpty) return "";
     if (pb == null) return "";
-    if (pb!.authStore.model == null) return "";
-    if (pb!.authStore.model is AdminModel) return (pb!.authStore.model as AdminModel).id;
-    if (pb!.authStore.model is RecordModel) return (pb!.authStore.model as RecordModel).id;
-    return "";
+    if (pb!.authStore.record == null) return "";
+    return pb!.authStore.record!.id;
   }
 
   // PocketBase instance
@@ -81,7 +80,9 @@ class State extends ObservablePersistingObject {
 
   bool get isAdmin {
     if (pb == null) return false;
-    return pb!.authStore.model is AdminModel;
+    if (pb!.authStore.isValid == false) return false;
+    if (pb!.authStore.record == null) return false;
+    return pb!.authStore.record!.collectionName == "_superusers";
   }
 
   /// images that needs to be downloaded
@@ -133,7 +134,7 @@ class State extends ObservablePersistingObject {
     loadingIndicator = "Sending password reset email";
     notify();
     try {
-      await pb.admins.requestPasswordReset(emailField.text);
+      await pb.collection("_superusers").requestPasswordReset(emailField.text);
       await pb.collection("users").requestPasswordReset(emailField.text);
     } catch (e, s) {
       logger("Error during resetting password: $e", s);
@@ -156,7 +157,7 @@ class State extends ObservablePersistingObject {
 
   Future<String> authenticateWithPassword(String email, String password) async {
     try {
-      final auth = await pb!.admins.authWithPassword(email, password);
+      final auth = await pb!.collection("_superusers").authWithPassword(email, password);
       return auth.token;
     } catch (e) {
       final auth = await pb!.collection("users").authWithPassword(email, password);
@@ -166,7 +167,7 @@ class State extends ObservablePersistingObject {
 
   Future<String> authenticateWithToken(String token) async {
     try {
-      final auth = await pb!.admins.refresh();
+      final auth = await pb!.collection("_superusers").authRefresh();
       return auth.token;
     } catch (e) {
       final auth = await pb!.collection("users").authRefresh();
@@ -176,7 +177,7 @@ class State extends ObservablePersistingObject {
 
   /// run a series of callbacks that would require the login credentials to be active
   activate(String inputURL, List<String> credentials, bool online) async {
-    if ((pb == null || pb?.baseUrl.isEmpty == true) || !loginActive) {
+    if ((pb == null || pb?.baseURL.isEmpty == true) || !loginActive) {
       pb = PocketBase(inputURL);
     }
 
@@ -208,11 +209,10 @@ class State extends ObservablePersistingObject {
             await pb!.collections.getOne(publicCollectionName);
           } catch (e) {
             if (isAdmin) {
-              await pb!.collections.import([dataCollectionImport, publicCollectionImport]);
-              await pb!.collections.update("users", body: {"createRule": null});
+              await initializePocketbase(pb!);
             } else {
               logger(
-                "ERROR: The needed database can not be created because the logged-in user is not admin.",
+                "ERROR: The first login must be done by an admin user. Please contact the admin to create the database.",
                 StackTrace.current,
               );
             }

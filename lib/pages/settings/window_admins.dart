@@ -8,7 +8,7 @@ import 'package:apexo/state/admins.dart';
 import 'package:apexo/state/state.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:pocketbase/src/dtos/admin_model.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 // ignore: must_be_immutable
 class AdminsWindow extends ObservingWidget {
@@ -53,21 +53,21 @@ class AdminsWindow extends ObservingWidget {
     );
   }
 
-  SettingsListTile buildListItem(AdminModel admin, BuildContext context) {
+  SettingsListTile buildListItem(RecordModel admin, BuildContext context) {
     return SettingsListTile(
-      title: admin.email,
-      subtitle: "${txt("accountCreated")}: ${admin.created.split(" ").first}",
+      title: admin.getStringValue("email"),
+      subtitle: "${txt("accountCreated")}: ${admin.get<String>("created").split(" ").first}",
       actions: [
-        if (state.email != admin.email) buildDeleteButton(admin),
+        if (state.email != admin.getStringValue("email")) buildDeleteButton(admin),
         buildEditButton(admin, context),
       ],
-      trailingText: state.email == admin.email
+      trailingText: state.email == admin.getStringValue("email")
           ? Text(txt("you"), style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600))
           : const SizedBox(),
     );
   }
 
-  Tooltip buildEditButton(AdminModel admin, BuildContext context) {
+  Tooltip buildEditButton(RecordModel admin, BuildContext context) {
     return Tooltip(
       message: txt("edit"),
       child: BorderColorTransition(
@@ -79,7 +79,7 @@ class AdminsWindow extends ObservingWidget {
             showDialog(
                 context: context,
                 builder: (context) {
-                  emailController.text = admin.email;
+                  emailController.text = admin.getStringValue("email");
                   passwordController.text = "";
                   return editDialog(context, admin);
                 });
@@ -89,7 +89,7 @@ class AdminsWindow extends ObservingWidget {
     );
   }
 
-  ContentDialog editDialog(BuildContext context, AdminModel admin) {
+  ContentDialog editDialog(BuildContext context, RecordModel admin) {
     return ContentDialog(
       title: Text(txt("editAdmin")),
       style: dialogStyling(false),
@@ -126,7 +126,7 @@ class AdminsWindow extends ObservingWidget {
     );
   }
 
-  Tooltip buildDeleteButton(AdminModel admin) {
+  Tooltip buildDeleteButton(RecordModel admin) {
     return Tooltip(
       message: txt("delete"),
       child: BorderColorTransition(

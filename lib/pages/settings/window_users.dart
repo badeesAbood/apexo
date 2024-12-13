@@ -55,7 +55,7 @@ class UsersWindow extends ObservingWidget {
   SettingsListTile buildListItem(RecordModel user, BuildContext context) {
     return SettingsListTile(
       title: user.getStringValue("email"),
-      subtitle: "${txt("accountCreated")}: ${user.created.split(" ").first}",
+      subtitle: "${txt("accountCreated")}: ${user.get<String>("created").split(" ").first}",
       actions: [
         buildDeleteButton(user),
         buildEditButton(user, context),

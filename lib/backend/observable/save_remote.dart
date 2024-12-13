@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:apexo/backend/utils/constants.dart';
+import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/backend/utils/strip_id_from_file.dart';
 import 'package:apexo/state/state.dart';
 import 'package:http/http.dart' as http;
@@ -113,7 +114,7 @@ class SaveRemote {
         );
 
         for (var item in pageResult.items) {
-          final ts = DateTime.parse(item.updated).millisecondsSinceEpoch;
+          final ts = DateTime.parse(item.get<String>("updated")).millisecondsSinceEpoch;
           result.add(Row(id: item.id, data: jsonEncode(item.data["data"]), ts: ts));
           // handle uploaded images
           for (var img in item.data["imgs"]) {
@@ -144,7 +145,7 @@ class SaveRemote {
       if (result.items.isEmpty) {
         return 0;
       }
-      return DateTime.parse(result.items.first.updated).millisecondsSinceEpoch;
+      return DateTime.parse(result.items.first.get<String>("updated")).millisecondsSinceEpoch;
     } catch (e) {
       await checkOnline();
       throw Exception(e);
@@ -164,27 +165,13 @@ class SaveRemote {
 
     for (var chunk in chunks) {
       try {
-        // TODO [Deferred]: currently pocketbase doesn't support upserts nor bulk upserts
-        // once we have it in version 0.23 we should update the following code
-        // splitting the data into chunks currently doesn't serve any purpose
-        // but it's here for future use
-
+        final batchOperation = pbInstance.createBatch();
         for (var item in chunk) {
-          bool exists;
-          try {
-            await remoteRows.getOne(item.id);
-            exists = true;
-          } catch (e) {
-            exists = false;
-          }
-          if (exists) {
-            // update
-            await remoteRows.update(item.id, body: {"data": item.data});
-          } else {
-            // create
-            await remoteRows.create(body: {"store": storeName, "data": item.data, "id": item.id});
-          }
+          batchOperation
+              .collection(dataCollectionName)
+              .upsert(body: {"store": storeName, "data": item.data, "id": item.id});
         }
+        await batchOperation.send();
       } catch (e) {
         await checkOnline();
         rethrow;
@@ -195,8 +182,15 @@ class SaveRemote {
 
   Future<bool> uploadImages(String recordID, List<http.MultipartFile> files) async {
     try {
-      final alreadyUploaded = List<String>.from((await remoteRows.getOne(recordID, fields: "imgs")).data["imgs"])
-          .map((e) => stripIDFromFileName(e));
+      late List<String> alreadyUploaded;
+      try {
+        alreadyUploaded = List<String>.from((await remoteRows.getOne(recordID, fields: "imgs")).data["imgs"])
+            .map((e) => stripIDFromFileName(e))
+            .toList();
+      } catch (e, s) {
+        alreadyUploaded = [];
+        logger("Error while trying to get a list of uploaded images: $e", s);
+      }
 
       // upload files one by one to avoid having large request body
       for (final file in files) {

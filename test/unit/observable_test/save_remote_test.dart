@@ -1,5 +1,4 @@
 import 'package:apexo/backend/observable/save_remote.dart';
-import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/uuid.dart';
 import 'package:apexo/state/state.dart';
 import 'package:http/http.dart';
@@ -13,15 +12,11 @@ void main() {
   int savedVersion3 = 0;
   String savedId = "";
   group("Save Remote", () {
-    late SaveRemote saveRemote;
-    late PocketBase pb;
+    final SaveRemote saveRemote = TestUtils.remote;
+    final PocketBase pb = TestUtils.pb;
 
     setUpAll(() async {
-      // TODO: this setup is taking too much time
-      // once the batch delete is implemented, we can use it here
-      pb = await TestUtils.resetRemoteData();
-      await pb.collections.import([dataCollectionImport]);
-      saveRemote = SaveRemote(storeName: "test", pbInstance: pb);
+      await TestUtils.resetServer();
     });
 
     test("checkOnline", () async {
@@ -108,7 +103,7 @@ void main() {
 
     test("uploading images", () async {
       // uploading
-      await saveRemote.uploadImages(savedId, [MultipartFile.fromString("imgs", "content", filename: "file1.txt")]);
+      await saveRemote.uploadImages(savedId, [MultipartFile.fromString("imgs+", "content", filename: "file1.txt")]);
       // version should be modified
       final version = await saveRemote.getVersion();
       expect(version, greaterThan(savedVersion3));
@@ -125,7 +120,7 @@ void main() {
     });
     test("appending one more image", () async {
       // uploading
-      await saveRemote.uploadImages(savedId, [MultipartFile.fromString("imgs", "content", filename: "file2.txt")]);
+      await saveRemote.uploadImages(savedId, [MultipartFile.fromString("imgs+", "content", filename: "file2.txt")]);
       // version should be modified
       final version = await saveRemote.getVersion();
       expect(version, greaterThan(savedVersion3));
@@ -144,7 +139,7 @@ void main() {
     });
     test("trying to append an image but its duplicated", () async {
       // uploading
-      await saveRemote.uploadImages(savedId, [MultipartFile.fromString("imgs", "content", filename: "file1.txt")]);
+      await saveRemote.uploadImages(savedId, [MultipartFile.fromString("imgs+", "content", filename: "file1.txt")]);
       // version should not be modified
       final version = await saveRemote.getVersion();
       expect(version, equals(savedVersion3));
@@ -159,10 +154,10 @@ void main() {
     });
     test("trying to append multiple images, some of which is duplicated, others are not", () async {
       await saveRemote.uploadImages(savedId, [
-        MultipartFile.fromString("imgs", "content", filename: "file1.txt"),
-        MultipartFile.fromString("imgs", "content", filename: "file2.txt"),
-        MultipartFile.fromString("imgs", "content", filename: "file3.txt"),
-        MultipartFile.fromString("imgs", "content", filename: "file4.txt"),
+        MultipartFile.fromString("imgs+", "content", filename: "file1.txt"),
+        MultipartFile.fromString("imgs+", "content", filename: "file2.txt"),
+        MultipartFile.fromString("imgs+", "content", filename: "file3.txt"),
+        MultipartFile.fromString("imgs+", "content", filename: "file4.txt"),
       ]);
       final record = await pb.collection("data").getOne(savedId);
       expect(List<String>.from(record.data["imgs"]).length, equals(4));
@@ -173,10 +168,10 @@ void main() {
     });
     test("trying to append multiple images, all of which are duplicated", () async {
       await saveRemote.uploadImages(savedId, [
-        MultipartFile.fromString("imgs", "content", filename: "file1.txt"),
-        MultipartFile.fromString("imgs", "content", filename: "file2.txt"),
-        MultipartFile.fromString("imgs", "content", filename: "file3.txt"),
-        MultipartFile.fromString("imgs", "content", filename: "file4.txt"),
+        MultipartFile.fromString("imgs+", "content", filename: "file1.txt"),
+        MultipartFile.fromString("imgs+", "content", filename: "file2.txt"),
+        MultipartFile.fromString("imgs+", "content", filename: "file3.txt"),
+        MultipartFile.fromString("imgs+", "content", filename: "file4.txt"),
       ]);
       final record = await pb.collection("data").getOne(savedId);
       expect(List<String>.from(record.data["imgs"]).length, equals(4));
@@ -187,10 +182,10 @@ void main() {
     });
     test("trying to append multiple images, none of which are duplicated", () async {
       await saveRemote.uploadImages(savedId, [
-        MultipartFile.fromString("imgs", "content", filename: "file5.txt"),
-        MultipartFile.fromString("imgs", "content", filename: "file6.txt"),
-        MultipartFile.fromString("imgs", "content", filename: "file7.txt"),
-        MultipartFile.fromString("imgs", "content", filename: "file8.txt"),
+        MultipartFile.fromString("imgs+", "content", filename: "file5.txt"),
+        MultipartFile.fromString("imgs+", "content", filename: "file6.txt"),
+        MultipartFile.fromString("imgs+", "content", filename: "file7.txt"),
+        MultipartFile.fromString("imgs+", "content", filename: "file8.txt"),
       ]);
       final record = await pb.collection("data").getOne(savedId);
       expect(List<String>.from(record.data["imgs"]).length, equals(8));

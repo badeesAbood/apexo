@@ -4,7 +4,7 @@ import 'package:apexo/state/state.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class Admins extends ObservableObject {
-  List<AdminModel> list = [];
+  List<RecordModel> list = [];
   bool loaded = false;
   bool loading = false;
   bool creating = false;
@@ -17,7 +17,7 @@ class Admins extends ObservableObject {
     creating = true;
     notify();
     try {
-      await state.pb!.admins.create(body: {
+      await state.pb!.collection("_superusers").create(body: {
         "email": email,
         "password": password,
         "passwordConfirm": password,
@@ -31,11 +31,11 @@ class Admins extends ObservableObject {
     notify();
   }
 
-  Future<void> delete(AdminModel admin) async {
+  Future<void> delete(RecordModel admin) async {
     errorMessage = "";
     deleting.addAll({admin.id: true});
     notify();
-    await state.pb!.admins.delete(admin.id);
+    await state.pb!.collection("_superusers").delete(admin.id);
     deleting.remove(admin.id);
     await reloadFromRemote();
   }
@@ -45,7 +45,7 @@ class Admins extends ObservableObject {
     updating.addAll({id: true});
     notify();
     try {
-      await state.pb!.admins.update(id, body: {
+      await state.pb!.collection("_superusers").update(id, body: {
         "email": email,
         if (password.isNotEmpty) "password": password,
         if (password.isNotEmpty) "passwordConfirm": password,
@@ -65,7 +65,7 @@ class Admins extends ObservableObject {
     loading = true;
     notify();
     try {
-      list = await state.pb!.admins.getFullList();
+      list = await state.pb!.collection("_superusers").getFullList();
     } catch (e, s) {
       logger("Error when getting full list of admins service: $e", s);
     }

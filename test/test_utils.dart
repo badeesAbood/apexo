@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:apexo/backend/observable/save_local.dart';
+import 'package:apexo/backend/observable/save_remote.dart';
+import 'package:apexo/backend/utils/init_pocketbase.dart';
 import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/backend/utils/safe_dir.dart';
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:logging/logging.dart';
@@ -28,24 +30,6 @@ class TestUtils {
       logger('Directory does not exist: ${directory.path}', null, 3);
     }
     logger("Local data removed successfully, the app now is like a freshly installed app", null, 3);
-  }
-
-  static Future<PocketBase> resetRemoteData() async {
-    // just like a fresh install
-    final pb = PocketBase(testPBServer);
-    if (pb.authStore.isValid == false) {
-      await pb.admins.authWithPassword(testPBEmail, testPBPassword);
-    }
-    try {
-      await pb.collections.delete("public");
-      // ignore: empty_catches
-    } catch (e) {}
-    try {
-      await pb.collections.delete("data");
-      // ignore: empty_catches
-    } catch (e) {}
-    logger("Remote data removed successfully, the server now is like a freshly installed pocketbase", null, 3);
-    return pb;
   }
 
   static void integrationLoggerInit() {
@@ -98,5 +82,31 @@ class TestUtils {
     await tester.enterText(asb, seed ?? target);
     await tester.pumpAndSettle();
     await tapFromTagInput(tester, target);
+  }
+
+  // Pocketbase and local hive setup
+
+  static final SaveLocal local = SaveLocal("test");
+  static final SaveRemote remote = SaveRemote(storeName: "test", pbInstance: pb);
+  static final pb = PocketBase(testPBServer);
+  static Future<void> deleteRemoteData() async {
+    // just like a fresh install
+    if (pb.authStore.isValid == false) {
+      await pb.collection("_superusers").authWithPassword(testPBEmail, testPBPassword);
+    }
+    try {
+      await pb.collections.delete("public");
+      // ignore: empty_catches
+    } catch (e) {}
+    try {
+      await pb.collections.delete("data");
+      // ignore: empty_catches
+    } catch (e) {}
+    logger("Remote data removed successfully, the server now is like a freshly installed pocketbase", null, 3);
+  }
+
+  static Future<void> resetServer() async {
+    await deleteRemoteData();
+    await initializePocketbase(pb);
   }
 }
