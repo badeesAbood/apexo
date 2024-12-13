@@ -10,7 +10,7 @@ import 'model.dart';
 import 'observable.dart';
 import 'save_local.dart';
 import 'save_remote.dart';
-import '../utils/Debouncer.dart';
+import '../utils/debouncer.dart';
 
 typedef ModellingFunc<G> = G Function(Map<String, dynamic> input);
 
