@@ -1,11 +1,11 @@
 import 'package:apexo/backend/observable/save_remote.dart';
+import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/uuid.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:apexo/backend/observable/store.dart';
 import 'package:apexo/backend/observable/model.dart';
 import 'package:apexo/backend/observable/save_local.dart';
 import 'package:pocketbase/pocketbase.dart';
-import '../../secret.dart';
 import '../../test_utils.dart';
 
 class Person extends Model {
@@ -240,19 +240,16 @@ void main() {
     late Store<Person> store;
     late SaveLocal local;
     late SaveRemote remote;
-    final PocketBase pb = PocketBase(testPBServer);
-
-    setUpAll(() async {
-      local = SaveLocal("sync");
-      remote = SaveRemote(storeName: "sync", pbInstance: pb);
-    });
+    late PocketBase pb;
 
     setUp(() async {
       // TODO: this setup is taking too much time
       // once the batch delete is implemented, we can use it here
       await local.clear();
 
-      TestUtils.resetRemoteData();
+      pb = await TestUtils.resetRemoteData();
+      await pb.collections.import([dataCollectionImport]);
+      remote = SaveRemote(storeName: "test", pbInstance: pb);
 
       store = Store<Person>(
         modeling: Person.fromJson,
@@ -271,6 +268,12 @@ void main() {
       expect(store.docs.length, equals(0));
       expect(await store.local!.getVersion(), 0);
       store.init();
+    });
+
+    setUpAll(() async {
+      pb = await TestUtils.resetRemoteData();
+      local = SaveLocal("sync");
+      remote = SaveRemote(storeName: "sync", pbInstance: pb);
     });
 
     test("deferredPresent is true when there are deferred updates", () async {
@@ -604,11 +607,9 @@ void main() {
       expect(store.get(id3), isNotNull);
     });
     test("bi-directional with conflicts (local winners)", () async {
-      remote.isOnline = false;
       final id1 = uuid();
       final id2 = uuid();
       final id3 = uuid();
-
       await remote.put([
         RowToWriteRemotely(id: id1, data: '{"id": "$id1", "name": "name1", "age": 11}'),
         RowToWriteRemotely(id: id2, data: '{"id": "$id2", "name": "name2", "age": 12}'),
@@ -616,6 +617,7 @@ void main() {
       ]);
 
       await store.waitUntilChangesAreProcessed();
+      remote.isOnline = false;
       store.set(Person.fromJson({"id": id2, "name": "modified-name", "age": 0}));
       await store.waitUntilChangesAreProcessed();
       remote.isOnline = true;

@@ -1,13 +1,11 @@
 import 'package:apexo/backend/observable/save_remote.dart';
+import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/uuid.dart';
 import 'package:apexo/state/state.dart';
 import 'package:http/http.dart';
 import 'package:pocketbase/pocketbase.dart';
 import "package:test/test.dart";
-import '../../secret.dart';
 import '../../test_utils.dart';
-
-final pb = PocketBase(testPBServer);
 
 void main() {
   int savedVersion1 = 0;
@@ -15,12 +13,15 @@ void main() {
   int savedVersion3 = 0;
   String savedId = "";
   group("Save Remote", () {
-    final saveRemote = SaveRemote(storeName: "test", pbInstance: pb);
+    late SaveRemote saveRemote;
+    late PocketBase pb;
 
     setUpAll(() async {
       // TODO: this setup is taking too much time
       // once the batch delete is implemented, we can use it here
-      TestUtils.resetRemoteData();
+      pb = await TestUtils.resetRemoteData();
+      await pb.collections.import([dataCollectionImport]);
+      saveRemote = SaveRemote(storeName: "test", pbInstance: pb);
     });
 
     test("checkOnline", () async {
@@ -37,6 +38,7 @@ void main() {
       await saveRemote.put(data);
       final result = await saveRemote.getSince();
       expect(result.rows, isNotEmpty);
+      expect(result.rows.first.data, '{"key":"value1"}');
       expect(result.version, greaterThan(0));
     });
 

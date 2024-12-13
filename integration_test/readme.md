@@ -23,14 +23,14 @@ The following instructions should help you write more tests
 
 You may run into unknown errors while running the test in `--all` mode. it's best to run them sequentially:
 
-```
-dart integration_test/watch.dart login
-dart integration_test/watch.dart doctors
-dart integration_test/watch.dart patients
-dart integration_test/watch.dart appointments
-dart integration_test/watch.dart calendar
-dart integration_test/watch.dart labworks
-dart integration_test/watch.dart settings
+```bash
+dart integration_test/watch.dart login;
+dart integration_test/watch.dart doctors;
+dart integration_test/watch.dart patients;
+dart integration_test/watch.dart appointments;
+dart integration_test/watch.dart calendar;
+dart integration_test/watch.dart labworks;
+dart integration_test/watch.dart settings;
 ```
 
 

@@ -30,7 +30,7 @@ class TestUtils {
     logger("Local data removed successfully, the app now is like a freshly installed app", null, 3);
   }
 
-  static Future<void> resetRemoteData() async {
+  static Future<PocketBase> resetRemoteData() async {
     // just like a fresh install
     final pb = PocketBase(testPBServer);
     if (pb.authStore.isValid == false) {
@@ -45,6 +45,7 @@ class TestUtils {
       // ignore: empty_catches
     } catch (e) {}
     logger("Remote data removed successfully, the server now is like a freshly installed pocketbase", null, 3);
+    return pb;
   }
 
   static void integrationLoggerInit() {
