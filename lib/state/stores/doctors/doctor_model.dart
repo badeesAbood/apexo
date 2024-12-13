@@ -41,7 +41,6 @@ class Doctor extends Model {
   /* 1 */ List<String> dutyDays = allDays;
   /* 2 */ String email = "";
   /* 3 */ List<String> lockToUserIDs = [];
-  // TODO: lockToUserIDs editing GUI, should only available to admins while online
 
   @override
   Doctor.fromJson(Map<String, dynamic> json) : super.fromJson(json) {

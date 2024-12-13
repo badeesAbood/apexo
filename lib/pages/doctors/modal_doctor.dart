@@ -70,7 +70,7 @@ openSingleDoctor({
                 limit: 7,
               ),
             ),
-            if (app_state.state.isAdmin)
+            if (app_state.state.isAdmin && app_state.state.isOnline)
               InfoLabel(
                 label: "${txt("lockToUsers")}:",
                 child: TagInputWidget(
