@@ -218,10 +218,12 @@ class State extends ObservablePersistingObject {
         // create database if it doesn't exist
         try {
           try {
-            await pb!.collections.getOne(dataCollectionName);
-            await pb!.collections.getOne(publicCollectionName);
+            setLoadingIndicator("Verifying collections");
+            await pb!.collection(dataCollectionName).getList(page: 1, perPage: 1);
+            await pb!.collection(publicCollectionName).getList(page: 1, perPage: 1);
           } catch (e) {
             if (isAdmin) {
+              setLoadingIndicator("Creating collections for the first time");
               await initializePocketbase(pb!);
             } else {
               logger(
