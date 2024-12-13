@@ -55,7 +55,7 @@ class _StyledRadarChartState extends State<StyledRadarChart> {
                   }),
               tickCount: 1,
               ticksTextStyle: const TextStyle(color: Colors.transparent),
-              titleTextStyle: TextStyle(color: Colors.grey, fontSize: 11),
+              titleTextStyle: const TextStyle(color: Colors.grey, fontSize: 11),
               radarShape: RadarShape.polygon,
               dataSets: List.generate(widget.data.length, (setIndex) {
                 Color color = getDeterministicItem(colorsWithoutYellow, widget.labels.join() + setIndex.toString());
