@@ -9,8 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'base.dart';
 
-class doctorsPageIntegrationTest extends IntegrationTestBase {
-  doctorsPageIntegrationTest({required super.tester});
+class DoctorsPageIntegrationTest extends IntegrationTestBase {
+  DoctorsPageIntegrationTest({required super.tester});
 
   @override
   String get name => 'doctors';

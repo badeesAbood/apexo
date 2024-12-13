@@ -35,7 +35,7 @@ void main() async {
         // there's no PB here, so this cuts of the connectivity for faster tests
         final baseURL = state.pb!.baseURL;
         state.pb!.baseURL = "https://apexo.app";
-        await doctorsPageIntegrationTest(tester: tester).run();
+        await DoctorsPageIntegrationTest(tester: tester).run();
         await PatientsIntegrationTest(tester: tester).run();
         await AppointmentsIntegrationTest(tester: tester).run();
         await CalendarIntegrationTest(tester: tester).run();
