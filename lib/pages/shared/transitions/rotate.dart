@@ -7,10 +7,10 @@ class RotatingWrapper extends StatefulWidget {
   const RotatingWrapper({super.key, required this.child, this.rotate = false});
 
   @override
-  _RotatingWrapperState createState() => _RotatingWrapperState();
+  RotatingWrapperState createState() => RotatingWrapperState();
 }
 
-class _RotatingWrapperState extends State<RotatingWrapper> with SingleTickerProviderStateMixin {
+class RotatingWrapperState extends State<RotatingWrapper> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _rotationAnimation;
 

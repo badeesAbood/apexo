@@ -11,10 +11,10 @@ class SlideTransitionWrapper extends StatefulWidget {
   });
 
   @override
-  _SlideTransitionWrapperState createState() => _SlideTransitionWrapperState();
+  SlideTransitionWrapperState createState() => SlideTransitionWrapperState();
 }
 
-class _SlideTransitionWrapperState extends State<SlideTransitionWrapper> with SingleTickerProviderStateMixin {
+class SlideTransitionWrapperState extends State<SlideTransitionWrapper> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _slideAnimation;
 

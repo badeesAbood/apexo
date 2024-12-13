@@ -13,10 +13,10 @@ class BorderColorTransition extends StatefulWidget {
   });
 
   @override
-  _BorderColorTransitionState createState() => _BorderColorTransitionState();
+  BorderColorTransitionState createState() => BorderColorTransitionState();
 }
 
-class _BorderColorTransitionState extends State<BorderColorTransition> with SingleTickerProviderStateMixin {
+class BorderColorTransitionState extends State<BorderColorTransition> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Color?> _colorAnimation;
 
