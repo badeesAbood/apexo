@@ -12,14 +12,12 @@ class Users extends ObservableObject {
   Map<String, bool> updating = {};
   Map<String, bool> deleting = {};
 
-  RecordService users = state.pb!.collection("users");
-
   Future<void> newUser(String email, String password) async {
     errorMessage = "";
     creating = true;
     notify();
     try {
-      await users.create(body: {
+      await state.pb!.collection("users").create(body: {
         "email": email,
         "password": password,
         "passwordConfirm": password,
@@ -38,7 +36,7 @@ class Users extends ObservableObject {
     errorMessage = "";
     deleting.addAll({user.id: true});
     notify();
-    await users.delete(user.id);
+    await state.pb!.collection("users").delete(user.id);
     deleting.remove(user.id);
     await reloadFromRemote();
   }
@@ -48,7 +46,7 @@ class Users extends ObservableObject {
     updating.addAll({id: true});
     notify();
     try {
-      await users.update(id, body: {
+      await state.pb!.collection("users").update(id, body: {
         "email": email,
         "verified": true,
         if (password.isNotEmpty) "password": password,
@@ -69,7 +67,7 @@ class Users extends ObservableObject {
     loading = true;
     notify();
     try {
-      list = await users.getFullList();
+      list = await state.pb!.collection("users").getFullList();
     } catch (e, s) {
       logger("Error when getting full list of users service: $e", s);
     }
