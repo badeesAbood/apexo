@@ -58,6 +58,7 @@ class En {
     "by": "By",
     "byTitle": "By Title",
     "noItemsFound": "No items found",
+    "filter": "Filter",
 
     // doctors
     "doctor": "Doctor",

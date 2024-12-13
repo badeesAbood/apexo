@@ -56,6 +56,7 @@ class Ar implements En {
     "by": "بحسب",
     "byTitle": "بحسب العنوان",
     "noItemsFound": "لم يتم العثور على عناصر",
+    "filter": "تصفية",
 
     // doctors
     "doctor": "طبيب",
