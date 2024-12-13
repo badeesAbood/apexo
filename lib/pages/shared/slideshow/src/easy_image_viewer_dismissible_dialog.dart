@@ -22,7 +22,7 @@ class EasyImageViewerDismissibleDialog extends StatefulWidget {
 
   /// Refer to [showImageViewerPager] for the arguments
   const EasyImageViewerDismissibleDialog(this.imageProvider,
-      {Key? key,
+      {super.key,
       this.immersive = true,
       this.onPageChanged,
       this.onViewerDismissed,
@@ -31,8 +31,7 @@ class EasyImageViewerDismissibleDialog extends StatefulWidget {
       this.infinitelyScrollable = false,
       required this.backgroundColor,
       required this.closeButtonTooltip,
-      required this.closeButtonColor})
-      : super(key: key);
+      required this.closeButtonColor});
 
   @override
   State<EasyImageViewerDismissibleDialog> createState() => _EasyImageViewerDismissibleDialogState();
@@ -48,7 +47,7 @@ class _EasyImageViewerDismissibleDialogState extends State<EasyImageViewerDismis
   /// This is needed because of https://github.com/thesmythgroup/easy_image_viewer/issues/27
   /// When no global key was used, the state was re-created on the initial zoom, which
   /// caused the new state to have _pagingEnabled set to true, which in turn broke
-  /// paning on the zoomed-in image.
+  /// panning on the zoomed-in image.
   final _popScopeKey = GlobalKey();
 
   @override
