@@ -13,7 +13,6 @@ final dataCollectionImport = CollectionModel(
     CollectionField({
       "autogeneratePattern": "[a-z0-9]{15}",
       "hidden": false,
-      "id": "text3208210256",
       "max": 15,
       "min": 15,
       "name": "id",
@@ -26,7 +25,6 @@ final dataCollectionImport = CollectionModel(
     }),
     CollectionField({
       "hidden": false,
-      "id": "eq0qodeh",
       "maxSize": 2000000,
       "name": "data",
       "presentable": false,
@@ -37,7 +35,6 @@ final dataCollectionImport = CollectionModel(
     CollectionField({
       "autogeneratePattern": "",
       "hidden": false,
-      "id": "iyjaaxrg",
       "max": 0,
       "min": 0,
       "name": "store",
@@ -50,7 +47,6 @@ final dataCollectionImport = CollectionModel(
     }),
     CollectionField({
       "hidden": false,
-      "id": "20mvabus",
       "maxSelect": 99,
       "maxSize": 15728640,
       "mimeTypes": null,
@@ -64,7 +60,6 @@ final dataCollectionImport = CollectionModel(
     }),
     CollectionField({
       "hidden": false,
-      "id": "autodate2990389176",
       "name": "created",
       "onCreate": true,
       "onUpdate": false,
@@ -74,7 +69,6 @@ final dataCollectionImport = CollectionModel(
     }),
     CollectionField({
       "hidden": false,
-      "id": "autodate3332085495",
       "name": "updated",
       "onCreate": true,
       "onUpdate": true,
