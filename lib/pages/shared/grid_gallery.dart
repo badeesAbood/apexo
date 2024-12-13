@@ -112,15 +112,17 @@ class GridGallery extends StatelessWidget {
 
     MultiImageProvider multiImageProvider = MultiImageProvider(list);
 
-    showImageViewerPager(
-      context,
-      multiImageProvider,
-      backgroundColor: Colors.black.withOpacity(0.9),
-      doubleTapZoomable: true,
-      immersive: false,
-      swipeDismissible: true,
-      closeButtonColor: Colors.white,
-      infinitelyScrollable: true,
-    );
+    if (context.mounted) {
+      showImageViewerPager(
+        context,
+        multiImageProvider,
+        backgroundColor: Colors.black.withOpacity(0.9),
+        doubleTapZoomable: true,
+        immersive: false,
+        swipeDismissible: true,
+        closeButtonColor: Colors.white,
+        infinitelyScrollable: true,
+      );
+    }
   }
 }
