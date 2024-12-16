@@ -50,7 +50,7 @@ class Labwork extends Model {
     /* 3 */ note = json["note"] ?? note;
     /* 4 */ price = double.parse((json["price"] ?? price).toString());
     /* 5 */ paid = json["paid"] ?? paid;
-    /* 6 */ date = json["date"] != null ? DateTime.fromMillisecondsSinceEpoch(json["date"]) : date;
+    /* 6 */ date = json["date"] != null ? DateTime.fromMillisecondsSinceEpoch(json["date"] * (60 * 60 * 1000)) : date;
     /* 7 */ lab = json["lab"] ?? lab;
     /* 8 */ phoneNumber = json["phoneNumber"] ?? phoneNumber;
   }
@@ -64,7 +64,7 @@ class Labwork extends Model {
     /* 3 */ if (note != d.note) json['note'] = note;
     /* 4 */ if (price != d.price) json['price'] = price;
     /* 5 */ if (paid != d.paid) json['paid'] = paid;
-    /* 6 */ if (date != d.date) json['date'] = date.millisecondsSinceEpoch;
+    /* 6 */ if (date != d.date) json['date'] = (date.millisecondsSinceEpoch / (60 * 60 * 1000)).round();
     /* 7 */ if (lab != d.lab) json['lab'] = lab;
     /* 8 */ if (phoneNumber != d.phoneNumber) json['phoneNumber'] = phoneNumber;
     return json;

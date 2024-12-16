@@ -442,7 +442,7 @@ class AgendaItem extends Model {
   }
 
   AgendaItem.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
-    date(json["date"] != null ? DateTime.fromMillisecondsSinceEpoch(json["date"]) : date());
+    date(json["date"] != null ? DateTime.fromMillisecondsSinceEpoch(json["date"] * 60000) : date());
     isDone(json["isDone"] ?? isDone());
   }
 
@@ -450,7 +450,7 @@ class AgendaItem extends Model {
   Map<String, dynamic> toJson() {
     final json = super.toJson();
     final d = AgendaItem.fromJson({});
-    if (date().compareTo(d.date()) != 0) json['date'] = date().millisecondsSinceEpoch;
+    json['date'] = (date().millisecondsSinceEpoch / 60000).round();
     if (isDone() != d.isDone()) json['isDone'] = isDone();
     return json;
   }

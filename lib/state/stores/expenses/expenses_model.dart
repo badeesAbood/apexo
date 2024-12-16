@@ -30,7 +30,7 @@ class Expense extends Model {
     /* 1 */ note = json['note'] ?? note;
     /* 2 */ amount = double.parse((json["amount"] ?? amount).toString());
     /* 3 */ paid = json['paid'] ?? paid;
-    /* 4 */ date = json["date"] != null ? DateTime.fromMillisecondsSinceEpoch(json["date"]) : date;
+    /* 4 */ date = json["date"] != null ? DateTime.fromMillisecondsSinceEpoch(json["date"] * 60 * 60 * 1000) : date;
     /* 5 */ issuer = json['issuer'] ?? issuer;
     /* 6 */ phoneNumber = json['phoneNumber'] ?? phoneNumber;
     /* 7 */ items = List<String>.from(json["items"] ?? items);
@@ -44,7 +44,7 @@ class Expense extends Model {
     /* 1 */ if (note != d.note) json['note'] = note;
     /* 2 */ if (amount != d.amount) json['amount'] = amount;
     /* 3 */ if (paid != d.paid) json['paid'] = paid;
-    /* 4 */ if (date != d.date) json['date'] = date.millisecondsSinceEpoch;
+    /* 4 */ if (date != d.date) json['date'] = (date.millisecondsSinceEpoch / (60 * 60 * 1000)).round();
     /* 5 */ if (issuer != d.issuer) json['issuer'] = issuer;
     /* 6 */ if (phoneNumber != d.phoneNumber) json['phoneNumber'] = phoneNumber;
     /* 7 */ if (items.isNotEmpty) json['items'] = items;
