@@ -281,8 +281,6 @@ class _StatsPageState extends ObservableObject {
         return _addMonths(input, 3);
       case StatsInterval.years:
         return _addYears(input, 1);
-      default:
-        throw ArgumentError("Invalid interval");
     }
   }
 
