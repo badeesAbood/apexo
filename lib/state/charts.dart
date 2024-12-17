@@ -28,7 +28,10 @@ class _StatsPageState extends ObservableObject {
     return "${chartsState.interval.name[0].toUpperCase()}${chartsState.interval.name.substring(1).toLowerCase()}";
   }
 
+  filteredAppointmentsObserver(e) => _filteredAppointments = null;
+  List<Appointment>? _filteredAppointments;
   List<Appointment> get filteredAppointments {
+    if (_filteredAppointments != null) return _filteredAppointments!;
     List<Appointment> res = [];
     for (var appointment in appointments.present.values) {
       if (appointment.date().isAfter(end)) continue;
@@ -36,17 +39,34 @@ class _StatsPageState extends ObservableObject {
       if (doctorID.isNotEmpty && !appointment.operatorsIDs.contains(doctorID)) continue;
       res.add(appointment);
     }
-    return res..sort((a, b) => a.date().compareTo(b.date()));
+    _filteredAppointments = res..sort((a, b) => a.date().compareTo(b.date()));
+    if (!observers.contains(filteredAppointmentsObserver)) {
+      observe(filteredAppointmentsObserver);
+    }
+    if (!appointments.observableObject.observers.contains(filteredAppointmentsObserver)) {
+      appointments.observableObject.observe(filteredAppointmentsObserver);
+    }
+    return _filteredAppointments!;
   }
 
+  _filteredReceiptsObserver(e) => _filteredReceipts = null;
+  List<Expense>? _filteredReceipts;
   List<Expense> get filteredReceipts {
+    if (_filteredReceipts != null) return _filteredReceipts!;
     List<Expense> res = [];
     for (var receipt in expenses.present.values) {
       if (receipt.date.isAfter(end)) continue;
       if (receipt.date.isBefore(start)) continue;
       res.add(receipt);
     }
-    return res..sort((a, b) => a.date.compareTo(b.date));
+    _filteredReceipts = res..sort((a, b) => a.date.compareTo(b.date));
+    if (!observers.contains(_filteredReceiptsObserver)) {
+      observe(_filteredReceiptsObserver);
+    }
+    if (!expenses.observableObject.observers.contains(_filteredReceiptsObserver)) {
+      expenses.observableObject.observe(_filteredReceiptsObserver);
+    }
+    return _filteredReceipts!;
   }
 
   List<List<Appointment>> get groupedAppointments {
