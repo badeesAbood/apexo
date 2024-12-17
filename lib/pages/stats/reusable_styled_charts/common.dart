@@ -32,7 +32,7 @@ FlTitlesData titles(List<String> labels) {
       sideTitles: SideTitles(
         minIncluded: false,
         showTitles: true,
-        reservedSize: 30,
+        reservedSize: 50,
         maxIncluded: false,
         getTitlesWidget: (value, meta) {
           return SideTitleWidget(
