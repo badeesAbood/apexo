@@ -1,6 +1,6 @@
-import '../../../pages/shared/week_calendar.dart';
+import 'package:apexo/backend/observable/model.dart';
 
-class Setting extends AgendaItem {
+class Setting extends Model {
   String value = "";
 
   Setting.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
