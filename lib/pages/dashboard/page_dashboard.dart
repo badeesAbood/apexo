@@ -18,43 +18,6 @@ import 'package:intl/intl.dart';
 class PageDashboard extends ObservingWidget {
   const PageDashboard({super.key});
 
-  List<Appointment> get thisMonthAppointments {
-    final DateTime now = DateTime.now();
-    List<Appointment> res = [];
-    for (var appointment in appointments.present.values) {
-      if (appointment.date().year != now.year) continue;
-      if (appointment.date().month != now.month) continue;
-      res.add(appointment);
-    }
-    return res..sort((a, b) => a.date().compareTo(b.date()));
-  }
-
-  List<Appointment> get todayAppointments {
-    final DateTime now = DateTime.now();
-    List<Appointment> res = [];
-    for (var appointment in thisMonthAppointments) {
-      if (appointment.date().day != now.day) continue;
-      res.add(appointment);
-    }
-    return res..sort((a, b) => a.date().compareTo(b.date()));
-  }
-
-  double get paymentsToday {
-    double res = 0;
-    for (var appointment in todayAppointments) {
-      res += appointment.paid;
-    }
-    return res;
-  }
-
-  int get newPatientsToday {
-    int res = 0;
-    for (var appointment in todayAppointments) {
-      if (appointment.firstAppointmentForThisPatient == true) res++;
-    }
-    return res;
-  }
-
   String get currentName {
     if (state.currentMember == null) return "";
     if (state.currentMember!.title.length > 20) return "${state.currentMember!.title.substring(0, 17)}...";
@@ -114,7 +77,7 @@ class PageDashboard extends ObservingWidget {
       if (permissions.list[5] || state.isAdmin) ...[
         buildTopSquares(),
         buildDashboardCharts()
-      ] else if (permissions.list[2] && todayAppointments.isNotEmpty) ...[
+      ] else if (permissions.list[2] && dashboardState.todayAppointments.isNotEmpty) ...[
         const SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
@@ -125,7 +88,7 @@ class PageDashboard extends ObservingWidget {
           height: 50,
           child: ListView(
             scrollDirection: Axis.horizontal,
-            children: todayAppointments.map((e) => AcrylicTitle(item: e)).toList(),
+            children: dashboardState.todayAppointments.map((e) => AcrylicTitle(item: e)).toList(),
           ),
         )
       ]
@@ -137,7 +100,7 @@ class PageDashboard extends ObservingWidget {
       child: Container(
         padding: const EdgeInsets.all(15),
         child: TabView(
-          currentIndex: openTab(),
+          currentIndex: dashboardState.currentOpenTab,
           closeButtonVisibility: CloseButtonVisibilityMode.never,
           header: const SizedBox(width: 5),
           footer: IconButton(
@@ -146,7 +109,7 @@ class PageDashboard extends ObservingWidget {
             ),
             onPressed: () => pages.navigate(pages.getByIdentifier("statistics")!),
           ),
-          onChanged: (value) => openTab(value),
+          onChanged: dashboardState.openTab,
           tabs: [
             Tab(
               text: Text(txt("appointments")),
@@ -211,19 +174,19 @@ class PageDashboard extends ObservingWidget {
             dashboardSquare(
               Colors.purple,
               FluentIcons.goto_today,
-              todayAppointments.length.toString(),
+              dashboardState.todayAppointments.length.toString(),
               txt("appointmentsToday"),
             ),
             dashboardSquare(
               Colors.blue,
               FluentIcons.people,
-              newPatientsToday.toString(),
+              dashboardState.newPatientsToday.toString(),
               txt("newPatientsToday"),
             ),
             dashboardSquare(
               Colors.teal,
               FluentIcons.money,
-              paymentsToday.toStringAsFixed(2),
+              dashboardState.paymentsToday.toStringAsFixed(2),
               txt("paymentsMadeToday"),
             ),
           ],
@@ -286,8 +249,69 @@ class PageDashboard extends ObservingWidget {
 
   @override
   getObservableState() {
-    return [openTab];
+    return [dashboardState];
   }
 }
 
-final openTab = ObservableState(0);
+class DashboardState extends ObservableObject {
+  DashboardState() {
+    appointments.observableObject.observe((e) {
+      _thisMonthAppointments = null;
+      _todayAppointments = null;
+    });
+  }
+
+  int currentOpenTab = 0;
+  openTab(int tab) {
+    currentOpenTab = tab;
+    notify();
+  }
+
+  List<Appointment>? _thisMonthAppointments;
+  List<Appointment> get thisMonthAppointments {
+    if (_thisMonthAppointments != null) {
+      return _thisMonthAppointments!;
+    }
+    final DateTime now = DateTime.now();
+    List<Appointment> res = [];
+    for (var appointment in appointments.present.values) {
+      if (appointment.date().year != now.year) continue;
+      if (appointment.date().month != now.month) continue;
+      res.add(appointment);
+    }
+    return res..sort((a, b) => a.date().compareTo(b.date()));
+  }
+
+  List<Appointment>? _todayAppointments;
+  List<Appointment> get todayAppointments {
+    if (_todayAppointments != null) {
+      return _todayAppointments!;
+    }
+    final DateTime now = DateTime.now();
+    List<Appointment> res = [];
+    for (var appointment in thisMonthAppointments) {
+      if (appointment.date().day != now.day) continue;
+      res.add(appointment);
+    }
+    _todayAppointments = res..sort((a, b) => a.date().compareTo(b.date()));
+    return _todayAppointments!;
+  }
+
+  double get paymentsToday {
+    double res = 0;
+    for (var appointment in todayAppointments) {
+      res += appointment.paid;
+    }
+    return res;
+  }
+
+  int get newPatientsToday {
+    int res = 0;
+    for (var appointment in todayAppointments) {
+      if (appointment.firstAppointmentForThisPatient == true) res++;
+    }
+    return res;
+  }
+}
+
+final dashboardState = DashboardState();
