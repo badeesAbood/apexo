@@ -187,7 +187,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
                 key: WK.dataTableListView,
                 itemCount: filtered.length > sorted.length ? sorted.length + 1 : sorted.length,
                 itemBuilder: (context, index) => filtered.length > sorted.length && index == sorted.length
-                        ? _buildShowMore()
+                    ? _buildShowMore()
                     : _buildSingleItem(sorted[index], checkedIds.contains(sorted[index].id)),
               ),
             ),
@@ -320,7 +320,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
 
   Acrylic _buildCommandBar() {
     return Acrylic(
-      tint: Colors.white.withOpacity(1),
+      tint: Colors.white.withOpacity(1), // TODO: fix withOpacity throughout the app
       tintAlpha: 1,
       elevation: 140,
       luminosityAlpha: 0.8,
