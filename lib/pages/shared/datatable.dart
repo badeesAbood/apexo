@@ -161,20 +161,22 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
   }
 
   Expanded _buildItemsList() {
+    final sorted = [...sortedItems]; // caching those two for easier computation
+    final filtered = [...filteredItems];
+    // TODO: we might need to go through every "get" and do this ^ on repeated usage of heavy ones
     return Expanded(
       child: Container(
         padding: const EdgeInsets.only(top: 10),
         child: Column(
           children: [
-            if (filteredItems.isEmpty) _buildNoItemsFound(),
+            if (filtered.isEmpty) _buildNoItemsFound(),
             Expanded(
               child: ListView.builder(
                 key: WK.dataTableListView,
-                itemCount: filteredItems.length > sortedItems.length ? sortedItems.length + 1 : sortedItems.length,
-                itemBuilder: (context, index) =>
-                    filteredItems.length > sortedItems.length && index == sortedItems.length
+                itemCount: filtered.length > sorted.length ? sorted.length + 1 : sorted.length,
+                itemBuilder: (context, index) => filtered.length > sorted.length && index == sorted.length
                         ? _buildShowMore()
-                        : _buildSingleItem(sortedItems[index], checkedIds.contains(sortedItems[index].id)),
+                    : _buildSingleItem(sorted[index], checkedIds.contains(sorted[index].id)),
               ),
             ),
           ],
