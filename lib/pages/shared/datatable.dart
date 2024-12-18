@@ -462,7 +462,7 @@ class DataTableSearchField extends StatelessWidget {
       width: 165,
       child: CupertinoTextField(
           key: WK.dataTableSearch,
-          placeholder: placeholder.isEmpty ? txt("searchPlaceholder") : "${txt("filter")}: ${placeholder}",
+          placeholder: placeholder.isEmpty ? txt("searchPlaceholder") : "${txt("filter")}: $placeholder",
           onChanged: onChanged,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
