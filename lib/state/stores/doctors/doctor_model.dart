@@ -8,16 +8,18 @@ final allDays = StartingDayOfWeek.values.map((e) => e.name).toList();
 
 class Doctor extends Model {
   List<Appointment> get allAppointments {
-    return appointments.present.values.where((x) => x.operatorsIDs.contains(id)).toList();
+    return appointments.byDoctor[id]?["all"] ?? []
+      ..sort((a, b) => a.date().compareTo(b.date()));
   }
 
   List<Appointment> get upcomingAppointments {
-    return allAppointments.where((x) => x.date().isAfter(DateTime.now())).toList()
+    return appointments.byDoctor[id]?["upcoming"] ?? []
       ..sort((a, b) => a.date().compareTo(b.date()));
   }
 
   List<Appointment> get pastDoneAppointments {
-    return allAppointments.where((x) => x.date().isBefore(DateTime.now()) && x.isDone()).toList();
+    return appointments.byDoctor[id]?["past"] ?? []
+      ..sort((a, b) => a.date().compareTo(b.date()));
   }
 
   @override

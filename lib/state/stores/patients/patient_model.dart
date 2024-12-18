@@ -7,20 +7,20 @@ import 'package:apexo/state/stores/appointments/appointments_store.dart';
 
 class Patient extends Model {
   List<Appointment> get allAppointments {
-    return appointments.present.values.where((x) => x.patientID == id).toList()
+    return appointments.byPatient[id]?["all"] ?? []
       ..sort((a, b) => a.date().compareTo(b.date()));
   }
 
   List<Appointment> get doneAppointments {
-    return allAppointments.where((x) => x.isDone()).toList();
+    return appointments.byPatient[id]?["done"] ?? [];
   }
 
   List<Appointment> get upcomingAppointments {
-    return allAppointments.where((x) => x.date().isAfter(DateTime.now())).toList();
+    return appointments.byPatient[id]?["upcoming"] ?? [];
   }
 
   List<Appointment> get pastAppointments {
-    return allAppointments.where((x) => x.date().isBefore(DateTime.now())).toList();
+    return appointments.byPatient[id]?["past"] ?? [];
   }
 
   int get age {

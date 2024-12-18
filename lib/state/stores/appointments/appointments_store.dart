@@ -21,9 +21,63 @@ class Appointments extends Store<Appointment> {
           },
         );
 
+  Map<String, Map<String, List<Appointment>>> byPatient = {};
+  Map<String, Map<String, List<Appointment>>> byDoctor = {};
+
   @override
   init() {
     super.init();
+
+    observableObject.observe((_) => _allPrescriptions = null);
+    observableObject.observe((_) {
+      byPatient = {};
+      byDoctor = {};
+      for (var appointment in observableObject.values) {
+        final patientID = appointment.patientID ?? "";
+        final isDone = appointment.isDone();
+        final isUpcoming = appointment.date().isAfter(DateTime.now());
+        final isPast = appointment.date().isBefore(DateTime.now());
+
+        // build patient caches
+        if (byPatient[patientID] == null) {
+          byPatient[patientID] = {
+            "upcoming": [],
+            "done": [],
+            "past": [],
+            "all": [],
+          };
+        }
+        byPatient[patientID]!["all"]!.add(appointment);
+        if (isUpcoming) {
+          byPatient[patientID]!["upcoming"]!.add(appointment);
+        } else if (isDone) {
+          byPatient[patientID]!["done"]!.add(appointment);
+        } else if (isPast) {
+          byPatient[patientID]!["past"]!.add(appointment);
+        }
+
+        // build doctor caches
+        for (var doctorId in appointment.operatorsIDs) {
+          if (byDoctor[doctorId] == null) {
+            byDoctor[doctorId] = {
+              "upcoming": [],
+              "done": [],
+              "past": [],
+              "all": [],
+            };
+          }
+          byDoctor[doctorId]!["all"]!.add(appointment);
+          if (isUpcoming) {
+            byDoctor[doctorId]!["upcoming"]!.add(appointment);
+          } else if (isDone) {
+            byDoctor[doctorId]!["done"]!.add(appointment);
+          } else if (isPast) {
+            byDoctor[doctorId]!["past"]!.add(appointment);
+          }
+        }
+      }
+    });
+
     state.activators[_storeName] = () async {
       await loaded;
 
@@ -57,8 +111,9 @@ class Appointments extends Store<Appointment> {
         present.entries.where((entry) => entry.value.operatorsIDs.contains(doctorId)));
   }
 
+  List<String>? _allPrescriptions;
   List<String> get allPrescriptions {
-    return Set<String>.from(present.values.expand((doc) => doc.prescriptions)).toList();
+    return _allPrescriptions ??= Set<String>.from(present.values.expand((doc) => doc.prescriptions)).toList();
   }
 
   filterByDoctor(String? value) {
