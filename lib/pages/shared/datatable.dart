@@ -89,6 +89,16 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     return candidates;
   }
 
+  String removeNonNumbers(String input) {
+    final regex = RegExp(r'^\D+|\D+$');
+    final containsNumbers = RegExp(r'\d').hasMatch(input);
+
+    if (containsNumbers) {
+      return input.replaceAll(regex, '');
+    }
+    return input;
+  }
+
   List<Item> get sortedItems {
     List<Item> result = List<Item>.from(filteredItems);
     if (sortBy < 0) {
@@ -96,12 +106,14 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
         return a.title.toLowerCase().compareTo(b.title.toLowerCase()) * sortDirection;
       });
     } else {
-      final sorted = List<_SortableItem<Item>>.from(result.map((e) {
-        return _SortableItem(e.labels[labels[sortBy]] ?? "", e);
-      }))
+      final sorted = List<_SortableItem<Item>>.from(result.map((e) => _SortableItem(e.labels[labels[sortBy]] ?? "", e)))
         ..sort((a, b) {
           if (double.tryParse(a.value) != null && double.tryParse(b.value) != null) {
             return double.parse(a.value).compareTo(double.parse(b.value)) * sortDirection;
+          } else if (double.tryParse(removeNonNumbers(a.value)) != null &&
+              double.tryParse(removeNonNumbers(b.value)) != null) {
+            return double.parse(removeNonNumbers(a.value)).compareTo(double.parse(removeNonNumbers(b.value))) *
+                sortDirection;
           } else {
             return a.value.compareTo(b.value) * sortDirection;
           }
