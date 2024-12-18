@@ -12,15 +12,18 @@ class Patient extends Model {
   }
 
   List<Appointment> get doneAppointments {
-    return appointments.byPatient[id]?["done"] ?? [];
+    return appointments.byPatient[id]?["done"] ?? []
+      ..sort((a, b) => a.date().compareTo(b.date()));
   }
 
   List<Appointment> get upcomingAppointments {
-    return appointments.byPatient[id]?["upcoming"] ?? [];
+    return appointments.byPatient[id]?["upcoming"] ?? []
+      ..sort((a, b) => a.date().compareTo(b.date()));
   }
 
   List<Appointment> get pastAppointments {
-    return appointments.byPatient[id]?["past"] ?? [];
+    return appointments.byPatient[id]?["past"] ?? []
+      ..sort((a, b) => a.date().compareTo(b.date()));
   }
 
   int get age {
