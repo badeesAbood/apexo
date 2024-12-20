@@ -5,6 +5,7 @@ import 'package:apexo/pages/print/print_link.dart';
 import 'package:apexo/pages/shared/appointment_card.dart';
 import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/pages/shared/call_button.dart';
+import 'package:apexo/pages/shared/dental_chart.dart';
 import 'package:apexo/pages/shared/qrlink.dart';
 import 'package:apexo/pages/shared/tag_input.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
@@ -154,6 +155,15 @@ openSinglePatient({
                 placeholder: "${txt("patientTags")}...",
               ),
             )
+          ],
+        ),
+        TabbedModal(
+          title: txt("dentalNotes"),
+          icon: FluentIcons.teeth,
+          padding: 5,
+          closable: true,
+          content: (state) => [
+            DentalChart(patient: pages.openPatient),
           ],
         ),
         if (editing) ...[appointmentsTab(context), webPageTab(context)]
