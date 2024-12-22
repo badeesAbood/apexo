@@ -11,6 +11,7 @@ class En {
   Map<String, String> dictionary = {
     // common
     "cancel": "Cancel",
+    "close": "Close",
     "save": "Save",
     "reset": "Reset",
     "add": "Add",

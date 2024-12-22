@@ -10,6 +10,7 @@ class Ar implements En {
   Map<String, String> dictionary = {
     // common
     "cancel": "إلغاء",
+    "close": "غلق",
     "save": "حفظ",
     "reset": "إعادة تعيين",
     "add": "إضافة",

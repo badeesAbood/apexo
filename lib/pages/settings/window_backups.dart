@@ -284,7 +284,9 @@ class BackupsWindow extends ObservingWidget {
 }
 
 class CloseButtonInDialog extends StatelessWidget {
+  final String buttonText;
   const CloseButtonInDialog({
+    this.buttonText = "cancel",
     super.key,
   });
 
@@ -294,7 +296,7 @@ class CloseButtonInDialog extends StatelessWidget {
       style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [const Icon(FluentIcons.cancel), const SizedBox(width: 10), Text(txt("cancel"))],
+        children: [const Icon(FluentIcons.cancel), const SizedBox(width: 10), Text(txt(buttonText))],
       ),
       onPressed: () => Navigator.pop(context),
     );
