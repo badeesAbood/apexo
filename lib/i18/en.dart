@@ -150,6 +150,8 @@ class En {
     "firstMolar": "First Molar",
     "secondMolar": "Second Molar",
     "thirdMolar": "Third Molar",
+    "exportSelected": "Export Selected",
+    "noPatientsSelected": "No patients selected",
 
     // calendar (appointments)
     "allDoctors": "All doctors",
