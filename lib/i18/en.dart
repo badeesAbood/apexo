@@ -22,6 +22,12 @@ class En {
     "logout": "Logout",
     "noResultsFound": "No results found",
 
+    // call
+    "callLaboratory": "Call laboratory",
+    "callPatient": "Call patient",
+    "emailDoctor": "Email doctor",
+    "callIssuer": "Call issuer",
+
     // pages
     "settings": "Settings",
     "dashboard": "Dashboard",

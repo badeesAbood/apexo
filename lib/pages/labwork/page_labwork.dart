@@ -6,6 +6,7 @@ import 'package:apexo/state/stores/labworks/labwork_model.dart';
 import 'package:apexo/state/stores/labworks/labworks_store.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 import "../shared/datatable.dart";
 
 class LabworksPage extends ObservingWidget {
@@ -53,6 +54,24 @@ class LabworksPage extends ObservingWidget {
                 openSingleLabwork(
                     context: context, json: item.toJson(), title: txt("labwork"), onSave: labworks.set, editing: true)
               },
+              itemActions: [
+                ItemAction(
+                  icon: FluentIcons.phone,
+                  title: txt("callLaboratory"),
+                  callback: (id) {
+                    final lab = labworks.get(id);
+                    if (lab == null) return;
+                    launchUrl(Uri.parse('tel:${lab.phoneNumber}'));
+                  },
+                ),
+                ItemAction(
+                  icon: FluentIcons.archive,
+                  title: txt("archive"),
+                  callback: (id) {
+                    labworks.archive(id);
+                  },
+                ),
+              ],
             ),
           ),
         ],

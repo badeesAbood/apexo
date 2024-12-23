@@ -1,5 +1,6 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:apexo/i18/index.dart';
+import 'package:apexo/pages/calendar/modal_appointment.dart';
 import 'package:apexo/pages/patients/modal_patient.dart';
 import 'package:apexo/pages/settings/window_backups.dart';
 import 'package:apexo/pages/shared/archive_toggle.dart';
@@ -9,6 +10,7 @@ import 'package:apexo/state/stores/patients/patients_store.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide TextBox;
 import 'package:flutter/cupertino.dart';
+import 'package:url_launcher/url_launcher.dart';
 import "../shared/datatable.dart";
 
 // ignore: must_be_immutable
@@ -72,6 +74,41 @@ class PatientPage extends ObservingWidget {
             onSave: patients.set,
           );
         },
+        itemActions: [
+          ItemAction(
+            icon: FluentIcons.add_event,
+            title: txt("addAppointment"),
+            callback: (id) async {
+              final patient = patients.get(id);
+              if (patient == null) return;
+              if (context.mounted) {
+                openSingleAppointment(
+                  context: context,
+                  json: {"patientID": id},
+                  title: txt("newAppointment"),
+                  onSave: appointments.set,
+                  editing: false,
+                );
+              }
+            },
+          ),
+          ItemAction(
+            icon: FluentIcons.phone,
+            title: txt("callPatient"),
+            callback: (id) {
+              final patient = patients.get(id);
+              if (patient == null) return;
+              launchUrl(Uri.parse('tel:${patient.phone}'));
+            },
+          ),
+          ItemAction(
+            icon: FluentIcons.archive,
+            title: txt("archive"),
+            callback: (id) {
+              patients.archive(id);
+            },
+          ),
+        ],
       ),
     );
   }

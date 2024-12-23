@@ -7,6 +7,7 @@ import 'package:apexo/state/stores/expenses/expenses_model.dart';
 import 'package:apexo/state/stores/expenses/expenses_store.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ExpensesPage extends ObservingWidget {
   const ExpensesPage({super.key});
@@ -51,6 +52,24 @@ class ExpensesPage extends ObservingWidget {
                 openSingleReceipt(
                     context: context, json: item.toJson(), title: txt("receipt"), onSave: expenses.set, editing: true)
               },
+              itemActions: [
+                ItemAction(
+                  icon: FluentIcons.phone,
+                  title: txt("callIssuer"),
+                  callback: (id) {
+                    final receipt = expenses.get(id);
+                    if (receipt == null) return;
+                    launchUrl(Uri.parse('tel:${receipt.phoneNumber}'));
+                  },
+                ),
+                ItemAction(
+                  icon: FluentIcons.archive,
+                  title: txt("archive"),
+                  callback: (id) {
+                    expenses.archive(id);
+                  },
+                ),
+              ],
             ),
           ),
         ],

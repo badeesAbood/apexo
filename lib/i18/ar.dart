@@ -21,6 +21,12 @@ class Ar implements En {
     "logout": "خروج",
     "noResultsFound": "لم يتم العثور على نتائج",
 
+    // call
+    "callLaboratory": "اتصل بالمختبر",
+    "callPatient": "اتصل بالمريض",
+    "emailDoctor": "ارسال بريد الكتروني",
+    "callIssuer": "اتصل بالبائع",
+
     // pages
     "settings": "إعدادات",
     "dashboard": "الرئيسية",

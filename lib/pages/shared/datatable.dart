@@ -14,6 +14,13 @@ class _SortableItem<Item> {
   _SortableItem(this.value, this.item);
 }
 
+class ItemAction {
+  IconData icon;
+  String title;
+  void Function(String) callback;
+  ItemAction({required this.icon, required this.title, required this.callback});
+}
+
 class DataTableAction {
   void Function(List<String>) callback;
   IconData icon;
@@ -27,6 +34,7 @@ class DataTable<Item extends Model> extends StatefulWidget {
   final void Function(Item) onSelect;
   final List<Widget> furtherActions;
   final bool compact;
+  final List<ItemAction> itemActions;
 
   const DataTable({
     super.key,
@@ -35,6 +43,7 @@ class DataTable<Item extends Model> extends StatefulWidget {
     required this.onSelect,
     this.furtherActions = const [],
     this.compact = false,
+    this.itemActions = const [],
   });
 
   @override
@@ -172,10 +181,17 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     );
   }
 
+  final contextMenuControllers = <String, FlyoutController>{};
+
   Expanded _buildItemsList() {
     final sorted = [...sortedItems]; // caching those two for easier computation
     final filtered = [...filteredItems];
     // TODO: we might need to go through every "get" and do this ^ on repeated usage of heavy ones
+
+    for (var item in filtered) {
+      contextMenuControllers.putIfAbsent(item.id, () => FlyoutController());
+    }
+
     return Expanded(
       child: Container(
         padding: const EdgeInsets.only(top: 10),
@@ -237,6 +253,41 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
           ),
           leading: _buildCheckBox(isChecked, item),
           onPressed: () => widget.onSelect(item),
+          trailing: FlyoutTarget(
+              controller: contextMenuControllers[item.id]!,
+              child: IconButton(
+                icon: Container(
+                  padding: const EdgeInsets.all(5),
+                  child: const Icon(FluentIcons.more),
+                ),
+                onPressed: () {
+                  contextMenuControllers[item.id]!.showFlyout(
+                    barrierDismissible: true,
+                    dismissOnPointerMoveAway: false,
+                    dismissWithEsc: true,
+                    builder: (context) {
+                      return StatefulBuilder(builder: (context, setState) {
+                        return MenuFlyout(items: [
+                          MenuFlyoutItem(
+                            text: Text(item.title),
+                            leading: const Icon(FluentIcons.edit),
+                            onPressed: () => widget.onSelect(item),
+                            closeAfterClick: true,
+                          ),
+                          if (widget.itemActions.isNotEmpty) const MenuFlyoutSeparator(),
+                          for (var action in widget.itemActions)
+                            MenuFlyoutItem(
+                              leading: Icon(action.icon),
+                              text: Text(action.title),
+                              onPressed: () => action.callback(item.id),
+                              closeAfterClick: true,
+                            ),
+                        ]);
+                      });
+                    },
+                  );
+                },
+              )),
         ),
       ),
     );
