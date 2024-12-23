@@ -109,7 +109,7 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
         ),
         _buildCalendar(),
         const SizedBox(height: 1),
-        _buildCurrentDayTitleBar(),
+        _buildCurrentDayTitleBar(itemsForSelectedDay),
         itemsForSelectedDay.isEmpty ? _buildEmptyDayMessage() : _buildAppointmentsList(itemsForSelectedDay),
       ],
     );
@@ -248,7 +248,7 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
     );
   }
 
-  Widget _buildCurrentDayTitleBar() {
+  Widget _buildCurrentDayTitleBar(List<Item> itemsForSelectedDay) {
     final df = localSettings.dateFormat.startsWith("d") == true ? "dd MMMM" : "MMMM dd";
     return Acrylic(
       child: Container(
