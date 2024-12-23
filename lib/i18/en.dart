@@ -114,6 +114,7 @@ class En {
     "after": "After",
     "days": "days",
     "day": "day",
+    "isDone": "Appointment is done",
 
     // patients
     "age": "Age",

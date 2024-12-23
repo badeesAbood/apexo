@@ -21,8 +21,12 @@ import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
+
+final paidController = TextEditingController();
+final priceController = TextEditingController();
 
 openSingleAppointment({
   required BuildContext context,
@@ -33,6 +37,8 @@ openSingleAppointment({
 }) {
   pages.openAppointment = Appointment.fromJson(json); // reset
   final o = pages.openAppointment;
+  paidController.text = o.paid.toStringAsFixed(0);
+  priceController.text = o.price.toStringAsFixed(0);
   showTabbedModal(
       key: Key(o.id),
       context: context,
@@ -195,29 +201,46 @@ openSingleAppointment({
                 Expanded(
                   child: InfoLabel(
                     label: "${txt("priceIn")} ${globalSettings.get("currency_______").value}",
-                    child: NumberBox(
+                    child: CupertinoTextField(
                       key: WK.fieldAppointmentPrice,
-                      value: pages.openAppointment.price,
-                      onChanged: (v) => pages.openAppointment.price = v ?? 0,
+                      controller: priceController,
+                      onChanged: (v) {
+                        pages.openAppointment.price = double.tryParse(v) ?? 0;
+                        pages.openAppointment.paid = double.tryParse(v) ?? 0;
+                        paidController.text = v;
+                        state.notify();
+                      },
                       placeholder: txt("price"),
-                      mode: SpinButtonPlacementMode.inline,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     ),
                   ),
                 ),
+                const SizedBox(width: 10),
                 Expanded(
                   child: InfoLabel(
                     label: "${txt("paidIn")} ${globalSettings.get("currency_______").value}",
-                    child: NumberBox(
+                    child: CupertinoTextField(
                       key: WK.fieldAppointmentPayment,
-                      value: pages.openAppointment.paid,
-                      onChanged: (v) => pages.openAppointment.paid = v ?? 0,
+                      controller: paidController,
+                      onChanged: (v) => pages.openAppointment.paid = double.tryParse(v) ?? 0,
                       placeholder: txt("paid"),
-                      mode: SpinButtonPlacementMode.inline,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     ),
                   ),
                 ),
               ],
-            )
+            ),
+            const Divider(direction: Axis.horizontal),
+            Checkbox(
+              checked: pages.openAppointment.isDone(),
+              onChanged: (checked) {
+                pages.openAppointment.isDone(checked);
+                state.notify();
+              },
+              content: Text(txt("isDone")),
+            ),
           ],
         ),
         if (editing)

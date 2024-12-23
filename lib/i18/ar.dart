@@ -112,6 +112,7 @@ class Ar implements En {
     "after": "بعد",
     "days": "أيام",
     "day": "يوم",
+    "isDone": "تم الانتهاء منه",
 
     // patients
     "age": "العمر",
