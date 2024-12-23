@@ -27,6 +27,7 @@ import 'package:path/path.dart' as path;
 
 final paidController = TextEditingController();
 final priceController = TextEditingController();
+final postOpNotesController = TextEditingController();
 
 openSingleAppointment({
   required BuildContext context,
@@ -39,6 +40,7 @@ openSingleAppointment({
   final o = pages.openAppointment;
   paidController.text = o.paid.toStringAsFixed(0);
   priceController.text = o.price.toStringAsFixed(0);
+  postOpNotesController.text = o.postOpNotes;
   showTabbedModal(
       key: Key(o.id),
       context: context,
@@ -155,8 +157,12 @@ openSingleAppointment({
                 key: WK.fieldAppointmentPostOpNotes,
                 expands: true,
                 maxLines: null,
-                controller: TextEditingController(text: pages.openAppointment.postOpNotes),
-                onChanged: (v) => pages.openAppointment.postOpNotes = v,
+                controller: postOpNotesController,
+                onChanged: (v) {
+                  pages.openAppointment.postOpNotes = v;
+                  pages.openAppointment.isDone(true);
+                  state.notify();
+                },
                 placeholder: "${txt("postOperativeNotes")}...",
               ),
             ),
@@ -167,6 +173,7 @@ openSingleAppointment({
                 suggestions: appointments.allPrescriptions.map((p) => TagInputItem(value: p, label: p)).toList(),
                 onChanged: (s) {
                   pages.openAppointment.prescriptions = s.where((x) => x.value != null).map((x) => x.value!).toList();
+                  pages.openAppointment.isDone(true);
                   state.notify();
                 },
                 initialValue: pages.openAppointment.prescriptions.map((p) => TagInputItem(value: p, label: p)).toList(),
@@ -207,7 +214,8 @@ openSingleAppointment({
                       onChanged: (v) {
                         pages.openAppointment.price = double.tryParse(v) ?? 0;
                         pages.openAppointment.paid = double.tryParse(v) ?? 0;
-                        paidController.text = v;
+                        paidController.text = pages.openAppointment.paid.toStringAsFixed(0);
+                        pages.openAppointment.isDone(true);
                         state.notify();
                       },
                       placeholder: txt("price"),
@@ -223,7 +231,11 @@ openSingleAppointment({
                     child: CupertinoTextField(
                       key: WK.fieldAppointmentPayment,
                       controller: paidController,
-                      onChanged: (v) => pages.openAppointment.paid = double.tryParse(v) ?? 0,
+                      onChanged: (v) {
+                        pages.openAppointment.paid = double.tryParse(v) ?? 0;
+                        pages.openAppointment.isDone(true);
+                        state.notify();
+                      },
                       placeholder: txt("paid"),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
