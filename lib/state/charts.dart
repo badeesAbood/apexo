@@ -21,8 +21,8 @@ class Period {
 
 class _StatsPageState extends ObservableObject {
   String doctorID = "";
-  DateTime start = DateTime.now().subtract(const Duration(days: 15));
-  DateTime end = DateTime.now().add(const Duration(days: 15));
+  DateTime start = DateTime(DateTime.now().year, DateTime.now().month, 1);
+  DateTime end = DateTime(DateTime.now().year, DateTime.now().month, 1).add(const Duration(days: 31));
   StatsInterval interval = StatsInterval.days;
   String get intervalString {
     return "${chartsState.interval.name[0].toUpperCase()}${chartsState.interval.name.substring(1).toLowerCase()}";
@@ -208,7 +208,7 @@ class _StatsPageState extends ObservableObject {
   resetSelected() {
     final now = DateTime.now();
     start = DateTime(now.year, now.month, 1);
-    end = DateTime(now.year, now.month + 1).subtract(const Duration(days: 1));
+    end = DateTime(now.year, now.month, 1).add(const Duration(days: 31));
     interval = StatsInterval.days;
   }
 
