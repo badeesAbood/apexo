@@ -23,10 +23,10 @@ class En {
     "noResultsFound": "No results found",
 
     // call
-    "callLaboratory": "Call laboratory",
-    "callPatient": "Call patient",
-    "emailDoctor": "Email doctor",
-    "callIssuer": "Call issuer",
+    "callLaboratory": "Call Laboratory",
+    "callPatient": "Call Patient",
+    "emailDoctor": "Email Doctor",
+    "callIssuer": "Call Issuer",
 
     // pages
     "settings": "Settings",

@@ -155,6 +155,8 @@ class Ar implements En {
     "firstMolar": "رحاة اولى",
     "secondMolar": "رحاة ثانية",
     "thirdMolar": "رحاة ثالثة",
+    "exportSelected": "تصدير المحدد",
+    "noPatientsSelected": "لم يتم اختيار أي مرضى",
 
     // calendar (appointments)
     "allDoctors": "جميع الأطباء",
