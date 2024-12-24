@@ -3,6 +3,7 @@ import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/calendar/modal_appointment.dart';
 import 'package:apexo/pages/patients/modal_patient.dart';
 import 'package:apexo/pages/settings/window_backups.dart';
+import 'package:apexo/pages/shared/archive_selected.dart';
 import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
 import 'package:apexo/state/stores/patients/patient_model.dart';
@@ -44,15 +45,7 @@ class PatientPage extends ObservingWidget {
             icon: FluentIcons.add_friend,
             title: txt("add"),
           ),
-          DataTableAction(
-            callback: (ids) {
-              for (var id in ids) {
-                patients.archive(id);
-              }
-            },
-            icon: FluentIcons.archive,
-            title: txt("archive"),
-          ),
+          archiveSelected(patients),
           DataTableAction(
             callback: (ids) {
               showDialog(

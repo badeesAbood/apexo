@@ -326,5 +326,8 @@ class En {
     "proceedOffline": "Proceed offline",
     "youLLGet": "Get reset link by email",
     "beenSent": "Password reset instructions have been sent to you, check your inbox.",
+
+    // other
+    "sureArchiveSelected": "Are you sure you want to archive the selected items?",
   };
 }

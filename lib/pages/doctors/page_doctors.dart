@@ -1,6 +1,7 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/calendar/modal_appointment.dart';
+import 'package:apexo/pages/shared/archive_selected.dart';
 import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/pages/doctors/modal_doctor.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
@@ -39,15 +40,7 @@ class DoctorsPage extends ObservingWidget {
             icon: FluentIcons.medical,
             title: txt("add"),
           ),
-          DataTableAction(
-            callback: (ids) {
-              for (var id in ids) {
-                doctors.archive(id);
-              }
-            },
-            icon: FluentIcons.archive,
-            title: txt("archiveSelected"),
-          )
+          archiveSelected(doctors)
         ],
         furtherActions: [const SizedBox(width: 5), ArchiveToggle(notifier: doctors.notify)],
         onSelect: (item) => openSingleDoctor(

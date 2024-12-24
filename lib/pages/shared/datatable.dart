@@ -24,8 +24,9 @@ class ItemAction {
 class DataTableAction {
   void Function(List<String>) callback;
   IconData icon;
-  String title;
-  DataTableAction({required this.callback, required this.icon, required this.title});
+  String? title;
+  Widget? child;
+  DataTableAction({required this.callback, required this.icon, this.title, this.child});
 }
 
 class DataTable<Item extends Model> extends StatefulWidget {
@@ -438,7 +439,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
                             }
                             a.callback(checkedIds.toList());
                           },
-                          label: Text(a.title),
+                          label: a.child ?? (a.title != null ? Text(a.title!) : null),
                           icon: Icon(a.icon)))
                       .toList(),
                   overflowBehavior: CommandBarOverflowBehavior.dynamicOverflow,

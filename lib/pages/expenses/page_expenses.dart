@@ -1,6 +1,7 @@
 import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/expenses/modal_expenses.dart';
+import 'package:apexo/pages/shared/archive_selected.dart';
 import 'package:apexo/pages/shared/archive_toggle.dart';
 import 'package:apexo/pages/shared/datatable.dart';
 import 'package:apexo/state/stores/expenses/expenses_model.dart';
@@ -37,15 +38,7 @@ class ExpensesPage extends ObservingWidget {
                   icon: FluentIcons.manufacturing,
                   title: txt("add"),
                 ),
-                DataTableAction(
-                  callback: (ids) {
-                    for (var id in ids) {
-                      expenses.archive(id);
-                    }
-                  },
-                  icon: FluentIcons.archive,
-                  title: txt("archiveSelected"),
-                )
+                archiveSelected(expenses)
               ],
               furtherActions: [const SizedBox(width: 5), ArchiveToggle(notifier: expenses.notify)],
               onSelect: (item) => {
