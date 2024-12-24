@@ -9,9 +9,11 @@ class GridGallery extends StatelessWidget {
   final double rowWidth;
   final double? size;
   final int clipCount;
+  final bool progress;
   const GridGallery({
     super.key,
     required this.imgs,
+    required this.progress,
     this.onPressDelete,
     this.countPerLine = 3,
     this.rowWidth = 350,
@@ -72,7 +74,7 @@ class GridGallery extends StatelessWidget {
             }
           },
         ),
-        if (onPressDelete != null)
+        if (onPressDelete != null && progress == false)
           Positioned(
             top: 4,
             right: 4,

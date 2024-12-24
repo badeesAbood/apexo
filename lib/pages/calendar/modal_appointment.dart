@@ -375,6 +375,7 @@ openSingleAppointment({
                   : SingleChildScrollView(
                       child: GridGallery(
                         imgs: pages.openAppointment.imgs,
+                        progress: state.progress,
                         onPressDelete: (img) async {
                           state.startProgress();
                           try {

@@ -122,6 +122,7 @@ class AppointmentCard extends StatelessWidget {
                               clipCount: 4,
                               rowWidth: 200,
                               size: 43,
+                              progress: false,
                             ),
                             FluentIcons.camera,
                           ),
