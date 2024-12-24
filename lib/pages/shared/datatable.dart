@@ -362,11 +362,58 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     );
   }
 
-  Text _buildItemsNumIndicator() {
-    return Text(
-      "${txt("showing")} ${sortedItems.length}/${filteredItems.length}",
-      style: TextStyle(color: Colors.grey.toAccentColor().lightest, fontSize: 11, fontWeight: FontWeight.bold),
+  Widget _buildItemsNumIndicator() {
+    final filtered = [...filteredItems];
+    return Row(
+      children: [
+        Text(
+          "${txt("showing")} ${sortedItems.length}/${filtered.length}",
+          style: TextStyle(color: Colors.grey.toAccentColor().lightest, fontSize: 11, fontWeight: FontWeight.bold),
+        ),
+        if (filtered.isNotEmpty) ..._buildToggleSorters(context),
+      ],
     );
+  }
+
+  List<Widget> _buildToggleSorters(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width < 865 || (width > 1000 && width < 1150)) {
+      return [];
+    }
+    return [
+      const SizedBox(width: 30),
+      ...(["title", ...nonNullLabels])
+          .map((e) => [
+                Acrylic(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+                  elevation: sortBy == nonNullLabels.indexOf(e) ? 12 : 0,
+                  child: ToggleButton(
+                    checked: sortBy == nonNullLabels.indexOf(e),
+                    onChanged: (checked) {
+                      if (checked) {
+                        setSortBy(nonNullLabels.indexOf(e));
+                      } else {
+                        toggleSortDirection();
+                      }
+                    },
+                    style: const ToggleButtonThemeData(
+                        uncheckedButtonStyle: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+                    )),
+                    child: Row(
+                      children: [
+                        Text(txt(e)),
+                        const SizedBox(width: 5),
+                        if (sortBy == nonNullLabels.indexOf(e))
+                          Icon(sortDirection > 0 ? FluentIcons.sort_up : FluentIcons.sort_down)
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 5)
+              ])
+          .expand((e) => e)
+    ];
   }
 
   Acrylic _buildCommandBar() {
