@@ -25,8 +25,9 @@ class AppointmentCard extends StatelessWidget {
   final Appointment appointment;
   final List<AppointmentSections> hide;
   final String? difference;
+  final int number;
   late Color color;
-  AppointmentCard({super.key, required this.appointment, this.difference, this.hide = const []}) {
+  AppointmentCard({super.key, required this.appointment, this.difference, required this.number, this.hide = const []}) {
     color = appointment.archived == true
         ? Colors.grey
         : (appointment.isMissed)
@@ -319,7 +320,7 @@ class AppointmentCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              txt("appointment"),
+              "${txt("appointment")}: $number",
               style: TextStyle(
                 fontSize: 10,
                 color: color.withOpacity(0.5),

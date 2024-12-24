@@ -183,9 +183,9 @@ TabbedModal appointmentsTab(BuildContext context) {
             InfoBar(title: Text(txt("noAppointmentsFound"))),
           ]
         : [
-            ...pages.openPatient.allAppointments.map((appointment) {
+            ...List.generate(pages.openPatient.allAppointments.length, (index) {
+              final appointment = pages.openPatient.allAppointments[index];
               String? difference;
-              int index = pages.openPatient.allAppointments.indexOf(appointment);
               if (pages.openPatient.allAppointments.last != appointment) {
                 int differenceInDays =
                     appointment.date().difference(pages.openPatient.allAppointments[index + 1].date()).inDays.abs();
@@ -197,6 +197,7 @@ TabbedModal appointmentsTab(BuildContext context) {
                 appointment: appointment,
                 difference: difference,
                 hide: const [AppointmentSections.patient],
+                number: index + 1,
               );
             })
           ],

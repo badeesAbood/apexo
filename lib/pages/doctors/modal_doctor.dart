@@ -106,9 +106,9 @@ TabbedModal upcomingAppointmentsTab(BuildContext context) {
             InfoBar(title: Text("No upcoming appointments found. Use the button below to register new one")),
           ]
         : [
-            ...pages.openMember.upcomingAppointments.map((appointment) {
+            ...List.generate(pages.openMember.upcomingAppointments.length, (index) {
+              final appointment = pages.openMember.upcomingAppointments[index];
               String? difference;
-              int index = pages.openMember.upcomingAppointments.indexOf(appointment);
               if (pages.openMember.upcomingAppointments.last != appointment) {
                 int differenceInDays =
                     appointment.date().difference(pages.openMember.upcomingAppointments[index + 1].date()).inDays.abs();
@@ -120,6 +120,7 @@ TabbedModal upcomingAppointmentsTab(BuildContext context) {
                 appointment: appointment,
                 difference: difference,
                 hide: const [AppointmentSections.doctors],
+                number: index + 1,
               );
             })
           ],
