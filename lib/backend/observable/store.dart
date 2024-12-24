@@ -5,6 +5,7 @@ import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/state/state.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:http/http.dart';
+import 'package:path/path.dart';
 
 import 'model.dart';
 import 'observable.dart';
@@ -423,10 +424,8 @@ class Store<G extends Model> {
     if (remote!.isOnline && lastDeferred.isEmpty) {
       try {
         if (upload) {
-          await remote!.uploadImages(
-              rowID,
-              await Future.wait(
-                  paths.map((path) => MultipartFile.fromPath("imgs+", path, filename: path.split("/").last))));
+          await remote!.uploadImages(rowID,
+              await Future.wait(paths.map((path) => MultipartFile.fromPath("imgs+", path, filename: basename(path)))));
         } else {
           await remote!.deleteImages(rowID, paths);
         }
