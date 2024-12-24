@@ -38,6 +38,7 @@ class PatientPage extends ObservingWidget {
                 editing: false,
                 title: txt("addNewPatient"),
                 onSave: patients.set,
+                showContinue: true,
               );
             },
             icon: FluentIcons.add_friend,

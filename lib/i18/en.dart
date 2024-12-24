@@ -14,6 +14,7 @@ class En {
     "close": "Close",
     "save": "Save",
     "reset": "Reset",
+    "continue": "Continue",
     "add": "Add",
     "edit": "Edit",
     "delete": "Delete",
@@ -74,7 +75,7 @@ class En {
     "doctorName": "Doctor name",
     "doctorEmail": "Doctor email",
     "dutyDays": "Duty days",
-    "addAppointment": "Add Appointment",
+    "addAppointment": "Add Appointment", // TODO: either addAppointment or newAppointment
     "lockToUsers": "Only the following users can view/edit this doctor's data and appointments",
 
     // days and months

@@ -34,6 +34,7 @@ class DoctorsPage extends ObservingWidget {
               title: "${txt("add")} ${txt("doctor")}",
               onSave: doctors.set,
               editing: false,
+              showContinue: true,
             ),
             icon: FluentIcons.medical,
             title: txt("add"),

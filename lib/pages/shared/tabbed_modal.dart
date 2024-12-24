@@ -8,9 +8,11 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 class _Sheet extends StatefulWidget {
   List<TabbedModal> tabs;
   Function? onSave;
+  Function? onContinue;
   Function? onArchive;
   Function? onRestore;
-  _Sheet(this.tabs, this.onSave, this.onArchive, this.onRestore, {super.key});
+  int? initiallySelected;
+  _Sheet(this.tabs, this.onSave, this.onContinue, this.onArchive, this.onRestore, this.initiallySelected, {super.key});
 
   @override
   State<StatefulWidget> createState() => SheetState();
@@ -25,6 +27,12 @@ class SheetState extends State<_Sheet> {
 
   notify() {
     if (mounted) setState(() {});
+  }
+
+  @override
+  void initState() {
+    selectedTab = widget.initiallySelected ?? 0;
+    super.initState();
   }
 
   @override
@@ -175,6 +183,22 @@ class SheetState extends State<_Sheet> {
                                   Navigator.of(context, rootNavigator: true).pop();
                                 },
                               ),
+                            if (widget.onContinue != null)
+                              FilledButton(
+                                child: Row(
+                                  children: [
+                                    locale.s.$direction == Direction.ltr
+                                        ? const Icon(FluentIcons.forward)
+                                        : const Icon(FluentIcons.back),
+                                    const SizedBox(width: 5),
+                                    Text(txt("continue"))
+                                  ],
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context, rootNavigator: true).pop();
+                                  widget.onContinue!();
+                                },
+                              ),
                             widget.tabs.length - 1 > selectedTab
                                 ? IconButton(
                                     key: WK.tabbedModalNext,
@@ -266,13 +290,15 @@ void showTabbedModal({
   required BuildContext context,
   required List<TabbedModal> tabs,
   Function()? onSave,
+  Function()? onContinue,
   Function()? onArchive,
   Function()? onRestore,
+  int? initiallySelected,
   Key? key,
 }) async {
   assert(debugCheckHasMediaQuery(context));
   await Navigator.of(context, rootNavigator: true).push(ModalSheetRoute(
-    builder: (_) => _Sheet(tabs, onSave, onArchive, onRestore, key: key),
+    builder: (_) => _Sheet(tabs, onSave, onContinue, onArchive, onRestore, initiallySelected, key: key),
     containerBuilder: (_, animation, child) => ScaffoldPage(
       padding: EdgeInsets.zero,
       content: LayoutBuilder(builder: (context, constraints) {

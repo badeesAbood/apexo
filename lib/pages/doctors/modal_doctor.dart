@@ -20,15 +20,31 @@ openSingleDoctor({
   required String title,
   required void Function(Doctor) onSave,
   required bool editing,
+  int selectedTab = 0,
+  bool? showContinue,
 }) {
   pages.openMember = Doctor.fromJson(json);
   final o = pages.openMember;
   showTabbedModal(
+      key: Key(o.id),
       context: context,
       onArchive: o.archived != true && editing ? () => doctors.set(o..archived = true) : null,
       onRestore: o.archived == true && editing ? () => doctors.set(o..archived = null) : null,
       onSave: () => doctors.set(pages.openMember),
-      key: Key(o.id),
+      onContinue: (editing || showContinue != true)
+          ? null
+          : () {
+              doctors.set(pages.openMember);
+              openSingleDoctor(
+                context: context,
+                json: pages.openMember.toJson(),
+                title: "${txt("edit")} ${txt("doctor")}",
+                onSave: onSave,
+                editing: true,
+                selectedTab: 1,
+              );
+            },
+      initiallySelected: selectedTab,
       tabs: [
         TabbedModal(
           title: title,

@@ -22,6 +22,8 @@ openSinglePatient({
   required String title,
   required void Function(Patient) onSave,
   required bool editing,
+  int selectedTab = 0,
+  bool? showContinue,
 }) {
   pages.openPatient = Patient.fromJson(json); // reset
 
@@ -35,6 +37,20 @@ openSinglePatient({
         patients.set(pages.openPatient);
         onSave(pages.openPatient);
       },
+      onContinue: (editing || showContinue != true)
+          ? null
+          : () {
+              patients.set(pages.openPatient);
+              openSinglePatient(
+                context: context,
+                json: pages.openPatient.toJson(),
+                title: txt("editPatient"),
+                onSave: onSave,
+                editing: true,
+                selectedTab: 2,
+              );
+            },
+      initiallySelected: selectedTab,
       tabs: [
         TabbedModal(
           title: title,

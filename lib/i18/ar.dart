@@ -13,6 +13,7 @@ class Ar implements En {
     "close": "غلق",
     "save": "حفظ",
     "reset": "إعادة تعيين",
+    "continue": "استمر",
     "add": "إضافة",
     "edit": "تعديل",
     "delete": "حذف",

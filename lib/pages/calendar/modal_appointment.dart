@@ -35,6 +35,7 @@ openSingleAppointment({
   required String title,
   required void Function(Appointment) onSave,
   required bool editing,
+  int selectedTab = 0,
 }) {
   pages.openAppointment = Appointment.fromJson(json); // reset
   final o = pages.openAppointment;
@@ -47,6 +48,20 @@ openSingleAppointment({
       onArchive: o.archived != true && editing ? () => appointments.set(o..archived = true) : null,
       onRestore: o.archived == true && editing ? () => appointments.set(o..archived = null) : null,
       onSave: () => appointments.set(o),
+      onContinue: editing
+          ? null
+          : () {
+              appointments.set(pages.openAppointment);
+              openSingleAppointment(
+                context: context,
+                json: pages.openAppointment.toJson(),
+                title: txt("editAppointment"),
+                onSave: onSave,
+                editing: true,
+                selectedTab: 2,
+              );
+            },
+      initiallySelected: selectedTab,
       tabs: [
         TabbedModal(
           title: title,

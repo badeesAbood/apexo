@@ -79,11 +79,12 @@ class AppointmentCard extends StatelessWidget {
                             GestureDetector(
                                 onTap: () {
                                   openSinglePatient(
-                                      context: context,
-                                      json: appointment.patient!.toJson(),
-                                      title: txt("patient"),
-                                      onSave: patients.set,
-                                      editing: true);
+                                    context: context,
+                                    json: appointment.patient!.toJson(),
+                                    title: txt("patient"),
+                                    onSave: patients.set,
+                                    editing: true,
+                                  );
                                 },
                                 child: AcrylicTitle(item: appointment.patient!)),
                             FluentIcons.medical,
