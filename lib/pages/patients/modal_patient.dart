@@ -219,13 +219,13 @@ TabbedModal appointmentsTab(BuildContext context) {
           ],
     actions: [
       TabAction(
-        text: txt("newAppointment"),
+        text: txt("addAppointment"),
         icon: FluentIcons.add_event,
         callback: (_) {
           openSingleAppointment(
             context: context,
             json: {"patientID": pages.openPatient.id},
-            title: txt("newAppointment"),
+            title: txt("addAppointment"),
             onSave: appointments.set,
             editing: false,
           );

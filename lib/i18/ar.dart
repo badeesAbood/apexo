@@ -134,7 +134,6 @@ class Ar implements En {
     "female": "أنثى",
     "noAppointmentsFound": "لم يتم العثور على مواعيد لهذا المريض، استخدم الزر أدناه لإضافة موعد جديد.",
     "editPatient": "تعديل المريض",
-    "newAppointment": "موعد جديد",
     "editAppointment": "تعديل الموعد",
     "patientPage": "صفحة ويب المريض",
     "patientCanUseTheFollowing": "يمكن للمريض استخدام الرابط التالي للوصول إلى مواعيده ومدفوعاته وصوره.",

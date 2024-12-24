@@ -86,7 +86,7 @@ class PatientPage extends ObservingWidget {
                 openSingleAppointment(
                   context: context,
                   json: {"patientID": id},
-                  title: txt("newAppointment"),
+                  title: txt("addAppointment"),
                   onSave: appointments.set,
                   editing: false,
                 );

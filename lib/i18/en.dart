@@ -75,7 +75,7 @@ class En {
     "doctorName": "Doctor name",
     "doctorEmail": "Doctor email",
     "dutyDays": "Duty days",
-    "addAppointment": "Add Appointment", // TODO: either addAppointment or newAppointment
+    "addAppointment": "Add Appointment",
     "lockToUsers": "Only the following users can view/edit this doctor's data and appointments",
 
     // days and months
@@ -136,7 +136,6 @@ class En {
     "female": "Female",
     "noAppointmentsFound": "No appointments found for this patient, use the button below to add new appointment.",
     "editPatient": "Edit Patient",
-    "newAppointment": "New Appointment",
     "editAppointment": "Edit Appointment",
     "patientPage": "Patient Web Page",
     "patientCanUseTheFollowing": "Patient can use the following link to access his appointments, payments and photos.",

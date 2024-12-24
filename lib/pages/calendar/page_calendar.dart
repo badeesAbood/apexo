@@ -68,7 +68,7 @@ class Calendar extends ObservingWidget {
         onAddNew: (selectedDate) {
           openSingleAppointment(
             context: context,
-            title: txt("newAppointment"),
+            title: txt("addAppointment"),
             json: {"date": selectedDate.millisecondsSinceEpoch / 60000},
             onSave: appointments.set,
             editing: false,
