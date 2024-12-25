@@ -8,6 +8,7 @@ import 'package:apexo/state/stores/doctors/doctors_store.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Locale;
 import '../backend/observable/observable.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 bool isPositiveInt(int? value) {
   if (value == null) return false;
@@ -17,6 +18,8 @@ bool isPositiveInt(int? value) {
 
 class State extends ObservablePersistingObject {
   State(super.identifier);
+
+  String version = "";
 
   Map<String, void Function()> onOnline = {};
   Map<String, void Function()> onOffline = {};
@@ -277,6 +280,8 @@ class State extends ObservablePersistingObject {
 
   @override
   fromJson(Map<String, dynamic> json) async {
+    version = (await PackageInfo.fromPlatform()).version;
+
     url = json["url"] ?? url;
     email = json["email"] ?? email;
     imagesToDownload = json["imagesToDownload"] == null ? [] : List<String>.from(json["imagesToDownload"]);

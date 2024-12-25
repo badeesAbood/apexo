@@ -1,5 +1,4 @@
 import 'package:apexo/backend/utils/init_stores.dart';
-import 'package:apexo/version.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:logging/logging.dart';
@@ -58,16 +57,7 @@ class ApexoApp extends ObservingWidget {
                   : NavigationPane(
                       autoSuggestBox: const AuxiliarySection(key: WK.auxSection),
                       autoSuggestBoxReplacement: const Icon(auxiliaryIcon),
-                      header: Row(
-                        children: [
-                          const AppLogo(),
-                          Text(
-                            key: WK.version,
-                            "V $version",
-                            style: TextStyle(fontSize: 12, color: Colors.grey.withOpacity(0.3)),
-                          )
-                        ],
-                      ),
+                      header: const AppLogo(),
                       selected: pages.currentPageIndex,
                       displayMode: PaneDisplayMode.auto,
                       items: List<NavigationPaneItem>.from(pages.allPages.where((p) => p.onFooter != true).map(

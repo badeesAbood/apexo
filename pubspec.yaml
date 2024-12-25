@@ -2,7 +2,7 @@ name: apexo
 description: "Dental Clinic Management System"
 publish_to: "none"
 
-version: 0.1.0+1
+version: 0.2.0
 
 environment:
   sdk: ">=3.4.4 <4.0.0"
@@ -35,6 +35,7 @@ dependencies:
   path: ^1.9.0
   http_parser: ^4.0.2
   teeth_selector: ^0.2.2
+  package_info_plus: ^8.1.2
   
 dev_dependencies:
   integration_test:
