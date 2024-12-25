@@ -111,6 +111,8 @@ class En {
     "price": "Price",
     "underpaid": "Underpaid",
     "overpaid": "Overpaid",
+    "fullyPaid": "Fully paid",
+    "paymentSummary": "Payment summary",
     "editingAppointment": "Editing Appointment",
     "after": "After",
     "days": "days",

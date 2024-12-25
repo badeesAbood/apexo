@@ -109,6 +109,8 @@ class Ar implements En {
     "price": "السعر",
     "underpaid": "دفع ناقص",
     "overpaid": "دفع زائد",
+    "fullyPaid": "كامل",
+    "paymentSummary": "ملخص الدفع",
     "editingAppointment": "تعديل الموعد",
     "after": "بعد",
     "days": "أيام",

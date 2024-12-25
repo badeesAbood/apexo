@@ -1,3 +1,4 @@
+import 'package:apexo/backend/utils/color_based_on_payment.dart';
 import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/calendar/modal_appointment.dart';
 import 'package:apexo/pages/index.dart';
@@ -11,6 +12,7 @@ import 'package:apexo/pages/shared/tag_input.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
 import 'package:apexo/state/stores/patients/patient_model.dart';
 import 'package:apexo/state/stores/patients/patients_store.dart';
+import 'package:apexo/state/stores/settings/settings_store.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide TextBox;
 import 'package:flutter/cupertino.dart';
@@ -215,7 +217,68 @@ TabbedModal appointmentsTab(BuildContext context) {
                 hide: const [AppointmentSections.patient],
                 number: index + 1,
               );
-            })
+            }),
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 10, 12, 50),
+              child: Acrylic(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                elevation: 50,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5),
+                      boxShadow: kElevationToShadow[4],
+                      border: Border(
+                          top: BorderSide(
+                        color: colorBasedOnPayments(pages.openPatient.paymentsMade, pages.openPatient.pricesGiven)
+                            .withOpacity(0.3),
+                        width: 5,
+                      ))),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Text("${txt("paymentSummary")} (${globalSettings.get("currency_______").value})",
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+                      ),
+                      const SizedBox(height: 10),
+                      const Divider(),
+                      const SizedBox(height: 15),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          PaymentPill(
+                            finalTextColor: Colors.grey,
+                            title: txt("cost"),
+                            amount: pages.openPatient.pricesGiven.toString(),
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 10),
+                          PaymentPill(
+                            finalTextColor: Colors.grey,
+                            title: txt("paid"),
+                            amount: pages.openPatient.paymentsMade.toString(),
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      PaymentPill(
+                        finalTextColor: Colors.grey,
+                        title: pages.openPatient.overPaid
+                            ? txt("overpaid")
+                            : pages.openPatient.underPaid
+                                ? txt("underpaid")
+                                : txt("fullyPaid"),
+                        amount: (pages.openPatient.paymentsMade - pages.openPatient.pricesGiven).abs().toString(),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
     actions: [
       TabAction(
