@@ -7,22 +7,30 @@ import 'package:apexo/state/stores/appointments/appointments_store.dart';
 
 class Patient extends Model {
   List<Appointment> get allAppointments {
-    return appointments.byPatient[id]?["all"] ?? []
+    return (appointments.byPatient[id]?["all"] ?? [])
+        .where((appointment) => appointment.archived != true || state.showArchived)
+        .toList()
       ..sort((a, b) => a.date().compareTo(b.date()));
   }
 
   List<Appointment> get doneAppointments {
-    return appointments.byPatient[id]?["done"] ?? []
+    return (appointments.byPatient[id]?["done"] ?? [])
+        .where((appointment) => appointment.archived != true || state.showArchived)
+        .toList()
       ..sort((a, b) => a.date().compareTo(b.date()));
   }
 
   List<Appointment> get upcomingAppointments {
-    return appointments.byPatient[id]?["upcoming"] ?? []
+    return (appointments.byPatient[id]?["upcoming"] ?? [])
+        .where((appointment) => appointment.archived != true || state.showArchived)
+        .toList()
       ..sort((a, b) => a.date().compareTo(b.date()));
   }
 
   List<Appointment> get pastAppointments {
-    return appointments.byPatient[id]?["past"] ?? []
+    return (appointments.byPatient[id]?["past"] ?? [])
+        .where((appointment) => appointment.archived != true || state.showArchived)
+        .toList()
       ..sort((a, b) => a.date().compareTo(b.date()));
   }
 
