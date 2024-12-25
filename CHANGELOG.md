@@ -1,4 +1,7 @@
-## Changelog
+
+### ____0.2.0____
+
+-   Multiple improvements and fixes for better usability
 
 
 ### ____0.1.0____

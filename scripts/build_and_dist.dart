@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'package:path/path.dart' as p;
 import "package:archive/archive.dart";
+import 'package:yaml/yaml.dart';
 
 void main() {
   print("Will build dist for windows and publish the release...");
@@ -17,11 +18,45 @@ void main() {
   print("$previousVersionTag -> $newVersionTag");
   replaceVersion(previousVersionTag, newVersionTag);
 
-  // Build windows application
-  print("building for windows...");
+  buildFor(
+    flutterArg: "windows",
+    platform: "windows",
+    resPath: p.join(Directory.current.path, "build", "windows", "x64", "runner", "Release"),
+    shouldArchive: true,
+    newVersionTag: newVersionTag,
+  );
+
+  buildFor(
+    flutterArg: "apk",
+    platform: "android",
+    resPath: p.join(Directory.current.path, "build", "app", "outputs", "flutter-apk", "app-release.apk"),
+    shouldArchive: false,
+    newVersionTag: newVersionTag,
+  );
+
+  // updating changelog
+  final changes = prompt(
+          "What are the changes? (separate lines by triple forward slash ///) leave empty if you don't wish to update the changelog.")
+      .split("///");
+  if (changes.join("").isNotEmpty) {
+    prependChangelog(newVersionTag, changes);
+    print("Updated the changelog successfully");
+  } else {
+    print("Skipped updating the changelog");
+  }
+}
+
+void buildFor({
+  required String platform,
+  required String flutterArg,
+  required String resPath,
+  required String newVersionTag,
+  required bool shouldArchive,
+}) {
+  print("building $platform...");
   final res = Process.runSync(
     Platform.isWindows ? "flutter.bat" : "flutter",
-    ["build", "windows", "--release"],
+    ["build", flutterArg, "--release"],
     workingDirectory: Directory.current.path,
     environment: Platform.environment,
   );
@@ -31,28 +66,23 @@ void main() {
   print("   OUT: ${res.stdout}");
 
   // packaging
-  print("packaging...");
-  final releaseDirPath = p.join(Directory.current.path, "build", "windows", "x64", "runner", "Release");
-  final archivePath = p.join(Directory.current.path, "dist", "apexo_windows_$newVersionTag.zip");
-  final archive = Archive();
-  print("   package path: $archivePath");
-  addDirectoryToArchive(releaseDirPath, archive);
-  final zipFile = File(archivePath);
-  final encoder = ZipEncoder();
-  final zipData = encoder.encode(archive);
-  print("   Writing to zip file...");
-  zipFile.writeAsBytesSync(zipData!);
-  print("   Finished packaging");
-
-  // updating changelog
-  final changes = prompt(
-          "What are the changes? (separate lines by triple forward slash ///) leave empty if you don't wish to update the changelog.")
-      .split("///");
-  if (changes.join("").isNotEmpty) {
-    appendChangeLog(newVersionTag, changes);
-    print("Updated the changelog successfully");
+  if (shouldArchive) {
+    print("Packaging for platform $platform");
+    final archivePath = p.join(Directory.current.path, "dist", "apexo_${platform}_$newVersionTag.zip");
+    final archive = Archive();
+    addDirectoryToArchive(resPath, archive);
+    final zipFile = File(archivePath);
+    final encoder = ZipEncoder();
+    final zipData = encoder.encode(archive);
+    zipFile.writeAsBytesSync(zipData!);
+    print("   Finished platform: $platform");
   } else {
-    print("Skipped updating the changelog");
+    print("Distributing for platform $platform");
+    final extension = p.basename(resPath).split(".").last;
+    File sourceFile = File(resPath);
+    File destinationFile = File(p.join(Directory.current.path, "dist", "apexo_${platform}_$newVersionTag.$extension"));
+    destinationFile.writeAsBytesSync(sourceFile.readAsBytesSync());
+    print("   Finished platform: $platform");
   }
 }
 
@@ -76,22 +106,14 @@ void addDirectoryToArchive(String directoryPath, Archive archive) {
 }
 
 String readPreviousVersion() {
-  var file = File("lib/version.dart");
-  if (!file.existsSync()) {
-    return "";
-  }
-  return file.readAsStringSync().split("\"")[1];
+  final fileContents = File("pubspec.yaml").readAsStringSync();
+  final yamlMap = loadYaml(fileContents) as YamlMap;
+  return yamlMap["version"] as String;
 }
 
 replaceVersion(String oldV, String newV) {
-  var file = File("lib/version.dart");
-  var content = file.readAsStringSync();
-  content = content.replaceAll(oldV, newV);
-  file.writeAsStringSync(content);
-
-  file = File("pubspec.yaml");
-  content = file.readAsStringSync();
-  content = content.replaceAll("version: $oldV+1", "version: $newV+1");
+  final file = File("pubspec.yaml");
+  final content = file.readAsStringSync().replaceAll("version: $oldV+1", "version: $newV+1");
   file.writeAsStringSync(content);
 }
 
@@ -100,10 +122,10 @@ String prompt(String message) {
   return stdin.readLineSync()!;
 }
 
-appendChangeLog(String versionTag, List<String> changes) {
-  var file = File("CHANGELOG.md");
-  var content = file.readAsStringSync();
-  var changesStr = "\n-   ${changes.join("\n-   ")}";
-  content = "$content\n### ____${versionTag}____\n$changesStr\n\n";
-  file.writeAsStringSync(content);
+prependChangelog(String versionTag, List<String> changes) {
+  final file = File("CHANGELOG.md");
+  final changesStr = "\n-   ${changes.join("\n-   ")}";
+  final content = file.readAsStringSync();
+  final newContent = "\n### ____${versionTag}____\n$changesStr\n\n$content";
+  file.writeAsStringSync(newContent);
 }
