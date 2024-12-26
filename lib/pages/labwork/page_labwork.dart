@@ -27,6 +27,7 @@ class LabworksPage extends ObservingWidget {
         children: [
           Expanded(
             child: DataTable<Labwork>(
+              compact: true,
               items: labworks.present.values.toList(),
               actions: [
                 DataTableAction(
