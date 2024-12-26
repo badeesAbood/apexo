@@ -141,7 +141,8 @@ class SaveRemote {
 
   Future<int> getVersion() async {
     try {
-      final result = await remoteRows.getList(sort: "-updated", perPage: 1, filter: 'store="$storeName"');
+      final result =
+          await remoteRows.getList(sort: "-updated", perPage: 1, filter: 'store="$storeName"', fields: "updated");
       if (result.items.isEmpty) {
         return 0;
       }
