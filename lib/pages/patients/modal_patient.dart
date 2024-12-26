@@ -246,8 +246,10 @@ TabbedModal appointmentsTab(BuildContext context) {
                       const SizedBox(height: 10),
                       const Divider(),
                       const SizedBox(height: 15),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 10,
+                        runSpacing: 10,
                         children: [
                           PaymentPill(
                             finalTextColor: Colors.grey,
@@ -255,25 +257,23 @@ TabbedModal appointmentsTab(BuildContext context) {
                             amount: pages.openPatient.pricesGiven.toString(),
                             color: Colors.white,
                           ),
-                          const SizedBox(width: 10),
                           PaymentPill(
                             finalTextColor: Colors.grey,
                             title: txt("paid"),
                             amount: pages.openPatient.paymentsMade.toString(),
                             color: Colors.white,
                           ),
+                          PaymentPill(
+                            finalTextColor: Colors.grey,
+                            title: pages.openPatient.overPaid
+                                ? txt("overpaid")
+                                : pages.openPatient.underPaid
+                                    ? txt("underpaid")
+                                    : txt("fullyPaid"),
+                            amount: (pages.openPatient.paymentsMade - pages.openPatient.pricesGiven).abs().toString(),
+                          )
                         ],
                       ),
-                      const SizedBox(height: 10),
-                      PaymentPill(
-                        finalTextColor: Colors.grey,
-                        title: pages.openPatient.overPaid
-                            ? txt("overpaid")
-                            : pages.openPatient.underPaid
-                                ? txt("underpaid")
-                                : txt("fullyPaid"),
-                        amount: (pages.openPatient.paymentsMade - pages.openPatient.pricesGiven).abs().toString(),
-                      )
                     ],
                   ),
                 ),
