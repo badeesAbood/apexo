@@ -23,6 +23,7 @@ class OperatorsPicker extends StatelessWidget {
       onItemTap: (tag) {
         Doctor? tapped = doctors.get(tag.value ?? "");
         Map<String, dynamic> json = tapped != null ? tapped.toJson() : {};
+        Navigator.of(context).pop();
         openSingleDoctor(
           context: context,
           json: json,

@@ -18,6 +18,7 @@ class PatientPicker extends StatelessWidget {
       onItemTap: (tag) {
         Patient? tapped = patients.get(tag.value ?? "");
         Map<String, dynamic> json = tapped != null ? tapped.toJson() : {};
+        Navigator.of(context).pop();
         openSinglePatient(
           context: context,
           json: json,
