@@ -10,12 +10,21 @@ class AppLogo extends StatefulWidget {
   State<AppLogo> createState() => _AppLogoState();
 }
 
+String savedVersion = "";
+
 class _AppLogoState extends State<AppLogo> {
-  String version = "";
+  String version = savedVersion;
 
   @override
   void initState() {
-    PackageInfo.fromPlatform().then((p) => setState(() => version = p.version)).ignore();
+    if (version.isEmpty) {
+      PackageInfo.fromPlatform()
+          .then((p) => setState(() {
+                version = p.version;
+                savedVersion = p.version;
+              }))
+          .ignore();
+    }
     super.initState();
   }
 
