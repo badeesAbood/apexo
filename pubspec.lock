@@ -696,10 +696,10 @@ packages:
     dependency: "direct main"
     description:
       name: pocketbase
-      sha256: e6aca23d3181a23d367c6650fc4ebe6855bfba4d18b3746ceb1974fb152d8cf9
+      sha256: ec5d0058debd60e0e5bf8254edaa60a4ca43a254123ca2a71f5a1c1c406608dd
       url: "https://pub.dev"
     source: hosted
-    version: "0.19.1"
+    version: "0.20.0"
   pool:
     dependency: transitive
     description:
@@ -1069,10 +1069,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: "68d1e89a91ed61ad9c370f9f8b6effed9ae5e0ede22a270bdfa6daf79fc2290a"
+      sha256: "8b338d4486ab3fbc0ba0db9f9b4f5239b6697fcee427939a40e720cbb9ee0a69"
       url: "https://pub.dev"
     source: hosted
-    version: "5.5.4"
+    version: "5.9.0"
   xdg_directories:
     dependency: transitive
     description:
@@ -1098,5 +1098,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.4.4 <4.0.0"
+  dart: ">=3.5.0 <4.0.0"
   flutter: ">=3.22.0"
