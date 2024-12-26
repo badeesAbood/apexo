@@ -24,6 +24,7 @@ void main() {
     resPath: p.join(Directory.current.path, "build", "windows", "x64", "runner", "Release"),
     shouldArchive: true,
     newVersionTag: newVersionTag,
+    copyDirectory: false,
   );
 
   buildFor(
@@ -32,6 +33,16 @@ void main() {
     resPath: p.join(Directory.current.path, "build", "app", "outputs", "flutter-apk", "app-release.apk"),
     shouldArchive: false,
     newVersionTag: newVersionTag,
+    copyDirectory: false,
+  );
+
+  buildFor(
+    flutterArg: "web",
+    platform: "web",
+    resPath: p.join(Directory.current.path, "build", "web"),
+    shouldArchive: false,
+    newVersionTag: newVersionTag,
+    copyDirectory: true,
   );
 
   // updating changelog
@@ -46,13 +57,13 @@ void main() {
   }
 }
 
-void buildFor({
-  required String platform,
-  required String flutterArg,
-  required String resPath,
-  required String newVersionTag,
-  required bool shouldArchive,
-}) {
+void buildFor(
+    {required String platform,
+    required String flutterArg,
+    required String resPath,
+    required String newVersionTag,
+    required bool shouldArchive,
+    required bool copyDirectory}) {
   print("building $platform...");
   final res = Process.runSync(
     Platform.isWindows ? "flutter.bat" : "flutter",
@@ -76,6 +87,10 @@ void buildFor({
     final zipData = encoder.encode(archive);
     zipFile.writeAsBytesSync(zipData!);
     print("   Finished platform: $platform");
+  } else if (copyDirectory) {
+    print("Distributing for platform $platform");
+    copyDirectorySync(Directory(resPath), Directory(p.join(Directory.current.path, "dist", platform)));
+    print("   Finished platform: $platform");
   } else {
     print("Distributing for platform $platform");
     final extension = p.basename(resPath).split(".").last;
@@ -83,6 +98,27 @@ void buildFor({
     File destinationFile = File(p.join(Directory.current.path, "dist", "apexo_${platform}_$newVersionTag.$extension"));
     destinationFile.writeAsBytesSync(sourceFile.readAsBytesSync());
     print("   Finished platform: $platform");
+  }
+}
+
+void copyDirectorySync(Directory source, Directory destination) {
+  if (!source.existsSync()) {
+    throw Exception("Source directory does not exist: ${source.path}");
+  }
+
+  // Create the destination directory if it doesn't exist
+  if (!destination.existsSync()) {
+    destination.createSync(recursive: true);
+  }
+
+  // Copy each entity from the source directory to the destination
+  for (var entity in source.listSync()) {
+    var newPath = '${destination.path}/${entity.uri.pathSegments.last}';
+    if (entity is File) {
+      entity.copySync(newPath);
+    } else if (entity is Directory) {
+      copyDirectorySync(entity, Directory(newPath));
+    }
   }
 }
 
@@ -113,7 +149,7 @@ String readPreviousVersion() {
 
 replaceVersion(String oldV, String newV) {
   final file = File("pubspec.yaml");
-  final content = file.readAsStringSync().replaceAll("version: $oldV+1", "version: $newV+1");
+  final content = file.readAsStringSync().replaceAll("version: $oldV", "version: $newV");
   file.writeAsStringSync(content);
 }
 

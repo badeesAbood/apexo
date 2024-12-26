@@ -1,4 +1,11 @@
 
+### ____0.2.1____
+
+-   Load images on request
+-   fixed issue with dates
+-   minor visual improvements
+
+
 ### ____0.2.0____
 
 -   Multiple improvements and fixes for better usability
