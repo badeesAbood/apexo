@@ -442,7 +442,8 @@ class AgendaItem extends Model {
   }
 
   AgendaItem.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
-    if (json["date"] != null && json["date"] > 8640000000000000) json["date"] = json["date"] / 60000;
+    // the following is a dirty fix for dates that haven't been divided by 60000
+    if (json["date"] != null && json["date"] > 1000000000000) json["date"] = json["date"] / 60000;
     date(json["date"] != null ? DateTime.fromMillisecondsSinceEpoch((json["date"] * 60000).toInt()) : date());
     isDone(json["isDone"] ?? isDone());
   }
