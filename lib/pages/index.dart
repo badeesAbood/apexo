@@ -162,6 +162,9 @@ class Pages extends ObservableObject {
   int selectedTabInSheet = 0;
 
   Page get currentPage {
+    if (currentPageIndex < 0 || currentPageIndex >= allPages.length) {
+      return allPages.first;
+    }
     return allPages[currentPageIndex];
   }
 
