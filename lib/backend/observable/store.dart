@@ -312,26 +312,27 @@ class Store<G extends Model> {
   Future<List<SyncResult>> synchronize() async {
     // on first sync, we need to set up the realtime subscription
     if (remote != null && realtimeSub == null && manualSyncOnly != true) {
-      try {
-        realtimeSub = await remote?.pbInstance.collection(dataCollectionName).subscribe("*", (msg) {
-          if (msg.record?.data["store"] == remote?.storeName) {
-            synchronize();
-          }
-        });
-        state.onOnline[remote!.storeName] = () {
+      state.onOnline[remote!.storeName] = () {
+        synchronize();
+      };
+      state.onOffline[remote!.storeName] = () {
+        if (realtimeSub != null) {
+          // cancel the subscription once we go offline
+          realtimeSub!();
+          // and set this to null so that we get to subscribe again when we go online
+          realtimeSub = null;
+        }
+      };
+
+      remote?.pbInstance.collection(dataCollectionName).subscribe("*", (msg) {
+        if (msg.record?.data["store"] == remote?.storeName) {
           synchronize();
-        };
-        state.onOffline[remote!.storeName] = () {
-          if (realtimeSub != null) {
-            // cancel the subscription once we go offline
-            realtimeSub!();
-            // and set this to null so that we get to subscribe again when we go online
-            realtimeSub = null;
-          }
-        };
-      } catch (e, s) {
+        }
+      }).then((cancellation) {
+        realtimeSub = cancellation;
+      }).catchError((e, s) {
         logger("Error during realtime subscription: $e", s);
-      }
+      });
     }
 
     lastProcessChanges = DateTime.now().millisecondsSinceEpoch;
