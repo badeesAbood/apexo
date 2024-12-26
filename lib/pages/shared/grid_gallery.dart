@@ -3,6 +3,7 @@ import 'package:apexo/pages/shared/slideshow/slideshow.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
 class GridGallery extends StatelessWidget {
+  final String rowId;
   final List<String> imgs;
   final void Function(String img)? onPressDelete;
   final int countPerLine;
@@ -12,6 +13,7 @@ class GridGallery extends StatelessWidget {
   final bool progress;
   const GridGallery({
     super.key,
+    required this.rowId,
     required this.imgs,
     required this.progress,
     this.onPressDelete,
@@ -53,8 +55,8 @@ class GridGallery extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        FutureBuilder<ImageProvider<Object>>(
-          future: getImage(img),
+        FutureBuilder<ImageProvider<Object>?>(
+          future: getImage(rowId, img),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
               return GestureDetector(
@@ -110,7 +112,10 @@ class GridGallery extends StatelessWidget {
   }
 
   showAllImages(BuildContext context, String firstImg) async {
-    final list = await Future.wait([firstImg, ...imgs.where((x) => x != firstImg)].map((e) => getImage(e)).toList());
+    final List<ImageProvider<Object>> list =
+        (await Future.wait([firstImg, ...imgs.where((x) => x != firstImg)].map((e) => getImage(rowId, e)).toList()))
+            .map((el) => el ?? const AssetImage("assets/images/missing.png"))
+            .toList();
 
     MultiImageProvider multiImageProvider = MultiImageProvider(list);
 

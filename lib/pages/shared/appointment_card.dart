@@ -117,6 +117,7 @@ class AppointmentCard extends StatelessWidget {
                           _buildSection(
                             txt("photos"),
                             GridGallery(
+                              rowId: appointment.id,
                               imgs: appointment.imgs,
                               countPerLine: 4,
                               clipCount: 4,

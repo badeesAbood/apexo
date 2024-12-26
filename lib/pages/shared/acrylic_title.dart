@@ -28,7 +28,7 @@ class _AcrylicTitleState extends State<AcrylicTitle> {
           decoration:
               BoxDecoration(color: color, borderRadius: BorderRadius.circular(100), boxShadow: kElevationToShadow[1]),
           child: FutureBuilder(
-              future: widget.item.avatar != null ? getImage(widget.item.avatar!) : null,
+              future: widget.item.avatar != null ? getImage(widget.item.id, widget.item.avatar!) : null,
               builder: (context, snapshot) {
                 if (widget.item.title.isEmpty) {
                   widget.item.title = " ";

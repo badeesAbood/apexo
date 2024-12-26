@@ -35,7 +35,6 @@ class GlobalActions extends ObservableObject {
     for (var callback in syncCallbacks.values) {
       callback();
     }
-    await state.downloadImgs();
   }
 
   List<GlobalAction> get actions {

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/safe_dir.dart';
 import 'package:apexo/backend/utils/strip_id_from_file.dart';
+import 'package:apexo/state/stores/appointments/appointments_store.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -28,20 +29,27 @@ Future<File> getOrCreateFile(String name) async {
   return File(join(await filesDir(), name));
 }
 
-Future<ImageProvider> getImage(String name) async {
-  // in case of web, we serve images from the server
+Future<ImageProvider?> getImage(String rowID, String name) async {
+  // Web platform doesn't support local files
   if (kIsWeb) {
-    await Hive.openBox(webImagesStore);
-    final imageUrl = Hive.box(webImagesStore).get(name);
-    if (imageUrl != null) {
-      return NetworkImage(imageUrl);
-    }
+    final imgUrl = await appointments.remote!.getImageLink(rowID, name);
+    return imgUrl == null ? null : NetworkImage(imgUrl);
   }
 
-  if (await checkIfFileExists(name)) {
+  // if the file exists locally, return it
+  else if (await checkIfFileExists(name)) {
     return Image.file(await getOrCreateFile(name)).image;
-  } else {
-    return const AssetImage("assets/images/missing.png");
+  }
+
+  // if the file doesn't exist locally, download it from the server
+  else {
+    final imgUrl = await appointments.remote!.getImageLink(rowID, name);
+    if (imgUrl == null) {
+      return null;
+    } else {
+      final download = await saveImageFromUrl(imgUrl, name);
+      return Image.file(download).image;
+    }
   }
 }
 

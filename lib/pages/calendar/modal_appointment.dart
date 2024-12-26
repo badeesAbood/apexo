@@ -374,6 +374,7 @@ openSingleAppointment({
                   ? InfoBar(title: Text(txt("emptyGallery")), content: Text(txt("noPhotos")))
                   : SingleChildScrollView(
                       child: GridGallery(
+                        rowId: pages.openAppointment.id,
                         imgs: pages.openAppointment.imgs,
                         progress: state.progress,
                         onPressDelete: (img) async {

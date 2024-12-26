@@ -1,6 +1,5 @@
 import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/encode.dart';
-import 'package:apexo/backend/utils/imgs.dart';
 import 'package:apexo/backend/utils/init_pocketbase.dart';
 import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/state/stores/doctors/doctor_model.dart';
@@ -93,27 +92,6 @@ class State extends ObservablePersistingObject {
     if (pb!.authStore.isValid == false) return false;
     if (pb!.authStore.record == null) return false;
     return pb!.authStore.record!.collectionName == "_superusers";
-  }
-
-  /// images that needs to be downloaded
-  List<String> imagesToDownload = [];
-  Future<void> downloadImgs() async {
-    // this is going to be triggered on:
-    // 1. adding images
-    // 2. when this object is initialized from JSON
-
-    isSyncing++;
-    try {
-      while (imagesToDownload.isNotEmpty) {
-        final targetURL = imagesToDownload.first;
-        await saveImageFromUrl(targetURL);
-        imagesToDownload.removeWhere((element) => element == targetURL);
-        notify();
-      }
-    } catch (e, s) {
-      logger("Error during downloading image: $e", s);
-    }
-    isSyncing--;
   }
 
   setLoadingIndicator(String message) {
@@ -284,7 +262,6 @@ class State extends ObservablePersistingObject {
 
     url = json["url"] ?? url;
     email = json["email"] ?? email;
-    imagesToDownload = json["imagesToDownload"] == null ? [] : List<String>.from(json["imagesToDownload"]);
     token = json["token"] ?? token;
     adminCollectionId = json["adminCollectionId"] ?? adminCollectionId;
     urlField.text = url;
@@ -295,8 +272,6 @@ class State extends ObservablePersistingObject {
     } else {
       loginActive = false;
     }
-
-    downloadImgs();
   }
 
   @override
@@ -305,7 +280,6 @@ class State extends ObservablePersistingObject {
     json['url'] = url;
     json['email'] = email;
     json["loginActive"] = loginActive;
-    json["imagesToDownload"] = imagesToDownload;
     json["token"] = token;
     json["adminCollectionId"] = adminCollectionId;
     return json;

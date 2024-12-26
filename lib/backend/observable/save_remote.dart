@@ -116,10 +116,7 @@ class SaveRemote {
         for (var item in pageResult.items) {
           final ts = DateTime.parse(item.get<String>("updated")).millisecondsSinceEpoch;
           result.add(Row(id: item.id, data: jsonEncode(item.data["data"]), ts: ts));
-          // handle uploaded images
-          for (var img in item.data["imgs"]) {
-            state.imagesToDownload.add("${state.url}/api/files/$dataCollectionName/${item.id}/$img");
-          }
+          fullNamesCache.addAll({item.id: List<String>.from(item.data["imgs"])});
         }
 
         // handle pagination
@@ -134,8 +131,6 @@ class SaveRemote {
       }
     } while (nextPageExists);
 
-    // trigger but don't wait for it to finish
-    state.downloadImgs();
     return VersionedResult(result.isNotEmpty ? result.map((r) => r.ts).reduce(max) : 0, result);
   }
 
@@ -198,7 +193,8 @@ class SaveRemote {
         if (alreadyUploaded.contains(file.filename)) {
           continue;
         }
-        await remoteRows.update(recordID, files: [file]);
+        final updatedRecord = await remoteRows.update(recordID, files: [file], fields: "imgs");
+        fullNamesCache.addAll({recordID: List<String>.from(updatedRecord.data["imgs"])});
       }
     } catch (e) {
       await checkOnline();
@@ -231,4 +227,28 @@ class SaveRemote {
     }
     return true;
   }
+
+  Future<String?> getImageLink(String rowID, String imageName) async {
+    try {
+      List<String> fullNames;
+      if (fullNamesCache.containsKey(rowID)) {
+        fullNames = fullNamesCache[rowID]!;
+      } else {
+        final record = await remoteRows.getOne(rowID, fields: "imgs");
+        fullNames = List<String>.from(record.data["imgs"]);
+      }
+      fullNamesCache[rowID] = fullNames;
+      final candidates = fullNames.where((e) => e.contains(imageName.split(".").first)).toList();
+      if (candidates.isEmpty) {
+        return null;
+      } else {
+        return "${state.url}/api/files/$dataCollectionName/$rowID/${candidates.first}";
+      }
+    } catch (e) {
+      await checkOnline();
+      rethrow;
+    }
+  }
+
+  Map<String, List<String>> fullNamesCache = {};
 }
