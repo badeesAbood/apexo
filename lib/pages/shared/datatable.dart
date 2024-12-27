@@ -561,20 +561,32 @@ class DataTableSearchField extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final String placeholder;
 
-  const DataTableSearchField({
+  DataTableSearchField({
     super.key,
     required this.onChanged,
     this.placeholder = "",
   });
+
+  final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: 165,
       child: CupertinoTextField(
+          suffix: _controller.text.isEmpty
+              ? null
+              : IconButton(
+                  icon: const Icon(FluentIcons.clear),
+                  onPressed: () {
+                    _controller.clear();
+                    onChanged("");
+                  },
+                ),
           key: WK.dataTableSearch,
           placeholder: placeholder.isEmpty ? txt("searchPlaceholder") : "${txt("filter")}: $placeholder",
           onChanged: onChanged,
+          controller: _controller,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
               gradient: LinearGradient(
