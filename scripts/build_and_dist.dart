@@ -113,7 +113,7 @@ void copyDirectorySync(Directory source, Directory destination) {
 
   // Copy each entity from the source directory to the destination
   for (var entity in source.listSync()) {
-    var newPath = '${destination.path}/${entity.uri.pathSegments.last}';
+    final newPath = p.join(destination.path, p.basename(entity.path));
     if (entity is File) {
       entity.copySync(newPath);
     } else if (entity is Directory) {
