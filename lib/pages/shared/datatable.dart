@@ -557,16 +557,21 @@ class DataTablePill extends StatelessWidget {
   }
 }
 
-class DataTableSearchField extends StatelessWidget {
+class DataTableSearchField extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final String placeholder;
 
-  DataTableSearchField({
+  const DataTableSearchField({
     super.key,
     required this.onChanged,
     this.placeholder = "",
   });
 
+  @override
+  State<DataTableSearchField> createState() => _DataTableSearchFieldState();
+}
+
+class _DataTableSearchFieldState extends State<DataTableSearchField> {
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -580,12 +585,13 @@ class DataTableSearchField extends StatelessWidget {
                   icon: const Icon(FluentIcons.clear),
                   onPressed: () {
                     _controller.clear();
-                    onChanged("");
+                    widget.onChanged("");
                   },
                 ),
           key: WK.dataTableSearch,
-          placeholder: placeholder.isEmpty ? txt("searchPlaceholder") : "${txt("filter")}: $placeholder",
-          onChanged: onChanged,
+          placeholder:
+              widget.placeholder.isEmpty ? txt("searchPlaceholder") : "${txt("filter")}: ${widget.placeholder}",
+          onChanged: widget.onChanged,
           controller: _controller,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
