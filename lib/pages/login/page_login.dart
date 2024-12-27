@@ -54,7 +54,7 @@ class Login extends ObservingWidget {
       content: Center(
           child: SizedBox(
         width: 350,
-        height: 300,
+        height: 350,
         child: TabView(
             currentIndex: state.selectedTab,
             onChanged: (input) {
@@ -132,12 +132,15 @@ class Login extends ObservingWidget {
         color: const Color.fromARGB(255, 250, 250, 250),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ...fields.map((field) => [field, const SizedBox(height: 5)]).expand((e) => e),
           if (state.loadingIndicator.isNotEmpty)
             Center(
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const ProgressBar(),
