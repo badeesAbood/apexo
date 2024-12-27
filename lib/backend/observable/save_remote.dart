@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/logger.dart';
-import 'package:apexo/backend/utils/strip_id_from_file.dart';
 import 'package:apexo/state/state.dart';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as p;
 import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:pocketbase/pocketbase.dart';
@@ -176,54 +176,74 @@ class SaveRemote {
     return true;
   }
 
-  Future<bool> uploadImages(String recordID, List<http.MultipartFile> files) async {
-    try {
-      late List<String> alreadyUploaded;
-      try {
-        alreadyUploaded = List<String>.from((await remoteRows.getOne(recordID, fields: "imgs")).data["imgs"])
-            .map((e) => stripIDFromFileName(e))
-            .toList();
-      } catch (e, s) {
-        alreadyUploaded = [];
-        logger("Error while trying to get a list of uploaded images: $e", s);
+  Future<void> waitForAnotherProcess({
+    required String fileName,
+    Duration checkInterval = const Duration(milliseconds: 500),
+    Duration timeout = const Duration(seconds: 15),
+  }) async {
+    final stopwatch = Stopwatch()..start();
+
+    while (stopwatch.elapsed < timeout) {
+      // Check if the string has been removed
+      if (!inProgress.contains(fileName)) {
+        return; // Resolves the future if the string is no longer in the set
       }
 
-      // upload files one by one to avoid having large request body
-      for (final file in files) {
-        // skip if file was already uploaded
-        if (alreadyUploaded
-            .where((uploaded) => uploaded.contains((file.filename ?? "null").split(".").first))
-            .isNotEmpty) {
-          continue;
-        }
-        alreadyUploaded.add(file.filename ?? "null");
-        final updatedRecord = await remoteRows.update(recordID, files: [file], fields: "imgs");
-        fullNamesCache.addAll({recordID: List<String>.from(updatedRecord.data["imgs"])});
+      // Wait for the next interval before checking again
+      await Future.delayed(checkInterval);
+    }
+
+    // If we exit the loop, it means the timeout has been reached
+    throw TimeoutException(
+      'The image was not uploaded in time in another process',
+    );
+  }
+
+  // some synchronization processes happens too fast
+  // that an image might be uploaded twice
+  // this is a workaround to avoid that
+  Set<String> inProgress = <String>{};
+  Future<bool> uploadImage(String rowID, http.MultipartFile file) async {
+    final nameWithoutExt = p.basenameWithoutExtension(file.filename ?? "null");
+    try {
+      if (inProgress.contains(nameWithoutExt)) {
+        await waitForAnotherProcess(fileName: nameWithoutExt);
+        await Future.delayed(const Duration(milliseconds: 100));
       }
+      late List<String> alreadyUploaded;
+      try {
+        alreadyUploaded = List<String>.from((await remoteRows.getOne(rowID, fields: "imgs")).data["imgs"]);
+      } catch (e, s) {
+        alreadyUploaded = [];
+        logger("Error while trying to get a list of already uploaded images: $e", s);
+      }
+
+      // skip if file was already uploaded
+      if (alreadyUploaded.any((uploaded) => uploaded.contains(nameWithoutExt))) {
+        return false;
+      }
+      inProgress.add(nameWithoutExt);
+      final updatedRecord = await remoteRows.update(rowID, files: [file], fields: "imgs");
+      fullNamesCache.addAll({rowID: List<String>.from(updatedRecord.data["imgs"])});
     } catch (e) {
+      inProgress.remove(nameWithoutExt);
       await checkOnline();
       rethrow;
     }
+    inProgress.remove(nameWithoutExt);
     return true;
   }
 
-  Future<bool> deleteImages(String rowID, List<String> paths) async {
+  Future<bool> deleteImage(String rowID, String imgName) async {
     try {
+      final nameWithoutExt = p.basenameWithoutExtension(imgName);
       final allFullNames = List<String>.from((await remoteRows.getOne(rowID, fields: "imgs")).data["imgs"]);
-      final allLocalNames = allFullNames.map((e) => stripIDFromFileName(e)).toList();
-      final localNamesToDelete = paths.map((e) => e.split("/").last);
-      List<String> fullNamesToDelete = [];
-      for (var i = 0; i < allLocalNames.length; i++) {
-        final localName = allLocalNames[i];
-        if (localNamesToDelete.contains(localName)) {
-          fullNamesToDelete.add(allFullNames[i]);
-        }
-      }
-      if (fullNamesToDelete.isEmpty) {
-        return true;
+      final fullNameToDelete = allFullNames.where((e) => e.contains(nameWithoutExt)).firstOrNull;
+      if (fullNameToDelete == null) {
+        return false;
       }
       await remoteRows.update(rowID, body: {
-        "imgs-": fullNamesToDelete,
+        "imgs-": [fullNameToDelete],
       });
     } catch (e) {
       await checkOnline();

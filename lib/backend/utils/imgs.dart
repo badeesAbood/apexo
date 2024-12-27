@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'package:apexo/backend/utils/constants.dart';
+import 'package:apexo/backend/utils/hash.dart';
 import 'package:apexo/backend/utils/safe_dir.dart';
 import 'package:apexo/backend/utils/strip_id_from_file.dart';
 import 'package:apexo/state/stores/appointments/appointments_store.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as path;
 import 'package:http/http.dart' as http;
 
 Future<void> createDirectory(String path) async {
@@ -20,16 +20,57 @@ Future<void> createDirectory(String path) async {
 }
 
 Future<bool> checkIfFileExists(String name) async {
-  final File file = File(join(await filesDir(), name));
+  final File file = File(path.join(await filesDir(), name));
   return await file.exists();
 }
 
 Future<File> getOrCreateFile(String name) async {
   await createDirectory(await filesDir());
-  return File(join(await filesDir(), name));
+  return File(path.join(await filesDir(), name));
 }
 
+// copies a given image to local folder and upload it to the server
+Future<String> handleNewImage({required String rowID, required String targetPath, bool updateModel = true}) async {
+  final bool fromLink = targetPath.startsWith("http");
+
+  String extension;
+  File imgFile;
+
+  if (fromLink) {
+    extension = await getImageExtensionFromURL(targetPath) ?? ".jpg";
+  } else {
+    extension = path.extension(targetPath);
+  }
+
+  final imgName = simpleHash(targetPath) + extension;
+
+  if (fromLink) {
+    imgFile = await saveImageFromUrl(targetPath, imgName);
+  } else {
+    imgFile = await savePickedImage(File(targetPath), imgName);
+  }
+
+  await appointments.uploadImg(rowID, imgFile.path);
+
+  return imgName;
+}
+
+final imgMemoryCache = <String, ImageProvider?>{};
+
 Future<ImageProvider?> getImage(String rowID, String name) async {
+  if (imgMemoryCache.containsKey(name)) {
+    return imgMemoryCache[name];
+  } else {
+    final img = await _getImage(rowID, name);
+    imgMemoryCache[name] = img;
+    if (imgMemoryCache.length > 100) {
+      imgMemoryCache.remove(imgMemoryCache.keys.first);
+    }
+    return img;
+  }
+}
+
+Future<ImageProvider?> _getImage(String rowID, String name) async {
   // Web platform doesn't support local files
   if (kIsWeb) {
     final imgUrl = await appointments.remote!.getImageLink(rowID, name);
@@ -53,10 +94,10 @@ Future<ImageProvider?> getImage(String rowID, String name) async {
   }
 }
 
-Future<File> savePickedImage(XFile image, String newName) async {
+Future<File> savePickedImage(File image, String newName) async {
   final File newImage = await getOrCreateFile(newName);
   if (await newImage.exists()) return newImage;
-  return await File(image.path).copy(newImage.path);
+  return await image.copy(newImage.path);
 }
 
 Future<File> saveImageFromUrl(String imageUrl, [String? givenName]) async {

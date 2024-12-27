@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:apexo/backend/observable/observable.dart';
 import 'package:apexo/backend/observable/observing_widget.dart';
-import 'package:apexo/backend/utils/hash.dart';
 import 'package:apexo/backend/utils/imgs.dart';
+import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/index.dart';
 import 'package:apexo/pages/settings/window_backups.dart';
@@ -72,18 +72,19 @@ class ImportDialog extends ObservingWidget {
             }
             if (context.mounted) Navigator.pop(context);
             state.startProgress();
-            for (var imgLink in res) {
-              // copy
-              final imgExtension = (await getImageExtensionFromURL(imgLink)) ?? ".jpg";
-              final imgName = simpleHash(imgLink) + imgExtension;
-              final imgFile = await saveImageFromUrl(imgLink, imgName);
-              // upload images
-              await appointments.uploadImgs(pages.openAppointment.id, [imgFile.path]);
-              // update the model only if it didn't exist before
-              if (pages.openAppointment.imgs.contains(imgName) == false) {
-                pages.openAppointment.imgs.add(imgName);
-                appointments.set(pages.openAppointment);
+            try {
+              for (var imgLink in res) {
+                final imgName = await handleNewImage(rowID: pages.openAppointment.id, targetPath: imgLink);
+                if (pages.openAppointment.imgs.contains(imgName) == false) {
+                  pages.openAppointment.imgs.add(imgName);
+                  appointments.set(pages.openAppointment);
+                }
+                // TODO: test if we can run the updaters (returned by the function above)
+                // after all the images have been uploaded
+                // it might reduce memory usage and flickering
               }
+            } catch (e, s) {
+              logger("Error during images importing: $e", s);
             }
             state.endProgress();
           },

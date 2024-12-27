@@ -237,23 +237,25 @@ class Store<G extends Model> {
 
       // those will be built in the for loop below
       Map<String, String> toRemoteWrite = {};
-      Map<String, List<String>> toUploadFiles = {};
-      Map<String, List<String>> toRemoveFiles = {};
+
+      final List<Future Function()> fileHandling = [];
 
       for (var entry in deferred.entries) {
         if (entry.key.startsWith("FILE")) {
           List<String> deferredFile = entry.key.split("||");
-          if (deferredFile[1] == "R") {
-            if (!toRemoveFiles.containsKey(deferredFile[2])) {
-              toRemoveFiles[deferredFile[2]] = [];
+          final bool upload = entry.value == 1;
+          final String rowID = deferredFile[1];
+          final String pathOrName = deferredFile[2];
+          // we will delay file handling since it takes too much time
+          // so we would run the document handling first then the file handling
+          fileHandling.add(() async {
+            if (upload) {
+              final multipart = await MultipartFile.fromPath("imgs+", pathOrName, filename: basename(pathOrName));
+              await remote!.uploadImage(rowID, multipart);
+            } else {
+              await remote!.deleteImage(rowID, pathOrName);
             }
-            toRemoveFiles[deferredFile[2]]!.addAll(deferredFile[3].split("#"));
-          } else {
-            if (!toUploadFiles.containsKey(deferredFile[2])) {
-              toUploadFiles[deferredFile[2]] = [];
-            }
-            toUploadFiles[deferredFile[2]]!.addAll(deferredFile[3].split("#"));
-          }
+          });
         } else {
           toRemoteWrite.addAll({entry.key: await local!.get(entry.key)});
         }
@@ -265,19 +267,9 @@ class Store<G extends Model> {
       if (toRemoteWrite.isNotEmpty) {
         await remote!.put(toRemoteWrite.entries.map((e) => RowToWriteRemotely(id: e.key, data: e.value)).toList());
       }
-      if (toUploadFiles.isNotEmpty) {
-        for (var element in toUploadFiles.entries) {
-          await remote!.uploadImages(
-              element.key,
-              await Future.wait(
-                  element.value.map((path) => MultipartFile.fromPath("imgs+", path, filename: basename(path)))));
-        }
-      }
-      if (toRemoveFiles.isNotEmpty) {
-        for (var element in toRemoveFiles.entries) {
-          await remote!.deleteImages(element.key, element.value);
-        }
-      }
+
+      // when all json related updates are done, we can handle files
+      await Future.wait(fileHandling.map((f) => f()));
 
       // reset deferred
       await local!.putDeferred({});
@@ -414,22 +406,15 @@ class Store<G extends Model> {
     archive(id);
   }
 
-  /// upload set of files to a certain row
-  Future<void> uploadImgs(String rowID, List<String> paths, [bool upload = true]) async {
+  /// delete an image
+  Future<void> deleteImg(String rowID, String name) async {
     onSyncStart?.call();
     if (remote == null) throw Exception("remote persistence layer is not defined");
     if (local == null) throw Exception("local persistence layer is not defined");
-
     Map<String, int> lastDeferred = await local!.getDeferred();
-
     if (remote!.isOnline && lastDeferred.isEmpty) {
       try {
-        if (upload) {
-          await remote!.uploadImages(rowID,
-              await Future.wait(paths.map((path) => MultipartFile.fromPath("imgs+", path, filename: basename(path)))));
-        } else {
-          await remote!.deleteImages(rowID, paths);
-        }
+        await remote!.deleteImage(rowID, name);
         onSyncEnd?.call();
         synchronize();
         return;
@@ -444,10 +429,45 @@ class Store<G extends Model> {
      * 2. there was an error during sending updates
      * 3. there are already deferred updates
      */
-    // DEFERRED Structure: "FILE||{U or R}||{rowID}||path1#path2#path3"
+    // DEFERRED Structure: "FILE||{rowID}||path:{0 for deleting, 1 for uploading}"
+
     await local!.putDeferred({}
       ..addAll(lastDeferred)
-      ..addAll({"FILE||${upload ? "U" : "R"}||$rowID||${paths.join("#")}": 0}));
+      ..addAll({"FILE||$rowID||$name": 0}));
+    deferredPresent = true;
+    onSyncEnd?.call();
+  }
+
+  /// upload set of files to a certain row
+  Future<void> uploadImg(String rowID, String path) async {
+    onSyncStart?.call();
+    if (remote == null) throw Exception("remote persistence layer is not defined");
+    if (local == null) throw Exception("local persistence layer is not defined");
+
+    Map<String, int> lastDeferred = await local!.getDeferred();
+
+    if (remote!.isOnline && lastDeferred.isEmpty) {
+      try {
+        final multipart = await MultipartFile.fromPath("imgs+", path, filename: basename(path));
+        await remote!.uploadImage(rowID, multipart);
+        onSyncEnd?.call();
+        synchronize();
+        return;
+      } catch (e, s) {
+        logger("Error during sending the file (Will defer upload): $e", s);
+      }
+    }
+
+    /**
+     * If we reached here it means that its either
+     * 1. we're offline
+     * 2. there was an error during sending updates
+     * 3. there are already deferred updates
+     */
+    // DEFERRED Structure: "FILE||{rowID}||path:{0 for deleting, 1 for uploading}"
+    await local!.putDeferred({}
+      ..addAll(lastDeferred)
+      ..addAll({"FILE||$rowID||$path": 1}));
     deferredPresent = true;
     onSyncEnd?.call();
   }

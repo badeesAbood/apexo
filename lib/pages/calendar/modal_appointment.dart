@@ -1,4 +1,3 @@
-import 'package:apexo/backend/utils/hash.dart';
 import 'package:apexo/backend/utils/imgs.dart';
 import 'package:apexo/backend/utils/logger.dart';
 import 'package:apexo/i18/index.dart';
@@ -23,7 +22,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart' as path;
 
 final paidController = TextEditingController();
 final priceController = TextEditingController();
@@ -320,14 +318,10 @@ openSingleAppointment({
                           state.startProgress();
                           try {
                             for (var img in res) {
-                              // copy
-                              final newFileName = simpleHash(img.path) + path.extension(img.path);
-                              final savedFile = await savePickedImage(img, newFileName);
-                              // upload
-                              await appointments.uploadImgs(pages.openAppointment.id, [savedFile.path]);
-                              // update model
-                              if (pages.openAppointment.imgs.contains(newFileName) == false) {
-                                pages.openAppointment.imgs.add(newFileName);
+                              final imgName =
+                                  await handleNewImage(rowID: pages.openAppointment.id, targetPath: img.path);
+                              if (pages.openAppointment.imgs.contains(imgName) == false) {
+                                pages.openAppointment.imgs.add(imgName);
                                 appointments.set(pages.openAppointment);
                               }
                             }
@@ -349,14 +343,10 @@ openSingleAppointment({
                             if (res == null) return;
                             state.startProgress();
                             try {
-                              // copy
-                              final newFileName = simpleHash(res.path) + path.extension(res.path);
-                              final file = await savePickedImage(res, newFileName);
-                              // upload image
-                              await appointments.uploadImgs(pages.openAppointment.id, [file.path]);
-                              // update the model
-                              if (pages.openAppointment.imgs.contains(newFileName) == false) {
-                                pages.openAppointment.imgs.add(newFileName);
+                              final imgName =
+                                  await handleNewImage(rowID: pages.openAppointment.id, targetPath: res.path);
+                              if (pages.openAppointment.imgs.contains(imgName) == false) {
+                                pages.openAppointment.imgs.add(imgName);
                                 appointments.set(pages.openAppointment);
                               }
                             } catch (e, s) {
@@ -380,7 +370,7 @@ openSingleAppointment({
                         onPressDelete: (img) async {
                           state.startProgress();
                           try {
-                            await appointments.uploadImgs(pages.openAppointment.id, [img], false);
+                            await appointments.deleteImg(pages.openAppointment.id, img);
                             pages.openAppointment.imgs.remove(img);
                             appointments.set(pages.openAppointment);
                           } catch (e, s) {
