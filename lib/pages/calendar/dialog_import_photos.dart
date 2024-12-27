@@ -79,9 +79,6 @@ class ImportDialog extends ObservingWidget {
                   pages.openAppointment.imgs.add(imgName);
                   appointments.set(pages.openAppointment);
                 }
-                // TODO: test if we can run the updaters (returned by the function above)
-                // after all the images have been uploaded
-                // it might reduce memory usage and flickering
               }
             } catch (e, s) {
               logger("Error during images importing: $e", s);

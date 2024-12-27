@@ -279,20 +279,6 @@ openSingleAppointment({
                 ? [
                     /// TODO: uploading images from the web is not supported
                     /// currently we're not supporting uploading images from the web
-                    /// if we're planning to support it, we should clean the images uploading functions first
-                    /// - should they accept an array?
-                    /// - should they accept a single image?
-                    /// - XFile vs File?
-                    /// - Http.MultipartFile.fromPath while we already had an XFile/File!! this doesn't seem right!
-                    /// - also how are we going to approach deferred image uploading in the web! given that we're dealing with a blob that gets revoked!
-                    /// - we should have testing ready for image uploading scenarios before making changes, I think it's very fragile!
-                    ///
-                    /// There's a lot of details to be considered before we can tackle this
-                    ///
-                    /// Why we should support uploading images from the web?
-                    /// This decision should be based on whether the application is going to be published in the iOS app store or not.
-                    ///
-                    /// Note: Image viewing and deleting is supported!
                   ]
                 : [
                     TabAction(
