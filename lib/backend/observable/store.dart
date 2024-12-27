@@ -11,7 +11,6 @@ import 'model.dart';
 import 'observable.dart';
 import 'save_local.dart';
 import 'save_remote.dart';
-import '../utils/debouncer.dart';
 
 typedef ModellingFunc<G> = G Function(Map<String, dynamic> input);
 
@@ -49,7 +48,6 @@ class Store<G extends Model> {
   SaveRemote? remote;
   Future<void> Function()? realtimeSub;
   final int debounceMS;
-  late Debouncer _debouncer;
   late ModellingFunc<G> modeling;
   bool deferredPresent = false;
   int lastProcessChanges = 0;
@@ -64,17 +62,15 @@ class Store<G extends Model> {
     this.onSyncEnd,
     this.manualSyncOnly,
   }) : observableObject = ObservableDict() {
-    // setting up debouncer
-    _debouncer = Debouncer(
-      milliseconds: debounceMS,
-    );
-
     // loading from local
     loaded = deleteMemoryAndLoadFromPersistence();
   }
 
   @mustCallSuper
   void init() {
+    // setting up sync queue
+    _setupSyncJobTimer();
+
     // setting up observers
     observableObject.observe((events) {
       if (events[0].type == EventType.modify && events[0].id == "__ignore_view__") {
@@ -83,9 +79,7 @@ class Store<G extends Model> {
       }
       List<String> ids = events.map((e) => e.id).toList();
       changes.addAll(ids);
-      _debouncer.run(() {
-        _processChanges();
-      });
+      _processChanges();
     });
   }
 
@@ -289,7 +283,7 @@ class Store<G extends Model> {
       // until the versions match
       // this is why there's another sync method below
 
-      await deleteMemoryAndLoadFromPersistence();
+      await reload();
       return SyncResult(
           pulled: toLocalWrite.length, pushed: toRemoteWrite.length, conflicts: conflicts, exception: null);
     } catch (e, s) {
@@ -298,11 +292,73 @@ class Store<G extends Model> {
     }
   }
 
-  //// ----------------------------- Public API --------------------------------
+  // the following logic is for the task management of synchronization
+  // it's not really a task runner,
+  // since it allows only for one task to be in the que with no concurrency
+  // any task that would be added will override the previous one
+
+  bool _jobRunning = false;
+  void _setupSyncJobTimer() {
+    // the following timer would run indefinitely,
+    // checking whether there's a sync job exists or not
+    Timer.periodic(Duration(milliseconds: this.debounceMS), (timer) async {
+      if (_jobRunning) {
+        return;
+      }
+      _jobRunning = true;
+      try {
+        if (_syncJob != null) {
+          await _syncJob!();
+          _syncJob = null;
+        }
+      } catch (e, s) {
+        logger("Error during synchronization: $e", s);
+      }
+      _jobRunning = false;
+    });
+  }
+
+  // holds the next job
+  Future<void> Function()? _syncJob;
+  // holds the result of the last job that ran
+  List<SyncResult>? lastRes;
+
+  // ----------------------------- Public API --------------------------------
 
   /// Syncs the local database with the remote database
   Future<List<SyncResult>> synchronize() async {
-    // on first sync, we need to set up the realtime subscription
+    // this would only register a job
+    // and wait patiently for its result
+    // if runs out of patience
+    // then it would steal the last result
+    // and shows as its own
+    // pretty weird... but it works
+    List<SyncResult>? res;
+    final sw = Stopwatch();
+    sw.start();
+    _syncJob = () async {
+      res = await _syncRequest();
+      lastRes = res;
+    };
+    while (res == null && sw.elapsed.inSeconds < 10) {
+      await Future.delayed(Duration(milliseconds: this.debounceMS));
+    }
+    return res ?? lastRes ?? [];
+  }
+
+  Future<List<SyncResult>> _syncRequest() async {
+    // this would run multiple tries to be in sync with the server
+    // why multiple tries?
+    // well... if it gives the server data then it would outdate itself
+    // since the server is the one issues the version numbers
+    // so when it gives the server somethings
+    // it would need pull the same thing that it gave (to have its version)
+    // finally when it sees that the local and the remote version match
+    // it would end
+    // check the while loop below for more.
+
+    // regardless of that... on first sync
+    // we need to set up the realtime subscription
     if (remote != null && realtimeSub == null && manualSyncOnly != true) {
       state.onOnline[remote!.storeName] = () {
         synchronize();
