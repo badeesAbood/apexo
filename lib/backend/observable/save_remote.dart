@@ -190,9 +190,13 @@ class SaveRemote {
 
       // upload files one by one to avoid having large request body
       for (final file in files) {
-        if (alreadyUploaded.contains(file.filename)) {
+        // skip if file was already uploaded
+        if (alreadyUploaded
+            .where((uploaded) => uploaded.contains((file.filename ?? "null").split(".").first))
+            .isNotEmpty) {
           continue;
         }
+        alreadyUploaded.add(file.filename ?? "null");
         final updatedRecord = await remoteRows.update(recordID, files: [file], fields: "imgs");
         fullNamesCache.addAll({recordID: List<String>.from(updatedRecord.data["imgs"])});
       }
