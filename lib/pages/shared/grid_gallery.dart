@@ -95,7 +95,7 @@ class GridGallery extends StatelessWidget {
               onTap: () => showAllImages(context, imgs[0]),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(8.0),
                   boxShadow: kElevationToShadow[1],
                   border: Border.all(color: Colors.white, width: 0.4),
@@ -123,7 +123,7 @@ class GridGallery extends StatelessWidget {
       showImageViewerPager(
         context,
         multiImageProvider,
-        backgroundColor: Colors.black.withOpacity(0.9),
+        backgroundColor: Colors.black.withValues(alpha: 0.9),
         doubleTapZoomable: true,
         immersive: false,
         swipeDismissible: true,

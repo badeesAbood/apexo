@@ -32,8 +32,8 @@ class StyledLineChart extends StatelessWidget {
         maxY: max + 0.05 * max,
         lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
-            getTooltipColor: (touchedSpot) => Colors.white.withOpacity(0.5),
-            tooltipBorder: BorderSide(color: Colors.grey.withOpacity(0.3)),
+            getTooltipColor: (touchedSpot) => Colors.white.withValues(alpha: 0.5),
+            tooltipBorder: BorderSide(color: Colors.grey.withValues(alpha: 0.3)),
             fitInsideHorizontally: true,
             fitInsideVertically: true,
             getTooltipItems: (touchedSpots) {
@@ -77,7 +77,7 @@ class StyledLineChart extends StatelessWidget {
                 gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [colorA, Colors.white.withOpacity(0.1)]),
+                    colors: [colorA, Colors.white.withValues(alpha: 0.1)]),
               ),
             );
           },

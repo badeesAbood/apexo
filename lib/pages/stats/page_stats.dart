@@ -160,7 +160,7 @@ class PageStats extends ObservingWidget {
             borderRadius: BorderRadius.circular(5),
           ),
           child: Container(
-            color: Colors.white.withOpacity(0.3),
+            color: Colors.white.withValues(alpha: 0.3),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -177,11 +177,11 @@ class PageStats extends ObservingWidget {
                         children: [
                           Text(
                             title,
-                            style: TextStyle(fontSize: 15, color: Colors.grey.withOpacity(0.7)),
+                            style: TextStyle(fontSize: 15, color: Colors.grey.withValues(alpha: 0.7)),
                           ),
                           Text(
                             subtitle,
-                            style: TextStyle(fontSize: 12, color: Colors.grey.withOpacity(0.7)),
+                            style: TextStyle(fontSize: 12, color: Colors.grey.withValues(alpha: 0.7)),
                           )
                         ],
                       ),
@@ -281,5 +281,5 @@ class PageStats extends ObservingWidget {
         letterSpacing: 0.3,
       );
 
-  Color get _color => Colors.grey.withOpacity(0.5);
+  Color get _color => Colors.grey.withValues(alpha: 0.5);
 }

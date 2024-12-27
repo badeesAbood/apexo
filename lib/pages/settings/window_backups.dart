@@ -96,7 +96,7 @@ class BackupsWindow extends ObservingWidget {
       animate: backups.uploading,
       child: Button(
         style: backups.uploading
-            ? ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey.withOpacity(0.1)))
+            ? ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey.withValues(alpha: 0.1)))
             : null,
         child: Row(
           children: [
@@ -118,7 +118,7 @@ class BackupsWindow extends ObservingWidget {
       animate: backups.creating,
       child: Button(
         style: backups.creating
-            ? ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey.withOpacity(0.1)))
+            ? ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey.withValues(alpha: 0.1)))
             : null,
         child: Row(
           children: [
@@ -140,7 +140,7 @@ class BackupsWindow extends ObservingWidget {
       padding: const EdgeInsets.all(7),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          color: getDeterministicItem(Colors.accentColors, element.key).withOpacity(0.1)),
+          color: getDeterministicItem(Colors.accentColors, element.key).withValues(alpha: 0.1)),
       child: Text(formatFileSize(element.size), style: const TextStyle(fontSize: 12)),
     );
   }
@@ -306,11 +306,11 @@ class CloseButtonInDialog extends StatelessWidget {
 ContentDialogThemeData dialogStyling(bool danger) {
   return ContentDialogThemeData(
     actionsDecoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
+        color: Colors.white.withValues(alpha: 0.8),
         borderRadius: const BorderRadius.all(Radius.circular(4)),
         boxShadow: [
           BoxShadow(
-            color: (danger ? Colors.red : Colors.grey).withOpacity(0.2),
+            color: (danger ? Colors.red : Colors.grey).withValues(alpha: 0.2),
             blurRadius: 10,
             spreadRadius: 1,
             offset: const Offset(0, 1),

@@ -233,7 +233,7 @@ TabbedModal appointmentsTab(BuildContext context) {
                       border: Border(
                           top: BorderSide(
                         color: colorBasedOnPayments(pages.openPatient.paymentsMade, pages.openPatient.pricesGiven)
-                            .withOpacity(0.3),
+                            .withValues(alpha: 0.3),
                         width: 5,
                       ))),
                   child: Column(

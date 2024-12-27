@@ -18,7 +18,7 @@ class _AcrylicTitleState extends State<AcrylicTitle> {
   @override
   Widget build(BuildContext context) {
     final Color color = (widget.item.archived == true
-        ? Colors.grey.withOpacity(0.2)
+        ? Colors.grey.withValues(alpha: 0.2)
         : getDeterministicItem(colorsWithoutYellow, (widget.item.title)));
     return SizedBox(
       width: 200,

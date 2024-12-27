@@ -200,7 +200,7 @@ class Login extends ObservingWidget {
               icon: const Icon(FluentIcons.red_eye, size: 18),
               style: !obscureText()
                   ? ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(Colors.grey.withOpacity(0.1)),
+                      backgroundColor: WidgetStatePropertyAll(Colors.grey.withValues(alpha: 0.1)),
                     )
                   : null,
             ),

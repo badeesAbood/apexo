@@ -51,19 +51,19 @@ class _StyledPieState extends State<StyledPie> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    color.lightest.withOpacity(0.7),
+                    color.lightest.withValues(alpha: 0.7),
                     color,
                   ],
                 ),
                 title: widget.data.keys.elementAt(i),
                 badgeWidget: Text("${((widget.data.values.elementAt(i) / total) * 100).toStringAsFixed(2)}%",
-                    style: TextStyle(color: Colors.white, backgroundColor: color.withOpacity(0.2))),
+                    style: TextStyle(color: Colors.white, backgroundColor: color.withValues(alpha: 0.2))),
                 badgePositionPercentageOffset: 0.8,
                 titlePositionPercentageOffset: 0.4,
                 titleStyle: TextStyle(
                   fontSize: 13,
                   color: Colors.white,
-                  backgroundColor: color.withOpacity(0.4),
+                  backgroundColor: color.withValues(alpha: 0.4),
                 ),
               );
             },

@@ -176,7 +176,7 @@ class TagInputWidgetState extends State<TagInputWidget> {
                 key: Key("${tag.label}_clear"),
                 icon: const Icon(FluentIcons.clear, size: 10),
                 onPressed: () => _removeTag(tag),
-                style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black.withOpacity(0.05))),
+                style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black.withValues(alpha: 0.05))),
               ),
             ],
           ),

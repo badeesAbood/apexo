@@ -67,16 +67,16 @@ class StyledStackedChart extends StatelessWidget {
               fromY: valueIndex == 0 ? 0 : set[valueIndex - 1],
               toY: valueIndex == 0 ? set[valueIndex] : set[valueIndex] + set[valueIndex - 1],
               gradient: LinearGradient(colors: [
-                Colors.white.withOpacity(0.4),
+                Colors.white.withValues(alpha: 0.4),
                 getDeterministicItem(Colors.accentColors, datasetLabels[valueIndex] + setIndex.toString())
-                    .withOpacity(0.9),
+                    .withValues(alpha: 0.9),
               ], begin: Alignment.bottomCenter, end: Alignment.topCenter),
               borderRadius: BorderRadius.circular(7),
               backDrawRodData: BackgroundBarChartRodData(
                 fromY: 0,
                 toY: max - max * 0.05,
                 show: true,
-                color: Colors.grey.withOpacity(0.05),
+                color: Colors.grey.withValues(alpha: 0.05),
               ),
             );
           }));

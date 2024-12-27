@@ -226,8 +226,8 @@ class SettingsItemState extends State<SettingsItem> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            widget.scope == Scope.app ? Colors.blue.withOpacity(0.05) : Colors.teal.withOpacity(0.05),
-            widget.scope == Scope.app ? Colors.blue.withOpacity(0.14) : Colors.teal.withOpacity(0.14),
+            widget.scope == Scope.app ? Colors.blue.withValues(alpha: 0.05) : Colors.teal.withValues(alpha: 0.05),
+            widget.scope == Scope.app ? Colors.blue.withValues(alpha: 0.14) : Colors.teal.withValues(alpha: 0.14),
           ],
         ),
       ),

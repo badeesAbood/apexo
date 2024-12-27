@@ -18,7 +18,7 @@ class CallIconButton extends StatelessWidget {
               onPressed: () {
                 launchUrl(Uri.parse('tel:$phoneNumber'));
               },
-              style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.green.withOpacity(0.1))),
+              style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.green.withValues(alpha: 0.1))),
             ),
           )
         : const SizedBox();

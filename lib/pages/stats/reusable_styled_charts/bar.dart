@@ -37,7 +37,7 @@ class StyledBarChart extends StatelessWidget {
                 toY: yAxis[index].toDouble(),
                 gradient: LinearGradient(
                   colors: [
-                    getDeterministicItem(Colors.accentColors, "${index}1").withOpacity(0.3),
+                    getDeterministicItem(Colors.accentColors, "${index}1").withValues(alpha: 0.3),
                     getDeterministicItem(Colors.accentColors, index.toString()),
                   ],
                   begin: Alignment.bottomCenter,
@@ -49,7 +49,7 @@ class StyledBarChart extends StatelessWidget {
                   show: true,
                   fromY: 0,
                   toY: (yAxis.reduce((a, b) => a > b ? a : b) * 1.2).toDouble(),
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                 ),
               ),
             ],

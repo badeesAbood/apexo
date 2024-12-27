@@ -115,11 +115,11 @@ class PageDashboard extends ObservingWidget {
               text: Text(txt("appointments")),
               icon: const Icon(FluentIcons.calendar),
               closeIcon: null,
-              outlineColor: Colors.grey.withOpacity(0.1),
+              outlineColor: Colors.grey.withValues(alpha: 0.1),
               body: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.4),
-                  border: Border.all(color: Colors.grey.withOpacity(0.1)),
+                  color: Colors.white.withValues(alpha: 0.4),
+                  border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
                   borderRadius: BorderRadius.circular(3),
                 ),
                 child: Padding(
@@ -138,11 +138,11 @@ class PageDashboard extends ObservingWidget {
               text: Text(txt("payments")),
               icon: const Icon(FluentIcons.money),
               closeIcon: null,
-              outlineColor: Colors.grey.withOpacity(0.1),
+              outlineColor: Colors.grey.withValues(alpha: 0.1),
               body: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.4),
-                  border: Border.all(color: Colors.grey.withOpacity(0.1)),
+                  color: Colors.white.withValues(alpha: 0.4),
+                  border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
                   borderRadius: BorderRadius.circular(3),
                 ),
                 child: Padding(

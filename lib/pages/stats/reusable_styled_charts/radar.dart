@@ -31,9 +31,9 @@ class _StyledRadarChartState extends State<StyledRadarChart> {
           Expanded(
             child: RadarChart(RadarChartData(
               borderData: border(),
-              gridBorderData: BorderSide(color: Colors.grey.withOpacity(0.3)),
-              tickBorderData: BorderSide(color: Colors.grey.withOpacity(0.3)),
-              radarBorderData: BorderSide(color: Colors.grey.withOpacity(0.3)),
+              gridBorderData: BorderSide(color: Colors.grey.withValues(alpha: 0.3)),
+              tickBorderData: BorderSide(color: Colors.grey.withValues(alpha: 0.3)),
+              radarBorderData: BorderSide(color: Colors.grey.withValues(alpha: 0.3)),
               getTitle: (index, angle) => RadarChartTitle(text: widget.labels[index]),
               titlePositionPercentageOffset: 0.2,
               radarTouchData: RadarTouchData(
@@ -62,7 +62,7 @@ class _StyledRadarChartState extends State<StyledRadarChart> {
                 return RadarDataSet(
                   borderColor: color,
                   borderWidth: 1,
-                  fillColor: color.withOpacity(0.1),
+                  fillColor: color.withValues(alpha: 0.1),
                   dataEntries: List.generate(widget.data[setIndex].length, (valueIndex) {
                     return RadarEntry(value: widget.data[setIndex][valueIndex]);
                   }),

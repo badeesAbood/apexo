@@ -43,7 +43,7 @@ class _AppLogoState extends State<AppLogo> {
             const SizedBox(width: 5),
             Text(
               version,
-              style: TextStyle(color: Colors.grey.withOpacity(0.4), fontSize: 12),
+              style: TextStyle(color: Colors.grey.withValues(alpha: 0.4), fontSize: 12),
             )
           ],
         ),

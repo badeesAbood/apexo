@@ -184,7 +184,7 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
                     padding: const WidgetStatePropertyAll(EdgeInsets.all(8)),
                     shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
-                        side: BorderSide(color: colorsWithoutYellow[DateTime.now().weekday - 1].withOpacity(1)))),
+                        side: BorderSide(color: colorsWithoutYellow[DateTime.now().weekday - 1].withValues(alpha: 1)))),
                   ),
                 ),
             ],
@@ -253,10 +253,10 @@ class WeekAgendaCalendarState<Item extends AgendaItem> extends State<WeekAgendaC
     return Acrylic(
       child: Container(
         decoration: BoxDecoration(
-            border: BorderDirectional(bottom: BorderSide(color: Colors.grey.withOpacity(0.1))),
+            border: BorderDirectional(bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.1))),
             gradient: LinearGradient(colors: [
-              colorsWithoutYellow[selectedDate.weekday - 1].darkest.withOpacity(0.08),
-              colorsWithoutYellow[selectedDate.weekday - 1].withOpacity(0),
+              colorsWithoutYellow[selectedDate.weekday - 1].darkest.withValues(alpha: 0.08),
+              colorsWithoutYellow[selectedDate.weekday - 1].withValues(alpha: 0),
             ])),
         padding: const EdgeInsets.symmetric(horizontal: 10),
         height: 45,
@@ -291,13 +291,13 @@ class AppointmentsNumberIndicator extends StatelessWidget {
         color: Colors.white,
         shadows: [
           ...kElevationToShadow[1]!,
-          Shadow(color: Colors.black.withOpacity(0.5), blurRadius: 2, offset: const Offset(0, 0)),
-          Shadow(color: Colors.black.withOpacity(0.5), blurRadius: 15, offset: const Offset(0, 0)),
+          Shadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 2, offset: const Offset(0, 0)),
+          Shadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 15, offset: const Offset(0, 0)),
           ...List.generate(
             10,
             (index) => Shadow(
-                color:
-                    colorsWithoutYellow[day.weekday - 1].withOpacity(min(roundToPrecision(events.length / 30, 2), 1)),
+                color: colorsWithoutYellow[day.weekday - 1]
+                    .withValues(alpha: min(roundToPrecision(events.length / 30, 2), 1)),
                 blurRadius: 1),
           )
         ],
@@ -329,13 +329,13 @@ class DayCell extends StatelessWidget {
         gradient: LinearGradient(
           colors: type == DayCellType.normal
               ? [
-                  Colors.grey.withOpacity(0.02),
-                  Colors.grey.withOpacity(0.05),
+                  Colors.grey.withValues(alpha: 0.02),
+                  Colors.grey.withValues(alpha: 0.05),
                 ]
               : type == DayCellType.today
                   ? [
-                      colorsWithoutYellow[day.weekday - 1].withOpacity(0.1),
-                      colorsWithoutYellow[day.weekday - 1].withOpacity(0.2),
+                      colorsWithoutYellow[day.weekday - 1].withValues(alpha: 0.1),
+                      colorsWithoutYellow[day.weekday - 1].withValues(alpha: 0.2),
                     ]
                   : [
                       colorsWithoutYellow[day.weekday - 1],

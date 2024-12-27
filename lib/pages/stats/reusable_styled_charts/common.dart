@@ -58,13 +58,13 @@ FlGridData grid(double max) {
     verticalInterval: 1,
     getDrawingHorizontalLine: (value) {
       return FlLine(
-        color: Colors.grey.withOpacity(0.1),
+        color: Colors.grey.withValues(alpha: 0.1),
         strokeWidth: 1,
       );
     },
     getDrawingVerticalLine: (value) {
       return FlLine(
-        color: Colors.grey.withOpacity(0.05),
+        color: Colors.grey.withValues(alpha: 0.05),
         strokeWidth: 1,
       );
     },

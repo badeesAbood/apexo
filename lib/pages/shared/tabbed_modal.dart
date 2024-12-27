@@ -123,7 +123,7 @@ class SheetState extends State<_Sheet> {
                                         : FluentIcons.chevron_right),
                                     onPressed: () => setState(() => selectedTab--),
                                     style: ButtonStyle(
-                                        backgroundColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.4))),
+                                        backgroundColor: WidgetStatePropertyAll(Colors.white.withValues(alpha: 0.4))),
                                   )
                                 : const SizedBox(width: 26),
                             FilledButton(
@@ -207,7 +207,7 @@ class SheetState extends State<_Sheet> {
                                         : FluentIcons.chevron_left),
                                     onPressed: () => setState(() => selectedTab++),
                                     style: ButtonStyle(
-                                        backgroundColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.4))),
+                                        backgroundColor: WidgetStatePropertyAll(Colors.white.withValues(alpha: 0.4))),
                                   )
                                 : const SizedBox(width: 26),
                           ],
@@ -224,9 +224,9 @@ class SheetState extends State<_Sheet> {
   Container _buildActions(TabbedModal tab, BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 255, 255, 255),
-          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, -2))]),
+      decoration: BoxDecoration(color: const Color.fromARGB(255, 255, 255, 255), boxShadow: [
+        BoxShadow(color: Colors.grey.withValues(alpha: 0.3), blurRadius: 15, offset: const Offset(0, -2))
+      ]),
       child: Row(
         children: [
           Expanded(
@@ -236,7 +236,7 @@ class SheetState extends State<_Sheet> {
                     child: FilledButton(
                       style: ButtonStyle(
                           backgroundColor:
-                              WidgetStatePropertyAll(progress ? Colors.grey.withOpacity(0.4) : action.color)),
+                              WidgetStatePropertyAll(progress ? Colors.grey.withValues(alpha: 0.4) : action.color)),
                       onPressed: () {
                         if (progress) return;
                         if (action.callback(this)) {

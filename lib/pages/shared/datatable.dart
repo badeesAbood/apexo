@@ -419,7 +419,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
 
   Acrylic _buildCommandBar() {
     return Acrylic(
-      tint: Colors.white.withOpacity(1), // TODO: fix withOpacity throughout the app
+      tint: Colors.white,
       tintAlpha: 1,
       elevation: 140,
       luminosityAlpha: 0.8,
@@ -599,7 +599,7 @@ class _DataTableSearchFieldState extends State<DataTableSearchField> {
                 end: AlignmentDirectional.topStart,
                 begin: AlignmentDirectional.bottomEnd,
                 colors: [
-                  Colors.white.withOpacity(0.1),
+                  Colors.white.withValues(alpha: 0.1),
                   Colors.white,
                 ],
               ))),

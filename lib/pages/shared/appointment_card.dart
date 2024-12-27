@@ -265,7 +265,7 @@ class AppointmentCard extends StatelessWidget {
         child: Transform.rotate(
           angle: (pi / (flip == 1 ? 2 : 1)) * flip,
           child: Icon(
-            color: Colors.grey.withOpacity(0.3),
+            color: Colors.grey.withValues(alpha: 0.3),
             FluentIcons.turn_right,
             size: 14,
           ),
@@ -285,7 +285,7 @@ class AppointmentCard extends StatelessWidget {
               child: Icon(
                 icon,
                 size: 13,
-                color: color.withOpacity(0.5),
+                color: color.withValues(alpha: 0.5),
               ),
             ),
             Acrylic(
@@ -327,7 +327,7 @@ class AppointmentCard extends StatelessWidget {
               "${txt("appointment")}: $number",
               style: TextStyle(
                 fontSize: 10,
-                color: color.withOpacity(0.5),
+                color: color.withValues(alpha: 0.5),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -442,7 +442,7 @@ class TimeDifference extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       difference!,
-      style: TextStyle(fontSize: 12, color: Colors.grey.withOpacity(0.5), fontWeight: FontWeight.bold),
+      style: TextStyle(fontSize: 12, color: Colors.grey.withValues(alpha: 0.5), fontWeight: FontWeight.bold),
     );
   }
 }
