@@ -1,4 +1,10 @@
 
+### ____0.2.2____
+
+-   clear button in datatable search
+-   fixed issues with photo uploading and sync
+
+
 ### ____0.2.1____
 
 -   Load images on request
