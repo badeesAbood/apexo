@@ -270,7 +270,7 @@ class Store<G extends Model> {
           await remote!.uploadImages(
               element.key,
               await Future.wait(
-                  element.value.map((path) => MultipartFile.fromPath("imgs+", path, filename: path.split("/").last))));
+                  element.value.map((path) => MultipartFile.fromPath("imgs+", path, filename: basename(path)))));
         }
       }
       if (toRemoveFiles.isNotEmpty) {
