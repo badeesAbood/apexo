@@ -258,7 +258,11 @@ class State extends ObservablePersistingObject {
 
   @override
   fromJson(Map<String, dynamic> json) async {
-    version = (await PackageInfo.fromPlatform()).version;
+    try {
+      version = (await PackageInfo.fromPlatform()).version;
+    } catch (_) {
+      version = "0.0.0";
+    }
 
     url = json["url"] ?? url;
     email = json["email"] ?? email;

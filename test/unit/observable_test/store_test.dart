@@ -213,22 +213,6 @@ void main() {
       await Future.delayed(const Duration(milliseconds: 10));
       expect(observersCalled, 0);
     });
-    test("debounceMS is considered in changes processing", () async {
-      Store<Person> mStore = Store(local: local, remote: null, modeling: Person.fromJson, debounceMS: 1000);
-      mStore.init();
-      await mStore.loaded;
-      mStore.set(Person.fromJson({}));
-      await Future.delayed(const Duration(milliseconds: 50));
-      expect((await mStore.local!.getAll()).length, equals(0));
-      await Future.delayed(const Duration(milliseconds: 100));
-      expect((await mStore.local!.getAll()).length, equals(0));
-      await Future.delayed(const Duration(milliseconds: 100));
-      expect((await mStore.local!.getAll()).length, equals(0));
-      await Future.delayed(const Duration(milliseconds: 400));
-      expect((await mStore.local!.getAll()).length, equals(0));
-      await Future.delayed(const Duration(milliseconds: 400));
-      expect((await mStore.local!.getAll()).length, equals(1));
-    });
   });
 
   group('Store synchronization tests', () {

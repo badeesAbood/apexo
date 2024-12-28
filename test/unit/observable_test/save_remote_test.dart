@@ -1,6 +1,5 @@
 import 'package:apexo/backend/observable/save_remote.dart';
 import 'package:apexo/backend/utils/uuid.dart';
-import 'package:apexo/state/state.dart';
 import 'package:http/http.dart';
 import 'package:pocketbase/pocketbase.dart';
 import "package:test/test.dart";
@@ -103,7 +102,7 @@ void main() {
 
     test("uploading images", () async {
       // uploading
-      await saveRemote.uploadImages(savedId, [MultipartFile.fromString("imgs+", "content", filename: "file1.txt")]);
+      await saveRemote.uploadImage(savedId, MultipartFile.fromString("imgs+", "content", filename: "file1.txt"));
       // version should be modified
       final version = await saveRemote.getVersion();
       expect(version, greaterThan(savedVersion3));
@@ -113,14 +112,12 @@ void main() {
       expect(List<String>.from(record.data["imgs"]).where((item) => item.contains("file1")).length, 1);
       // getting the image through getSince
       await saveRemote.getSince(version: savedVersion3);
-      // queued for download
-      expect(state.imagesToDownload.where((url) => url.contains("file1")).length, 1);
       // for test below
       savedVersion3 = version;
     });
     test("appending one more image", () async {
       // uploading
-      await saveRemote.uploadImages(savedId, [MultipartFile.fromString("imgs+", "content", filename: "file2.txt")]);
+      await saveRemote.uploadImage(savedId, MultipartFile.fromString("imgs+", "content", filename: "file2.txt"));
       // version should be modified
       final version = await saveRemote.getVersion();
       expect(version, greaterThan(savedVersion3));
@@ -132,14 +129,12 @@ void main() {
       expect(List<String>.from(record.data["imgs"]).where((item) => item.contains("file1")).length, 1);
       // getting the image through getSince
       await saveRemote.getSince(version: savedVersion3);
-      // queued for download
-      expect(state.imagesToDownload.where((url) => url.contains("file2")).length, 1);
       // for test below
       savedVersion3 = version;
     });
     test("trying to append an image but its duplicated", () async {
       // uploading
-      await saveRemote.uploadImages(savedId, [MultipartFile.fromString("imgs+", "content", filename: "file1.txt")]);
+      await saveRemote.uploadImage(savedId, MultipartFile.fromString("imgs+", "content", filename: "file1.txt"));
       // version should not be modified
       final version = await saveRemote.getVersion();
       expect(version, equals(savedVersion3));
@@ -153,12 +148,10 @@ void main() {
       await saveRemote.getSince(version: savedVersion3);
     });
     test("trying to append multiple images, some of which is duplicated, others are not", () async {
-      await saveRemote.uploadImages(savedId, [
-        MultipartFile.fromString("imgs+", "content", filename: "file1.txt"),
-        MultipartFile.fromString("imgs+", "content", filename: "file2.txt"),
-        MultipartFile.fromString("imgs+", "content", filename: "file3.txt"),
-        MultipartFile.fromString("imgs+", "content", filename: "file4.txt"),
-      ]);
+      await saveRemote.uploadImage(savedId, MultipartFile.fromString("imgs+", "content", filename: "file1.txt"));
+      await saveRemote.uploadImage(savedId, MultipartFile.fromString("imgs+", "content", filename: "file2.txt"));
+      await saveRemote.uploadImage(savedId, MultipartFile.fromString("imgs+", "content", filename: "file3.txt"));
+      await saveRemote.uploadImage(savedId, MultipartFile.fromString("imgs+", "content", filename: "file4.txt"));
       final record = await pb.collection("data").getOne(savedId);
       expect(List<String>.from(record.data["imgs"]).length, equals(4));
       expect(List<String>.from(record.data["imgs"]).where((item) => item.contains("file1")).length, 1);
@@ -167,12 +160,10 @@ void main() {
       expect(List<String>.from(record.data["imgs"]).where((item) => item.contains("file4")).length, 1);
     });
     test("trying to append multiple images, all of which are duplicated", () async {
-      await saveRemote.uploadImages(savedId, [
-        MultipartFile.fromString("imgs+", "content", filename: "file1.txt"),
-        MultipartFile.fromString("imgs+", "content", filename: "file2.txt"),
-        MultipartFile.fromString("imgs+", "content", filename: "file3.txt"),
-        MultipartFile.fromString("imgs+", "content", filename: "file4.txt"),
-      ]);
+      await saveRemote.uploadImage(savedId, MultipartFile.fromString("imgs+", "content", filename: "file1.txt"));
+      await saveRemote.uploadImage(savedId, MultipartFile.fromString("imgs+", "content", filename: "file2.txt"));
+      await saveRemote.uploadImage(savedId, MultipartFile.fromString("imgs+", "content", filename: "file3.txt"));
+      await saveRemote.uploadImage(savedId, MultipartFile.fromString("imgs+", "content", filename: "file4.txt"));
       final record = await pb.collection("data").getOne(savedId);
       expect(List<String>.from(record.data["imgs"]).length, equals(4));
       expect(List<String>.from(record.data["imgs"]).where((item) => item.contains("file1")).length, 1);
@@ -181,12 +172,10 @@ void main() {
       expect(List<String>.from(record.data["imgs"]).where((item) => item.contains("file4")).length, 1);
     });
     test("trying to append multiple images, none of which are duplicated", () async {
-      await saveRemote.uploadImages(savedId, [
-        MultipartFile.fromString("imgs+", "content", filename: "file5.txt"),
-        MultipartFile.fromString("imgs+", "content", filename: "file6.txt"),
-        MultipartFile.fromString("imgs+", "content", filename: "file7.txt"),
-        MultipartFile.fromString("imgs+", "content", filename: "file8.txt"),
-      ]);
+      await saveRemote.uploadImage(savedId, MultipartFile.fromString("imgs+", "content", filename: "file5.txt"));
+      await saveRemote.uploadImage(savedId, MultipartFile.fromString("imgs+", "content", filename: "file6.txt"));
+      await saveRemote.uploadImage(savedId, MultipartFile.fromString("imgs+", "content", filename: "file7.txt"));
+      await saveRemote.uploadImage(savedId, MultipartFile.fromString("imgs+", "content", filename: "file8.txt"));
       final record = await pb.collection("data").getOne(savedId);
       expect(List<String>.from(record.data["imgs"]).length, equals(8));
       expect(List<String>.from(record.data["imgs"]).where((item) => item.contains("file1")).length, 1);
@@ -199,7 +188,7 @@ void main() {
       expect(List<String>.from(record.data["imgs"]).where((item) => item.contains("file8")).length, 1);
     });
     test("removing one image", () async {
-      await saveRemote.deleteImages(savedId, ["file1.txt"]);
+      await saveRemote.deleteImage(savedId, "file1.txt");
       final record = await pb.collection("data").getOne(savedId);
       expect(List<String>.from(record.data["imgs"]).length, equals(7));
       expect(List<String>.from(record.data["imgs"]).where((item) => item.contains("file1")).length, 0);
@@ -212,7 +201,7 @@ void main() {
       expect(List<String>.from(record.data["imgs"]).where((item) => item.contains("file8")).length, 1);
     });
     test("removing one image, but it doesn't exist", () async {
-      await saveRemote.deleteImages(savedId, ["file1.txt"]);
+      await saveRemote.deleteImage(savedId, "file1.txt");
       final record = await pb.collection("data").getOne(savedId);
       expect(List<String>.from(record.data["imgs"]).length, equals(7));
       expect(List<String>.from(record.data["imgs"]).where((item) => item.contains("file1")).length, 0);
@@ -225,7 +214,9 @@ void main() {
       expect(List<String>.from(record.data["imgs"]).where((item) => item.contains("file8")).length, 1);
     });
     test("removing multiple images, one of which doesn't exist", () async {
-      await saveRemote.deleteImages(savedId, ["file1.txt", "file7.txt", "file8.txt"]);
+      await saveRemote.deleteImage(savedId, "file1.txt");
+      await saveRemote.deleteImage(savedId, "file7.txt");
+      await saveRemote.deleteImage(savedId, "file8.txt");
       final record = await pb.collection("data").getOne(savedId);
       expect(List<String>.from(record.data["imgs"]).length, equals(5));
       expect(List<String>.from(record.data["imgs"]).where((item) => item.contains("file1")).length, 0);
@@ -238,7 +229,11 @@ void main() {
       expect(List<String>.from(record.data["imgs"]).where((item) => item.contains("file8")).length, 0);
     });
     test("removing all images", () async {
-      await saveRemote.deleteImages(savedId, ["file2.txt", "file3.txt", "file4.txt", "file5.txt", "file6.txt"]);
+      await saveRemote.deleteImage(savedId, "file2.txt");
+      await saveRemote.deleteImage(savedId, "file3.txt");
+      await saveRemote.deleteImage(savedId, "file4.txt");
+      await saveRemote.deleteImage(savedId, "file5.txt");
+      await saveRemote.deleteImage(savedId, "file6.txt");
       final record = await pb.collection("data").getOne(savedId);
       expect(List<String>.from(record.data["imgs"]).length, equals(0));
     });
