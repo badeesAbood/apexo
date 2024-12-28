@@ -1,4 +1,10 @@
 
+### ____0.2.3____
+
+-   Fixed issue of android login from web app
+-   Fixed issue of fast user
+
+
 ### ____0.2.2____
 
 -   clear button in datatable search
