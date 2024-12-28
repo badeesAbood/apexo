@@ -71,22 +71,6 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     return labels.where((x) => !x.contains("\u200B")).toList();
   }
 
-  String get sortByString {
-    if (sortBy < 0) {
-      return "title";
-    } else {
-      return labels[sortBy];
-    }
-  }
-
-  String get sortDirectionString {
-    if (sortDirection == 1) {
-      return "Ascend";
-    } else {
-      return "Descend";
-    }
-  }
-
   List<Item> get filteredItems {
     final words = _searchValue.toLowerCase().split(" ");
     final List<Item> candidates = [];
