@@ -171,7 +171,6 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
   Expanded _buildItemsList() {
     final sorted = [...sortedItems]; // caching those two for easier computation
     final filtered = [...filteredItems];
-    // TODO: we might need to go through every "get" and do this ^ on repeated usage of heavy ones
 
     for (var item in filtered) {
       contextMenuControllers.putIfAbsent(item.id, () => FlyoutController());

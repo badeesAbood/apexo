@@ -278,7 +278,6 @@ openSingleAppointment({
             actions: kIsWeb
                 ? [
                     /// TODO: uploading images from the web is not supported
-                    /// currently we're not supporting uploading images from the web
                   ]
                 : [
                     TabAction(
