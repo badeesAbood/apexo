@@ -1,4 +1,4 @@
-> The following document is a user manual for the Apexo project. If you would like to know about the technical details, or you would like to build the application yourself please refer to the [Github repository](https://github.com/alselawi/apexo-flutter) and read through [readme.md](https://github.com/alselawi/apexo-flutter/blob/master/readme.md).
+> The following document is a user manual for the Apexo project. If you would like to know about the technical details, or you would like to build the application yourself please refer to the [Github repository](https://github.com/alselawi/apexo-flutter) and read through [readme.md](https://github.com/alselawi/apexo-flutter/blob/master/README.md).
 
 
 ## Downloading
