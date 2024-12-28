@@ -78,10 +78,3 @@ class Calendar extends ObservingWidget {
     );
   }
 }
-
-// TODO: bug: go to 16 / september 2024
-// try to check/uncheck the checkbox as fast as you can
-// inconsistent result will appear due to multiple calls to synchronize
-// would an increased bouncing solve it?
-// would a check against local DB _ts_ solve it?
-// why is it happening?
