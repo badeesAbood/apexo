@@ -3,7 +3,7 @@
 
 Apexo is application intended for simple and easy management of dental clinics. Its free and open source. It supports patient management, appointment management, photo attachments, multiple doctors, multiple users, works offline, synchronizes through multiple devices, multi-lingual, secure, supports backups.
 
-[Website](https://apexo.app) - [Demo](https://demo.apexo.app) - [Download]()
+[Website](https://apexo.app) - [Demo](https://demo.apexo.app) - [Download](https://apexo.app/#getting-started) - [Documentation](https://docs.apexo.app)
 
 > The following document is technical documentation for the Apexo project. If you are a user, or would like to use the application please visit the [Apexo website](https://apexo.app), or read through the [manual.md](https://github.com/alselawi/apexo-flutter/blob/master/manual.md).
 
