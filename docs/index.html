@@ -439,7 +439,10 @@
 						(section) => (section.style.display = "block")
 					);
 
-					if (searchTerm.length < 2) return; // Only search for 2+ characters
+					if (searchTerm.length < 2) {
+						let hasResults = true;
+						return;
+					}
 
 					let hasResults = false;
 
