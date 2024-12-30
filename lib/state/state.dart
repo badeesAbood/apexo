@@ -58,7 +58,7 @@ class AppState extends ObservablePersistingObject {
   String loadingIndicator = "";
   int selectedTab = 0;
   bool resetInstructionsSent = false;
-  bool isFirstLaunch = true;
+  bool isFirstLaunch = false;
   bool dialogShown = false;
 
   // login credentials
@@ -205,6 +205,7 @@ class AppState extends ObservablePersistingObject {
             await pb!.collection(dataCollectionName).getList(page: 1, perPage: 1);
             await pb!.collection(publicCollectionName).getList(page: 1, perPage: 1);
           } catch (e) {
+            isFirstLaunch = true;
             if (isAdmin) {
               setLoadingIndicator("Creating collections for the first time");
               await initializePocketbase(pb!);
