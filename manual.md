@@ -26,7 +26,7 @@ Using the link above (which is an affiliate link) you can get 200$ of credit in 
 3. After creating the droplet, you must allow up to 3 minutes for the server to start.
 
 4. Next, head to your droplet page and click on "access" then "launch droplet console".
-    ![Access](https://raw.githubusercontent.com/alselawi/apexo-flutter/master/manual_imgs/access.png)
+    ![Access](https://raw.githubusercontent.com/alselawi/apexo-flutter/master/docs/manual_imgs/access.png)
 
 5. Once you have access to the console, run the following command:
     ```
@@ -84,7 +84,7 @@ From the left sidebar go to "settings" and the "backups".
 
 The following image shows how to setup a backup schedule every day, or every week, bi-weekly, or every month. You can also setup how many backups to keep.
 
-![Backups](https://raw.githubusercontent.com/alselawi/apexo-flutter/master/manual_imgs/backups.png)
+![Backups](https://raw.githubusercontent.com/alselawi/apexo-flutter/master/docs/manual_imgs/backups.png)
 
 #### Setting up S3
 
