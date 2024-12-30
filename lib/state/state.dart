@@ -15,8 +15,8 @@ bool isPositiveInt(int? value) {
   return true;
 }
 
-class State extends ObservablePersistingObject {
-  State(super.identifier);
+class AppState extends ObservablePersistingObject {
+  AppState(super.identifier);
 
   String version = "";
 
@@ -58,6 +58,8 @@ class State extends ObservablePersistingObject {
   String loadingIndicator = "";
   int selectedTab = 0;
   bool resetInstructionsSent = false;
+  bool isFirstLaunch = true;
+  bool dialogShown = false;
 
   // login credentials
   String url = "";
@@ -290,4 +292,4 @@ class State extends ObservablePersistingObject {
   }
 }
 
-final State state = State("main-state");
+final AppState state = AppState("main-state");

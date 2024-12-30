@@ -2,7 +2,9 @@ import 'package:apexo/backend/observable/observable.dart';
 import 'package:apexo/backend/observable/observing_widget.dart';
 import 'package:apexo/i18/index.dart';
 import 'package:apexo/pages/index.dart';
+import 'package:apexo/pages/settings/window_backups.dart';
 import 'package:apexo/pages/shared/acrylic_title.dart';
+import 'package:apexo/pages/shared/qrlink.dart';
 import 'package:apexo/pages/stats/reusable_styled_charts/bar.dart';
 import 'package:apexo/pages/stats/reusable_styled_charts/line.dart';
 import 'package:apexo/state/charts.dart';
@@ -42,6 +44,17 @@ class PageDashboard extends ObservingWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (state.isFirstLaunch && state.dialogShown == false && context.mounted) {
+        state.dialogShown = true;
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return const FirstLaunchDialog();
+            });
+      }
+    });
+
     return Column(key: WK.dashboardPage, crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
         padding: const EdgeInsets.all(15),
@@ -315,3 +328,30 @@ class DashboardState extends ObservableObject {
 }
 
 final dashboardState = DashboardState();
+
+class FirstLaunchDialog extends StatelessWidget {
+  const FirstLaunchDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ContentDialog(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(txt("firstLaunchDialogTitle")),
+          IconButton(icon: const Icon(FluentIcons.cancel), onPressed: () => Navigator.pop(context))
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(txt("firstLaunchDialogContent")),
+          const SizedBox(height: 10),
+          const QRLink(link: "https://docs.apexo.app/#section-3"),
+        ],
+      ),
+      style: dialogStyling(false),
+      actions: const [CloseButtonInDialog(buttonText: "close")],
+    );
+  }
+}
