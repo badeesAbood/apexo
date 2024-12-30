@@ -9,15 +9,20 @@
 			href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
 		/>
 
-        <meta name="mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black">
-        <meta name="apple-mobile-web-app-title" content="Apexo">
-        <link rel="apple-touch-icon" href="./build/web/icons/Icon-192.png">
-      
-        <!-- Favicon -->
-        <link rel="icon" type="image/png" href="./build/web/favicon.png"/>
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		<meta name="apple-mobile-web-app-title" content="Apexo" />
+		<link rel="apple-touch-icon" href="./build/web/icons/Icon-192.png" />
+
+		<!-- Favicon -->
+		<link rel="icon" type="image/png" href="./build/web/favicon.png" />
 
 		<style>
+			/* Base Styles */
+			html {
+				background: #fafafa;
+			}
+
 			body {
 				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
 					Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -25,32 +30,69 @@
 				padding: 0;
 				background-color: #ffffff;
 				color: #2c3e50;
-				display: flex;
-				flex-direction: row;
 				height: 100vh;
+				max-width: 1200px;
+				margin: 0 auto;
+				background: #fafafa;
+				display: flex;
+				flex-direction: column;
 			}
 
+			/* Container for Nav and Main Content */
+			.container {
+				display: flex;
+				flex: 1;
+			}
+
+			/* Navigation Styles */
 			#nav {
-				flex-shrink: 0;
-				width: 250px;
-				border: 1px solid #eaeaea;
+				position: sticky;
+				top: 75px;
+				width: 290px;
+				height: calc(100vh - 75px);
 				box-sizing: border-box;
 				overflow-y: auto;
-				background-color: #f9fafb;
+				background-color: #fff;
 				box-shadow: 0px 0 15px rgb(0 0 0 / 4%);
-				margin: 10px;
+				margin-top: 0;
+				margin-right: 0;
+				direction: rtl;
+				scrollbar-width: thin;
+				scrollbar-color: #cbd5e0 #f9fafb;
+			}
+
+			#nav > * {
+				direction: ltr;
+			}
+
+			#nav::-webkit-scrollbar {
+				width: 8px;
+			}
+
+			#nav::-webkit-scrollbar-track {
+				background: #f9fafb;
 				border-radius: 4px;
 			}
 
-			#nav h3 {
-				color: #fff;
+			#nav::-webkit-scrollbar-thumb {
+				background: #cbd5e0;
+				border-radius: 4px;
+			}
+
+			#nav::-webkit-scrollbar-thumb:hover {
+				background: #a0aec0;
+			}
+
+			#nav .head {
 				text-align: center;
 				font-size: 17px;
 				margin: 0;
-				padding: 10px 20px;
+				padding: 23px 0 24px;
 				border: none;
-				background-color: #1a365d;
-				box-shadow: 0 0 13px 3px #1a365d4a;
+				background-color: #ffffff;
+				border-bottom: 1px solid #eaeaea;
+				color: #4a5568;
+				font-weight: 100;
 			}
 
 			#nav ul {
@@ -58,7 +100,7 @@
 				padding: 0;
 			}
 
-			#nav ul li a {
+			#nav > ul > li > a {
 				text-decoration: none;
 				color: #4a5568;
 				font-weight: 500;
@@ -66,6 +108,9 @@
 				padding: 8px 12px;
 				border-radius: 6px;
 				transition: all 0.2s ease;
+				font-size: 15px;
+				border-left: 2px solid #e3e3e3;
+				border-radius: 0;
 			}
 
 			#nav ul li a:hover {
@@ -74,14 +119,145 @@
 				text-decoration: none;
 			}
 
+			/* Main Content Styles */
 			main {
-				flex-grow: 1;
+				flex: 1;
 				padding: 40px;
 				overflow-y: auto;
 				box-sizing: border-box;
 				line-height: 1.6;
+				background: #fff;
+				border: 1px solid #eaeaea;
+				background-color: #f9fafb;
+				box-shadow: 0px 0 15px rgb(0 0 0 / 6%);
+				padding-top: 80px;
 			}
 
+			/* Top Bar Styles */
+			.top-bar {
+				position: fixed;
+				top: 0;
+				background: white;
+				padding: 15px 20px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				border-bottom: 1px solid #eaeaea;
+				z-index: 100;
+				overflow-x: hidden;
+				width: calc(100% - 40px);
+				left: 0;
+				margin: 0;
+			}
+
+			.horizontal-nav {
+				display: flex;
+				gap: 5px;
+			}
+
+			.nav-item {
+				text-decoration: none;
+				color: #4a5568;
+				font-weight: 500;
+				padding: 8px 16px;
+				border-radius: 6px;
+				transition: all 0.2s ease;
+			}
+
+			.nav-item:hover {
+				background-color: #edf2f7;
+				color: #2b6cb0;
+			}
+
+			.nav-item.active {
+				background-color: #2b6cb0;
+				color: white;
+			}
+
+			/* Search Container Styles */
+			.search-container {
+				display: flex;
+				flex-grow: 0.9;
+				align-items: center;
+				background: #f1f5f9;
+				border-radius: 8px;
+				padding: 6px 12px;
+			}
+
+			#searchInput {
+				border: none;
+				background: none;
+				padding: 8px;
+				width: 150px;
+				font-size: 14px;
+				outline: none;
+				flex-grow: 1;
+			}
+
+			.search-btn {
+				background: none;
+				border: none;
+				cursor: pointer;
+				padding: 6px;
+				color: #4a5568;
+				display: flex;
+				align-items: center;
+			}
+
+			.search-btn:hover {
+				color: #2b6cb0;
+			}
+
+			/* Responsive Styles */
+			@media screen and (max-width: 768px) {
+				.horizontal-nav {
+					display: none;
+				}
+				.top-bar {
+					flex-direction: column;
+					gap: 15px;
+				}
+
+				.search-container {
+					width: 100%;
+				}
+
+				#searchInput {
+					width: 100%;
+				}
+
+				#nav {
+					position: fixed;
+					left: -400px;
+					top: 0;
+					height: 100vh;
+					transition: left 0.3s ease !important;
+					z-index: 999;
+					box-shadow: 32px 0px 150px 0px #00000069;
+				}
+
+				#nav.active {
+					left: 0;
+				}
+
+				.menu-toggle {
+					display: block !important;
+				}
+
+				.menu-toggle.active span:nth-child(1) {
+					transform: rotate(45deg) translate(5px, 5px);
+				}
+
+				.menu-toggle.active span:nth-child(2) {
+					opacity: 0;
+				}
+
+				.menu-toggle.active span:nth-child(3) {
+					transform: rotate(-45deg) translate(7px, -7px);
+				}
+			}
+
+			/* Typography Styles */
 			h1,
 			h2,
 			h3 {
@@ -91,6 +267,7 @@
 				margin-top: 2em;
 			}
 
+			/* Code Block Styles */
 			pre {
 				background: #f8fafc;
 				padding: 20px;
@@ -106,6 +283,7 @@
 				font-size: 0.9em;
 			}
 
+			/* Image Styles */
 			img {
 				max-width: 300px;
 				width: 100%;
@@ -123,29 +301,34 @@
 				box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 			}
 
+			#logo:hover {
+				transform: none;
+				cursor: default;
+			}
+
+			/* Blockquote Styles */
 			blockquote {
 				border-radius: 7px;
-				padding-left: 20px;
 				padding: 10px;
 				border: 1px solid #1a365d;
 				border-left-width: 9px;
 				margin-bottom: 20px;
-				background-color: #f8f8f8;
+				background-color: #fff;
+				margin: 10px;
 			}
 
+			/* Menu Toggle Styles */
 			.menu-toggle {
 				display: none;
 				position: fixed;
-				bottom: 20px;
-				right: 20px;
+				top: 5px;
+				right: 10px;
 				z-index: 1000;
 				background: none;
 				border: none;
 				cursor: pointer;
-				padding: 10px;
-				background: #1a365d;
+				padding: 7px;
 				border-radius: 15px;
-				box-shadow: 0 0 20px 5px #92a0b3;
 			}
 
 			.menu-toggle span {
@@ -153,39 +336,34 @@
 				width: 25px;
 				height: 3px;
 				margin: 5px 0;
-				background: #f9fafb;
+				background: #2b6cb0;
 				transition: all 0.3s ease;
 			}
 
-			@media screen and (max-width: 768px) {
-				#nav {
-					position: fixed;
-					left: -350px;
-					top: 0;
-					height: 97%;
-					transition: left 0.3s ease;
-					z-index: 999;
-				}
+			/* Logo Container Styles */
+			.logo-container h5 {
+				margin: 0;
+				font-weight: 100;
+				letter-spacing: 0.07em;
+			}
 
-				#nav.active {
-					left: 0;
-				}
+			#logo {
+				height: 25px;
+				margin: 0;
+				box-shadow: none;
+				width: unset;
+				display: inline;
+			}
 
-				.menu-toggle {
-					display: block;
-				}
-
-				.menu-toggle.active span:nth-child(1) {
-					transform: rotate(45deg) translate(5px, 5px);
-				}
-
-				.menu-toggle.active span:nth-child(2) {
-					opacity: 0;
-				}
-
-				.menu-toggle.active span:nth-child(3) {
-					transform: rotate(-45deg) translate(7px, -7px);
-				}
+			.no-result {
+				padding: 20px;
+				text-align: center;
+				color: rgb(74, 85, 104);
+				display: none;
+				background: #fff;
+				border: 2px solid #e3e3e3;
+				font-weight: 600;
+				border-radius: 5px;
 			}
 		</style>
 	</head>
@@ -195,17 +373,102 @@
 			<span></span>
 			<span></span>
 		</button>
-		<div id="nav">
-			<h3>Apexo Manual</h3>
-			<ul id="toc">
-				<li>Loading...</li>
-			</ul>
+		<div class="container">
+			<div id="nav">
+				<ul id="toc">
+					<li>Loading...</li>
+				</ul>
+			</div>
+			<main id="content">
+				<div class="top-bar">
+					<img id="logo" src="./assets/images/logo.png" />
+					<div class="search-container">
+						<input
+							type="text"
+							id="searchInput"
+							placeholder="Search documentation..."
+						/>
+						<button class="search-btn">
+							<svg
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+							>
+								<circle cx="11" cy="11" r="8"></circle>
+								<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+							</svg>
+						</button>
+					</div>
+					<div class="horizontal-nav">
+						<a href="https://apexo.app/#getting-started" class="nav-item active"
+							>Download</a
+						>
+						<a href="https://github.com/alselawi/apexo-flutter" class="nav-item"
+							>Github</a
+						>
+						<a href="https://demo.apexo.app" class="nav-item">Demo</a>
+						<a href="https://apexo.app/changelog" class="nav-item">Changelog</a>
+					</div>
+				</div>
+				<div id="main-content">
+					<p>Loading documentation...</p>
+				</div>
+			</main>
 		</div>
-		<main id="content">
-			<p>Loading documentation...</p>
-		</main>
 
 		<script>
+			function setupSearch() {
+				const searchInput = document.getElementById("searchInput");
+				const mainContent = document.getElementById("main-content");
+
+				const noResultsNotice = document.createElement("div");
+				noResultsNotice.classList.add("no-result");
+				noResultsNotice.innerHTML = "No matching results found";
+				mainContent.appendChild(noResultsNotice);
+
+				searchInput.addEventListener("input", (e) => {
+					const searchTerm = e.target.value.toLowerCase();
+					const headers = mainContent.querySelectorAll("h1, h2, h3, h4, h5");
+					const contentSections = mainContent.querySelectorAll(
+						"p, li, code, blockquote, pre"
+					);
+
+					// Reset all content visibility
+					headers.forEach((header) => (header.style.display = "block"));
+					contentSections.forEach(
+						(section) => (section.style.display = "block")
+					);
+
+					if (searchTerm.length < 2) return; // Only search for 2+ characters
+
+					let hasResults = false;
+
+					// Search through headers and content
+					headers.forEach((header) => {
+						const text = header.textContent.toLowerCase();
+						const isVisible = text.includes(searchTerm);
+						header.style.display = isVisible ? "block" : "none";
+						if (isVisible) hasResults = true;
+					});
+
+					contentSections.forEach((section) => {
+						const text = section.textContent.toLowerCase();
+						const isVisible = text.includes(searchTerm);
+						section.style.display = isVisible ? "block" : "none";
+						if (isVisible) hasResults = true;
+					});
+
+					noResultsNotice.style.display = hasResults ? "none" : "block";
+				});
+
+				// Add search button click handler
+				document.querySelector(".search-btn").addEventListener("click", () => {
+					searchInput.focus();
+				});
+			}
+
 			async function fetchMarkdown() {
 				const markdownUrl =
 					"https://raw.githubusercontent.com/alselawi/apexo-flutter/master/manual.md";
@@ -218,10 +481,11 @@
 
 					const markdownText = await response.text();
 					const html = marked.marked(markdownText); // Convert Markdown to HTML
-					const contentElement = document.getElementById("content");
+					const contentElement = document.getElementById("main-content");
 					contentElement.innerHTML = html;
 
 					generateTableOfContents(html);
+					setupSearch();
 				} catch (error) {
 					document.getElementById(
 						"content"
@@ -229,7 +493,8 @@
 				}
 
 				const images = document.querySelectorAll("img");
-				images.forEach((img) => {
+				images.forEach((img, index) => {
+					if (index == 0) return;
 					img.addEventListener("click", () => {
 						const lightbox = document.createElement("div");
 						lightbox.style =
@@ -252,7 +517,7 @@
 
 			function generateTableOfContents(html) {
 				const contentElement = document.getElementById("content");
-				const headers = contentElement.querySelectorAll("h1, h2, h3");
+				const headers = contentElement.querySelectorAll("h1, h2, h3, h4, h5");
 				const toc = document.getElementById("toc");
 
 				toc.innerHTML = "";
@@ -265,8 +530,30 @@
 					const link = document.createElement("a");
 					link.href = `#${id}`;
 					link.textContent = header.textContent;
+
+					// Add indentation based on header level
+					const level = parseInt(header.tagName.charAt(1));
+					listItem.style.paddingLeft = `${(level - 1) * 20}px`;
+
 					listItem.appendChild(link);
 					toc.appendChild(listItem);
+				});
+
+				document.getElementById("toc").addEventListener("click", (e) => {
+					if (e.target.tagName === "A") {
+						const nav = document.querySelector("#nav");
+						const menuToggle = document.getElementById("menuToggle");
+						nav.classList.remove("active");
+						menuToggle.classList.remove("active");
+						setTimeout(() => {
+							window.scrollTo({
+								top:
+									document.getElementById(e.target.hash.slice(1)).offsetTop -
+									100,
+								behavior: "smooth",
+							});
+						}, 100);
+					}
 				});
 			}
 
