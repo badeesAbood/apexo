@@ -67,6 +67,7 @@ class LabworksPage extends ObservingWidget {
                 ),
               ],
               defaultSortDirection: -1,
+              defaultSortingName: "byDate",
             ),
           ),
         ],

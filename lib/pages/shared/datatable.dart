@@ -37,6 +37,7 @@ class DataTable<Item extends Model> extends StatefulWidget {
   final bool compact;
   final List<ItemAction> itemActions;
   final int defaultSortDirection;
+  final String defaultSortingName;
 
   const DataTable({
     super.key,
@@ -47,6 +48,7 @@ class DataTable<Item extends Model> extends StatefulWidget {
     this.compact = false,
     this.itemActions = const [],
     this.defaultSortDirection = 1,
+    this.defaultSortingName = "byTitle",
   });
 
   @override
@@ -345,7 +347,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     return ComboBox<int>(
       key: WK.dataTableSortBy,
       items: [
-        ComboBoxItem<int>(value: -1, child: Text(txt("byTitle"))),
+        ComboBoxItem<int>(value: -1, child: Text(txt(widget.defaultSortingName))),
         ...nonNullLabels
             .map((l) => ComboBoxItem<int>(value: nonNullLabels.indexOf(l), child: Text("${txt("by")} ${txt(l)}")))
       ],
@@ -374,7 +376,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     }
     return [
       const SizedBox(width: 30),
-      ...(["title", ...nonNullLabels])
+      ...([widget.defaultSortingName, ...nonNullLabels])
           .map((e) => [
                 Acrylic(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),

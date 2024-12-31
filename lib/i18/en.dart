@@ -65,6 +65,7 @@ class En {
     "showing": "Showing",
     "by": "By",
     "byTitle": "By Title",
+    "byDate": "By Date",
     "noItemsFound": "No items found",
     "filter": "Filter",
 

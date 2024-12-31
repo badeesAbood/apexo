@@ -63,6 +63,7 @@ class Ar implements En {
     "showing": "يتم إظهار",
     "by": "بحسب",
     "byTitle": "بحسب العنوان",
+    "byDate": "بحسب التاريخ",
     "noItemsFound": "لم يتم العثور على عناصر",
     "filter": "تصفية",
 
