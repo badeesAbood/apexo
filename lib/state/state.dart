@@ -58,8 +58,11 @@ class AppState extends ObservablePersistingObject {
   String loadingIndicator = "";
   int selectedTab = 0;
   bool resetInstructionsSent = false;
+
+  // launch state
   bool isFirstLaunch = false;
   bool dialogShown = false;
+  bool isDemo = false;
 
   // login credentials
   String url = "";
@@ -138,7 +141,7 @@ class AppState extends ObservablePersistingObject {
     notify();
   }
 
-  loginButton([bool online = true]) {
+  void loginButton([bool online = true]) {
     String url = urlField.text.replaceFirst(RegExp(r'/+$'), "");
     String email = emailField.text;
     String password = passwordField.text;
@@ -180,7 +183,7 @@ class AppState extends ObservablePersistingObject {
       url = inputURL;
     }
 
-    if (online) {
+    if (online && isDemo == false) {
       try {
         // email and password authentication
         if (credentials.length == 2) {
@@ -243,7 +246,7 @@ class AppState extends ObservablePersistingObject {
     for (var callback in activators.values) {
       try {
         final secondStage = await callback();
-        if (online) await secondStage();
+        if (online && isDemo == false) await secondStage();
       } catch (e, s) {
         logger("Error during running activators: $e", s);
       }
