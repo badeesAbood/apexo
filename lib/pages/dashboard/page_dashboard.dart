@@ -66,7 +66,7 @@ class PageDashboard extends ObservingWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${txt("hello")}, $currentName",
+                  "${txt("hello")} $currentName",
                   style: const TextStyle(fontSize: 20),
                 ),
                 Text(

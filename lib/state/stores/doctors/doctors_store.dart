@@ -32,7 +32,7 @@ class Doctors extends Store<Doctor> {
       await deleteMemoryAndLoadFromPersistence();
 
       if (state.isDemo) {
-        if (docs.isEmpty) setAll(demoDoctors(7));
+        if (docs.isEmpty) setAll(demoDoctors(5));
       } else {
         remote = SaveRemote(
           pbInstance: state.pb!,
