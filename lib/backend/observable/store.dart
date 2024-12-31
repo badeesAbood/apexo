@@ -111,7 +111,7 @@ class Store<G extends Model> {
   }
 
   _processChanges() async {
-    if (state.isDemo) return;
+    if (state.isDemo) notify();
 
     if (local == null) {
       return;
