@@ -1,4 +1,11 @@
 
+### ____0.2.4____
+
+-   Web demo setup
+-   Splash screen for web
+-   Fixed issue with statistics page done & missed chart
+
+
 ### ____0.2.3____
 
 -   Fixed issue of android login from web app
