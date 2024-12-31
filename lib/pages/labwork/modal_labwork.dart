@@ -38,16 +38,6 @@ openSingleLabwork({
           spacing: 10,
           content: (state) => [
             InfoLabel(
-              label: "${txt("labworkTitle")}:",
-              child: CupertinoTextField(
-                  key: WK.fieldLabworkTitle,
-                  controller: TextEditingController(text: o.title),
-                  placeholder: "${txt("labworkTitle")}...",
-                  onChanged: (val) {
-                    o.title = val;
-                  }),
-            ),
-            InfoLabel(
               label: "${txt("date")}:",
               child: DateTimePicker(
                 key: WK.fieldLabworkDate,

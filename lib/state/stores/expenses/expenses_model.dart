@@ -17,6 +17,11 @@ class Expense extends Model {
     return buildingLabels;
   }
 
+  @override
+  String get title {
+    return DateFormat("yyyy-MM-dd").format(date);
+  }
+
   // id: id of the labwork (inherited from Model)
   // title: title of the labwork (inherited from Model)
   /* 1 */ String note = "";

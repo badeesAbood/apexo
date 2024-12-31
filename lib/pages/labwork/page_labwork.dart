@@ -66,6 +66,7 @@ class LabworksPage extends ObservingWidget {
                   },
                 ),
               ],
+              defaultSortDirection: -1,
             ),
           ),
         ],

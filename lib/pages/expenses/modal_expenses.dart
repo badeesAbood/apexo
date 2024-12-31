@@ -38,16 +38,6 @@ openSingleReceipt({
           spacing: 10,
           content: (state) => [
             InfoLabel(
-              label: "${txt("receiptTitle")}:",
-              child: CupertinoTextField(
-                  key: WK.fieldReceiptTitle,
-                  controller: TextEditingController(text: o.title),
-                  placeholder: "${txt("receiptTitle")}...",
-                  onChanged: (val) {
-                    o.title = val;
-                  }),
-            ),
-            InfoLabel(
               label: "${txt("date")}:",
               child: DateTimePicker(
                 key: WK.fieldReceiptDate,

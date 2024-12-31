@@ -36,6 +36,7 @@ class DataTable<Item extends Model> extends StatefulWidget {
   final List<Widget> furtherActions;
   final bool compact;
   final List<ItemAction> itemActions;
+  final int defaultSortDirection;
 
   const DataTable({
     super.key,
@@ -45,6 +46,7 @@ class DataTable<Item extends Model> extends StatefulWidget {
     this.furtherActions = const [],
     this.compact = false,
     this.itemActions = const [],
+    this.defaultSortDirection = 1,
   });
 
   @override
@@ -153,6 +155,12 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     setState(() {
       sortDirection = sortDirection * -1;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    sortDirection = widget.defaultSortDirection;
   }
 
   @override

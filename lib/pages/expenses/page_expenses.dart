@@ -63,6 +63,7 @@ class ExpensesPage extends ObservingWidget {
                   },
                 ),
               ],
+              defaultSortDirection: -1,
             ),
           ),
         ],

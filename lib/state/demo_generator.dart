@@ -202,7 +202,7 @@ const Map<String, String> _receiptIssuers = {
   "Village Stationary": "07517409134",
 };
 
-const List<String> _labworkTitles = [
+const List<String> _labworkNotes = [
   "Zirconia Crown",
   "Ceramic Crown",
   "Lithium Disilicate Crown",
@@ -221,20 +221,6 @@ const List<String> _labworkTitles = [
   "Invisalign Lite",
   "Aligners",
   "Quad-Helix",
-];
-
-const List<String> expenseTitles = [
-  "Dental Supplies",
-  "Laboratory",
-  "Equipment",
-  "Rent",
-  "Utilities",
-  "Marketing",
-  "Insurance",
-  "Other",
-  "Other",
-  "Other",
-  "Other",
 ];
 
 const List<String> _receiptItems = [
@@ -366,7 +352,6 @@ Labwork _demoLabwork() {
   final future = date.isAfter(DateTime.now());
   final lab = _labs.keys.toList()[Random().nextInt(_labs.length)];
   return Labwork.fromJson({
-    "title": _labworkTitles[Random().nextInt(_labworkTitles.length)],
     "date": (date.millisecondsSinceEpoch / (60 * 60 * 1000)).toInt(),
     "operatorsIDs": [_savedDoctors[Random().nextInt(_savedDoctors.length)].id],
     "patientID": patient.id,
@@ -374,6 +359,7 @@ Labwork _demoLabwork() {
     "price": Random().nextInt(100),
     "lab": lab,
     "phoneNumber": _labs[lab],
+    "note": _labworkNotes[Random().nextInt(_labworkNotes.length)],
   });
 }
 
@@ -385,7 +371,6 @@ Expense _demoExpense() {
   final price = Random().nextInt(700);
   final receiptIssuer = _receiptIssuers.keys.toList()[Random().nextInt(_receiptIssuers.length)];
   return Expense.fromJson({
-    "title": expenseTitles[Random().nextInt(expenseTitles.length)],
     "date": (date.millisecondsSinceEpoch / (60 * 60 * 1000)).toInt(),
     "paid": future ? null : true,
     "amount": price,
