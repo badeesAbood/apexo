@@ -1,4 +1,10 @@
 
+### ____0.2.5____
+
+-   Fixed sorting of labworks and expenses
+-   Fixed change detection and reflection in demo
+
+
 ### ____0.2.4____
 
 -   Web demo setup
