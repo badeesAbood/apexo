@@ -8,7 +8,7 @@ import '../../../pages/shared/week_calendar.dart';
 class Appointment extends AgendaItem {
   @override
   String? get avatar {
-    if (state.isDemo) return "https://thispersondoesnotexist.com/";
+    if (state.isDemo) return "https://person.alisaleem.workers.dev/";
     if (imgs.isEmpty) return null;
     return imgs.first;
   }
