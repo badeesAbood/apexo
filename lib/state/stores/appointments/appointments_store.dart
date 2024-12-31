@@ -87,7 +87,7 @@ class Appointments extends Store<Appointment> {
       await deleteMemoryAndLoadFromPersistence();
 
       if (state.isDemo) {
-        setAll(demoAppointments(3000));
+        if (docs.isEmpty) setAll(demoAppointments(3000));
       } else {
         remote = SaveRemote(
           pbInstance: state.pb!,

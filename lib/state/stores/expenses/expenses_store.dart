@@ -32,7 +32,7 @@ class Expenses extends Store<Expense> {
       local = SaveLocal(_storeName);
       await deleteMemoryAndLoadFromPersistence();
       if (state.isDemo) {
-        setAll(demoExpenses(300));
+        if (docs.isEmpty) setAll(demoExpenses(300));
       } else {
         remote = SaveRemote(
           pbInstance: state.pb!,

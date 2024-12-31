@@ -33,7 +33,7 @@ class Labworks extends Store<Labwork> {
       await deleteMemoryAndLoadFromPersistence();
 
       if (state.isDemo) {
-        setAll(demoLabworks(50));
+        if (docs.isEmpty) setAll(demoLabworks(50));
       } else {
         remote = SaveRemote(
           pbInstance: state.pb!,
