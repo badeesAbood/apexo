@@ -21,6 +21,8 @@ void main() {
 
   initializeStores();
 
+  if (Uri.base.host == "demo.apexo.app") state.isDemo = true;
+
   runApp(const ApexoApp());
 }
 
