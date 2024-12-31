@@ -60,6 +60,13 @@ final imgMemoryCache = <String, ImageProvider?>{};
 Future<ImageProvider?> getImage(String rowID, String name) async {
   if (imgMemoryCache.containsKey(name)) {
     return imgMemoryCache[name];
+  } else if (name == "https://thispersondoesnotexist.com/") {
+    final link = "$name?no-cache=$rowID";
+    if (imgMemoryCache.containsKey(link)) {
+      return imgMemoryCache[link];
+    }
+    final img = Image.network(link).image;
+    return imgMemoryCache[link] = img;
   } else {
     final img = await _getImage(rowID, name);
     imgMemoryCache[name] = img;

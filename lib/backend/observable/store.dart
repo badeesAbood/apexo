@@ -111,6 +111,8 @@ class Store<G extends Model> {
   }
 
   _processChanges() async {
+    if (state.isDemo) return;
+
     if (local == null) {
       return;
     }
@@ -178,6 +180,7 @@ class Store<G extends Model> {
   }
 
   Future<SyncResult> _syncTry() async {
+    if (state.isDemo) return SyncResult(exception: "sync is disabled in demo mode");
     if (local == null || remote == null) {
       return SyncResult(exception: "local/remote persistence layers are not defined");
     }

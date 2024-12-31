@@ -1,4 +1,6 @@
 import 'package:apexo/backend/utils/imgs.dart';
+import 'package:apexo/backend/utils/que.dart';
+import 'package:apexo/state/state.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import '../../backend/observable/model.dart';
 import '../../backend/utils/get_deterministic_item.dart';
@@ -28,7 +30,11 @@ class _AcrylicTitleState extends State<AcrylicTitle> {
           decoration:
               BoxDecoration(color: color, borderRadius: BorderRadius.circular(100), boxShadow: kElevationToShadow[1]),
           child: FutureBuilder(
-              future: widget.item.avatar != null ? getImage(widget.item.id, widget.item.avatar!) : null,
+              future: widget.item.avatar != null
+                  ? (state.isDemo
+                      ? demoAvatarRequestQue.add(() => getImage(widget.item.id, widget.item.avatar!))
+                      : getImage(widget.item.id, widget.item.avatar!))
+                  : null,
               builder: (context, snapshot) {
                 if (widget.item.title.isEmpty) {
                   widget.item.title = " ";

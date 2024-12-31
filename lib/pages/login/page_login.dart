@@ -13,6 +13,9 @@ class Login extends ObservingWidget {
 
   @override
   getObservableState() {
+    if (state.isDemo) {
+      state.loginButton();
+    }
     return [state, obscureText];
   }
 

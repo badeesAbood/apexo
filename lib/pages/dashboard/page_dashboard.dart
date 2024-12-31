@@ -79,14 +79,15 @@ class PageDashboard extends ObservingWidget {
         ),
       ),
       const Divider(),
-      Padding(
-        padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
-        child: InfoBar(
-          title: Text(mode),
-          severity: state.isAdmin ? InfoBarSeverity.success : InfoBarSeverity.warning,
-          content: Text(dashboardMessage),
+      if (!state.isDemo)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+          child: InfoBar(
+            title: Text(mode),
+            severity: state.isAdmin ? InfoBarSeverity.success : InfoBarSeverity.warning,
+            content: Text(dashboardMessage),
+          ),
         ),
-      ),
       if (permissions.list[5] || state.isAdmin) ...[
         buildTopSquares(),
         buildDashboardCharts()

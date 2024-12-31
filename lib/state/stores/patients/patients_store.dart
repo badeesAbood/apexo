@@ -1,3 +1,5 @@
+import 'package:apexo/state/demo_generator.dart';
+
 import './patient_model.dart';
 import '../../state.dart';
 import '../../../backend/observable/save_local.dart';
@@ -30,16 +32,20 @@ class Patients extends Store<Patient> {
       local = SaveLocal(_storeName);
       await deleteMemoryAndLoadFromPersistence();
 
-      remote = SaveRemote(
-        pbInstance: state.pb!,
-        storeName: _storeName,
-        onOnlineStatusChange: (current) {
-          if (state.isOnline != current) {
-            state.isOnline = current;
-            state.notify();
-          }
-        },
-      );
+      if (state.isDemo) {
+        setAll(demoPatients(350));
+      } else {
+        remote = SaveRemote(
+          pbInstance: state.pb!,
+          storeName: _storeName,
+          onOnlineStatusChange: (current) {
+            if (state.isOnline != current) {
+              state.isOnline = current;
+              state.notify();
+            }
+          },
+        );
+      }
 
       return () async {
         state.setLoadingIndicator("Synchronizing patients");

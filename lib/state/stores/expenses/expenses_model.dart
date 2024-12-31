@@ -1,5 +1,6 @@
 import 'package:apexo/backend/observable/model.dart';
 import 'package:apexo/i18/index.dart';
+import 'package:intl/intl.dart';
 
 class Expense extends Model {
   @override
@@ -7,6 +8,7 @@ class Expense extends Model {
     Map<String, String> buildingLabels = {
       "issuer": issuer,
       "status": paid ? txt("paid") : txt("due"),
+      "month": DateFormat("MMM yyyy", locale.s.$code).format(date),
       "amount": amount.toString(),
     };
     for (var i = 0; i < tags.length; i++) {

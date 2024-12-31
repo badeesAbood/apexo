@@ -73,6 +73,7 @@ class Patient extends Model {
 
   @override
   get avatar {
+    if (state.isDemo) return "https://thispersondoesnotexist.com/";
     return imgs.isNotEmpty ? imgs.first : null;
   }
 

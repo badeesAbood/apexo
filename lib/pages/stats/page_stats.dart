@@ -75,7 +75,7 @@ class PageStats extends ObservingWidget {
                   StyledStackedChart(
                     labels: chartsState.periods.map((p) => p.label).toList(),
                     datasets: chartsState.doneAndMissedAppointments,
-                    datasetLabels: [txt("done"), txt("missed")],
+                    datasetLabels: [txt("done"), txt("all")],
                   ),
                   FluentIcons.check_list,
                 ),

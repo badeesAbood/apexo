@@ -6,7 +6,7 @@ import 'package:apexo/pages/index.dart';
 import 'package:apexo/state/state.dart';
 
 class Permissions extends ObservablePersistingObject {
-  List<bool> list = [false, false, false, false, false, false];
+  List<bool> list = state.isDemo ? [true, true, true, true, true, true] : [false, false, false, false, false, false];
   List<bool> editingList = [false, false, false, false, false, false];
 
   bool get edited {

@@ -1,3 +1,5 @@
+import 'package:apexo/state/demo_generator.dart';
+
 import '../../../backend/observable/save_local.dart';
 import '../../../backend/observable/save_remote.dart';
 import '../../../global_actions.dart';
@@ -30,16 +32,20 @@ class Labworks extends Store<Labwork> {
       local = SaveLocal(_storeName);
       await deleteMemoryAndLoadFromPersistence();
 
-      remote = SaveRemote(
-        pbInstance: state.pb!,
-        storeName: _storeName,
-        onOnlineStatusChange: (current) {
-          if (state.isOnline != current) {
-            state.isOnline = current;
-            state.notify();
-          }
-        },
-      );
+      if (state.isDemo) {
+        setAll(demoLabworks(50));
+      } else {
+        remote = SaveRemote(
+          pbInstance: state.pb!,
+          storeName: _storeName,
+          onOnlineStatusChange: (current) {
+            if (state.isOnline != current) {
+              state.isOnline = current;
+              state.notify();
+            }
+          },
+        );
+      }
 
       return () async {
         state.setLoadingIndicator("Synchronizing labworks");

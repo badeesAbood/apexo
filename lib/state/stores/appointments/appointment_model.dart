@@ -8,6 +8,7 @@ import '../../../pages/shared/week_calendar.dart';
 class Appointment extends AgendaItem {
   @override
   String? get avatar {
+    if (state.isDemo) return "https://thispersondoesnotexist.com/";
     if (imgs.isEmpty) return null;
     return imgs.first;
   }
@@ -83,7 +84,7 @@ class Appointment extends AgendaItem {
     return patient!.allAppointments.first == this;
   }
 
-  // id: id of the member (inherited from Model)
+  // id: id of the appointment (inherited from Model)
   // date: date (& time) of the member (inherited from AgendaItem)
   /* 1 */ List<String> operatorsIDs = [];
   /* 2 */ String? patientID;
