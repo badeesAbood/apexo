@@ -43,6 +43,7 @@ class GlobalActions extends ObservableObject {
         tooltip: "Synchronize",
         iconData: FluentIcons.sync,
         onPressed: () async {
+          if (state.isDemo) return;
           await resync();
         },
         badge: state.isSyncing > 0 ? "${state.isSyncing}" : syncCallbacks.length.toString(),
@@ -55,6 +56,7 @@ class GlobalActions extends ObservableObject {
         tooltip: "Reconnect",
         iconData: (state.isOnline && !state.proceededOffline) ? FluentIcons.streaming : FluentIcons.streaming_off,
         onPressed: () async {
+          if (state.isDemo) return;
           await state.activate(state.url, [state.token], true);
           for (var callback in reconnectCallbacks.values) {
             callback();
