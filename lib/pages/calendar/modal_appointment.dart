@@ -26,6 +26,7 @@ import 'package:image_picker/image_picker.dart';
 final paidController = TextEditingController();
 final priceController = TextEditingController();
 final postOpNotesController = TextEditingController();
+bool didNotEditPaidYet = true;
 
 openSingleAppointment({
   required BuildContext context,
@@ -39,6 +40,7 @@ openSingleAppointment({
   final o = pages.openAppointment;
   paidController.text = o.paid.toStringAsFixed(0);
   priceController.text = o.price.toStringAsFixed(0);
+  didNotEditPaidYet = true;
   postOpNotesController.text = o.postOpNotes;
   showTabbedModal(
       key: Key(o.id),
@@ -227,7 +229,9 @@ openSingleAppointment({
                       onChanged: (v) {
                         pages.openAppointment.price = double.tryParse(v) ?? 0;
                         pages.openAppointment.paid = double.tryParse(v) ?? 0;
-                        paidController.text = pages.openAppointment.paid.toStringAsFixed(0);
+                        if (didNotEditPaidYet) {
+                          paidController.text = pages.openAppointment.paid.toStringAsFixed(0);
+                        }
                         pages.openAppointment.isDone(true);
                         state.notify();
                       },
@@ -245,6 +249,7 @@ openSingleAppointment({
                       key: WK.fieldAppointmentPayment,
                       controller: paidController,
                       onChanged: (v) {
+                        didNotEditPaidYet = false;
                         pages.openAppointment.paid = double.tryParse(v) ?? 0;
                         pages.openAppointment.isDone(true);
                         state.notify();
