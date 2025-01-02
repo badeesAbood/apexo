@@ -2,6 +2,7 @@ import 'package:apexo/backend/utils/constants.dart';
 import 'package:apexo/backend/utils/encode.dart';
 import 'package:apexo/backend/utils/init_pocketbase.dart';
 import 'package:apexo/backend/utils/logger.dart';
+import 'package:apexo/backend/utils/versions.dart';
 import 'package:apexo/state/stores/doctors/doctor_model.dart';
 import 'package:apexo/state/stores/doctors/doctors_store.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Locale;
@@ -19,6 +20,11 @@ class AppState extends ObservablePersistingObject {
   AppState(super.identifier);
 
   String version = "";
+  String? latestVersion;
+
+  bool get newVersionAvailable {
+    return latestVersion != null && latestVersion != version;
+  }
 
   Map<String, void Function()> onOnline = {};
   Map<String, void Function()> onOffline = {};
@@ -268,6 +274,12 @@ class AppState extends ObservablePersistingObject {
       version = (await PackageInfo.fromPlatform()).version;
     } catch (_) {
       version = "0.0.0";
+    }
+
+    try {
+      latestVersion = (await getLatestVersion('alselawi', 'apexo-flutter', 'dist')).version;
+    } catch (e, s) {
+      logger("Could not get latest version: $e", s);
     }
 
     url = json["url"] ?? url;

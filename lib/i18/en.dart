@@ -335,5 +335,8 @@ class En {
     "firstLaunchDialogTitle": "Welcome to Apexo",
     "firstLaunchDialogContent":
         "You have successfully installed Apexo. However, for better experience and for real-world use, you'll have a couple of things to configure. Scan the QR code below to get started.",
+    "newVersionDialogTitle": "New version available",
+    "newVersionDialogContent":
+        "A new version of Apexo is available. Please update to the latest version to get the best experience. Scan the QR code below to get started.",
   };
 }

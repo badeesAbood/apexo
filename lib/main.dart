@@ -1,4 +1,6 @@
 import 'package:apexo/backend/utils/init_stores.dart';
+import 'package:apexo/pages/settings/window_backups.dart';
+import 'package:apexo/pages/shared/qrlink.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:logging/logging.dart';
@@ -40,52 +42,64 @@ class ApexoApp extends ObservingWidget {
         key: WK.fluentApp,
         locale: Locale(locale.s.$code),
         themeMode: ThemeMode.dark,
-        home: Builder(
-          key: WK.builder,
-          builder: (context) => PopScope(
-            canPop: false,
-            onPopInvoked: (_) => pages.goBack(),
-            child: NavigationView(
-              appBar: NavigationAppBar(
-                automaticallyImplyLeading: false,
-                title: state.loginActive ? Text(pages.currentPage.title) : Text(txt("login")),
-                leading: pages.history.isEmpty ? null : const BackButton(key: WK.backButton),
-                // ignore: prefer_const_constructors
-                actions: GlobalActions(key: WK.globalActions),
-              ),
-              content: state.loginActive ? null : const Login(key: WK.loginPage),
-              pane: state.loginActive != true
-                  ? null
-                  : NavigationPane(
-                      autoSuggestBox: const AuxiliarySection(key: WK.auxSection),
-                      autoSuggestBoxReplacement: const Icon(auxiliaryIcon),
-                      header: const AppLogo(),
-                      selected: pages.currentPageIndex,
-                      displayMode: PaneDisplayMode.auto,
-                      items: List<NavigationPaneItem>.from(pages.allPages.where((p) => p.onFooter != true).map(
-                            (page) => PaneItem(
-                              key: Key("${page.identifier}_page_button"),
-                              icon: page.accessible ? Icon(page.icon) : const Icon(FluentIcons.lock),
-                              body: page.accessible ? (page.body)() : const SizedBox(),
-                              title: Text(page.title),
-                              onTap: () => page.accessible ? pages.navigate(page) : null,
-                              enabled: page.accessible,
-                            ),
-                          )),
-                      footerItems: [
-                        ...pages.allPages.where((p) => p.onFooter == true).map(
+        home: Builder(builder: (BuildContext context) {
+          if (state.newVersionAvailable) {
+            Future.delayed(const Duration(milliseconds: 100), () {
+              if (!state.dialogShown) {
+                state.dialogShown = true;
+                if (context.mounted) {
+                  showDialog(context: context, builder: (BuildContext context) => const NewVersionDialog());
+                }
+              }
+            });
+          }
+          return Builder(
+            key: WK.builder,
+            builder: (context) => PopScope(
+              canPop: false,
+              onPopInvoked: (_) => pages.goBack(),
+              child: NavigationView(
+                appBar: NavigationAppBar(
+                  automaticallyImplyLeading: false,
+                  title: state.loginActive ? Text(pages.currentPage.title) : Text(txt("login")),
+                  leading: pages.history.isEmpty ? null : const BackButton(key: WK.backButton),
+                  // ignore: prefer_const_constructors
+                  actions: GlobalActions(key: WK.globalActions),
+                ),
+                content: state.loginActive ? null : const Login(key: WK.loginPage),
+                pane: state.loginActive != true
+                    ? null
+                    : NavigationPane(
+                        autoSuggestBox: const AuxiliarySection(key: WK.auxSection),
+                        autoSuggestBoxReplacement: const Icon(auxiliaryIcon),
+                        header: const AppLogo(),
+                        selected: pages.currentPageIndex,
+                        displayMode: PaneDisplayMode.auto,
+                        items: List<NavigationPaneItem>.from(pages.allPages.where((p) => p.onFooter != true).map(
                               (page) => PaneItem(
-                                icon: Icon(page.icon),
-                                body: (page.body)(),
+                                key: Key("${page.identifier}_page_button"),
+                                icon: page.accessible ? Icon(page.icon) : const Icon(FluentIcons.lock),
+                                body: page.accessible ? (page.body)() : const SizedBox(),
                                 title: Text(page.title),
-                                onTap: () => pages.navigate(page),
+                                onTap: () => page.accessible ? pages.navigate(page) : null,
+                                enabled: page.accessible,
                               ),
-                            ),
-                      ],
-                    ),
+                            )),
+                        footerItems: [
+                          ...pages.allPages.where((p) => p.onFooter == true).map(
+                                (page) => PaneItem(
+                                  icon: Icon(page.icon),
+                                  body: (page.body)(),
+                                  title: Text(page.title),
+                                  onTap: () => pages.navigate(page),
+                                ),
+                              ),
+                        ],
+                      ),
+              ),
             ),
-          ),
-        ));
+          );
+        }));
   }
 }
 
@@ -185,6 +199,33 @@ class BackButton extends ObservingWidget {
             icon: Icon(locale.s.$direction == Direction.rtl ? FluentIcons.forward : FluentIcons.back),
             onPressed: () => pages.goBack()),
       ),
+    );
+  }
+}
+
+class NewVersionDialog extends StatelessWidget {
+  const NewVersionDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ContentDialog(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(txt("newVersionDialogTitle")),
+          IconButton(icon: const Icon(FluentIcons.cancel), onPressed: () => Navigator.pop(context))
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(txt("newVersionDialogContent")),
+          const SizedBox(height: 10),
+          const QRLink(link: "https://apexo.app/#getting-started"),
+        ],
+      ),
+      style: dialogStyling(false),
+      actions: const [CloseButtonInDialog(buttonText: "close")],
     );
   }
 }
