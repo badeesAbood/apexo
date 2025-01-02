@@ -35,7 +35,7 @@ class ExpensesPage extends ObservingWidget {
                     openSingleReceipt(
                         context: context, json: {}, title: txt("newReceipt"), onSave: expenses.set, editing: false);
                   },
-                  icon: FluentIcons.manufacturing,
+                  icon: FluentIcons.bill,
                   title: txt("add"),
                 ),
                 archiveSelected(expenses)
