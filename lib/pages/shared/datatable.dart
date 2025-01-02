@@ -424,17 +424,19 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
             Expanded(
               child: Builder(
                 builder: (context) => CommandBar(
-                  primaryItems: widget.actions
-                      .map((a) => CommandBarButton(
-                          onPressed: () {
-                            if (Navigator.canPop(context)) {
-                              Navigator.pop(context);
-                            }
-                            a.callback(checkedIds.toList());
-                          },
-                          label: a.child ?? (a.title != null ? Text(a.title!) : null),
-                          icon: Icon(a.icon)))
-                      .toList(),
+                  primaryItems: List.generate(widget.actions.length, (index) {
+                    final action = widget.actions[index];
+                    return CommandBarButton(
+                      onPressed: () {
+                        if (Navigator.canPop(context)) {
+                          Navigator.pop(context);
+                        }
+                        action.callback(checkedIds.toList());
+                      },
+                      label: action.child ?? (action.title != null ? Text(action.title!) : null),
+                      icon: Icon(action.icon),
+                    );
+                  }),
                   overflowBehavior: CommandBarOverflowBehavior.dynamicOverflow,
                 ),
               ),
