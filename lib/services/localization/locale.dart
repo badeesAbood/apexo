@@ -8,10 +8,7 @@ class _Localization {
   List<En> list = [En(), Ar()];
   final selectedLocale = ObservableState(0);
   En get s => list[selectedLocale()];
-
-  void setSelected(int index) {
-    selectedLocale(index);
-  }
+  void setSelected(int index) => selectedLocale(index);
 }
 
 final locale = _Localization();
