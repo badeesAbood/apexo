@@ -41,7 +41,6 @@ class Labworks extends Store<Labwork> {
         if (docs.isEmpty) setAll(demoLabworks(25));
       } else {
         remote = SaveRemote(
-          baseUrl: login.url,
           pbInstance: login.pb!,
           storeName: _storeName,
           onOnlineStatusChange: (current) {

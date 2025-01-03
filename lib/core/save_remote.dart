@@ -36,7 +36,6 @@ class VersionedResult {
 class SaveRemote {
   final String storeName;
   final PocketBase pbInstance;
-  final String baseUrl;
 
   // timer to debounce online status checks
   Timer? timer;
@@ -48,7 +47,6 @@ class SaveRemote {
   SaveRemote({
     required this.storeName,
     required this.pbInstance,
-    required this.baseUrl,
     this.onOnlineStatusChange,
   }) {
     checkOnline();
@@ -267,7 +265,7 @@ class SaveRemote {
       if (candidates.isEmpty) {
         return null;
       } else {
-        return "$baseUrl/api/files/$dataCollectionName/$rowID/${candidates.first}";
+        return "${pbInstance.baseURL}/api/files/$dataCollectionName/$rowID/${candidates.first}";
       }
     } catch (e) {
       await checkOnline();

@@ -95,7 +95,6 @@ class Appointments extends Store<Appointment> {
         if (docs.isEmpty) setAll(demoAppointments(1000));
       } else {
         remote = SaveRemote(
-          baseUrl: login.url,
           pbInstance: login.pb!,
           storeName: _storeName,
           onOnlineStatusChange: (current) {

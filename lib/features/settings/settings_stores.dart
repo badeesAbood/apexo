@@ -59,7 +59,6 @@ class GlobalSettings extends Store<Setting> {
       await deleteMemoryAndLoadFromPersistence();
 
       remote = SaveRemote(
-        baseUrl: login.url,
         pbInstance: login.pb!,
         storeName: _storeNameGlobal,
         onOnlineStatusChange: (current) {

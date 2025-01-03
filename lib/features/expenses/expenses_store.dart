@@ -40,7 +40,6 @@ class Expenses extends Store<Expense> {
         if (docs.isEmpty) setAll(demoExpenses(100));
       } else {
         remote = SaveRemote(
-          baseUrl: login.url,
           pbInstance: login.pb!,
           storeName: _storeName,
           onOnlineStatusChange: (current) {

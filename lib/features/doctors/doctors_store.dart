@@ -39,7 +39,6 @@ class Doctors extends Store<Doctor> {
         if (docs.isEmpty) setAll(demoDoctors(5));
       } else {
         remote = SaveRemote(
-          baseUrl: login.url,
           pbInstance: login.pb!,
           storeName: _storeName,
           onOnlineStatusChange: (current) {
