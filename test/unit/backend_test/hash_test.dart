@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:apexo/backend/utils/hash.dart';
+import 'package:apexo/utils/hash.dart';
 
 void main() {
   group('simpleHash', () {

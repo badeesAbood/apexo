@@ -13,9 +13,9 @@ class LabworksIntegrationTest extends IntegrationTestBase {
   @override
   Map<String, Future<Null> Function()> get tests => {
         "01: Should move to labworks page": () async {
-          await tester.tap(find.byKey(const Key('labworks_page_button')));
+          await tester.tap(find.byKey(const Key('labworks_screen_button')));
           await tester.pumpAndSettle();
-          expect(find.byKey(WK.labworksPage), findsOneWidget);
+          expect(find.byKey(WK.labworksScreen), findsOneWidget);
         },
         "02: should add labwork with the necessary details": () async {
           await tester.tap(find.text("Add"));

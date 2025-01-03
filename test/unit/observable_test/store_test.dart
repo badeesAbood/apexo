@@ -1,9 +1,9 @@
-import 'package:apexo/backend/observable/save_remote.dart';
-import 'package:apexo/backend/utils/uuid.dart';
+import 'package:apexo/core/save_remote.dart';
+import 'package:apexo/utils/uuid.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:apexo/backend/observable/store.dart';
-import 'package:apexo/backend/observable/model.dart';
-import 'package:apexo/backend/observable/save_local.dart';
+import 'package:apexo/core/store.dart';
+import 'package:apexo/core/model.dart';
+import 'package:apexo/core/save_local.dart';
 import 'package:pocketbase/pocketbase.dart';
 import '../../test_utils.dart';
 

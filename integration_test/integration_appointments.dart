@@ -1,8 +1,8 @@
-import 'package:apexo/i18/index.dart';
-import 'package:apexo/pages/index.dart';
-import 'package:apexo/pages/shared/acrylic_title.dart';
-import 'package:apexo/pages/shared/appointment_card.dart';
-import 'package:apexo/pages/shared/archive_toggle.dart';
+import 'package:apexo/app/routes.dart';
+import 'package:apexo/services/localization/locale.dart';
+import 'package:apexo/common_widgets/acrylic_title.dart';
+import 'package:apexo/common_widgets/appointment_card.dart';
+import 'package:apexo/common_widgets/archive_toggle.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,7 +28,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           expect(find.text(txt("noAppointmentsFound")), findsOneWidget);
           await tester.tap(find.text('New Appointment'));
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.byType(AppointmentCard), findsOneWidget);
         },
@@ -51,22 +51,22 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
         "03: Side Icons: Archived icon": () async {
           await tester.tap(find.byIcon(FluentIcons.edit));
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Archive");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Archive");
           await tester.pumpAndSettle();
           expect(find.byType(AppointmentCard), findsNothing);
           await tester
-              .tap(find.descendant(of: find.byKey(Key(pages.openPatient.id)), matching: find.byType(ArchiveToggle)));
+              .tap(find.descendant(of: find.byKey(Key(routes.openPatient.id)), matching: find.byType(ArchiveToggle)));
           await tester.pumpAndSettle();
           expect(find.byType(AppointmentCard), findsOneWidget);
           expect(find.descendant(of: find.byKey(WK.acSideIcons), matching: find.byIcon(FluentIcons.archive)),
               findsOneWidget);
           await tester.tap(find.byIcon(FluentIcons.edit));
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Restore");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Restore");
           await tester.pumpAndSettle();
           expect(find.byType(AppointmentCard), findsOneWidget);
           await tester
-              .tap(find.descendant(of: find.byKey(Key(pages.openPatient.id)), matching: find.byType(ArchiveToggle)));
+              .tap(find.descendant(of: find.byKey(Key(routes.openPatient.id)), matching: find.byType(ArchiveToggle)));
           expect(find.byType(AppointmentCard), findsOneWidget);
           expect(find.descendant(of: find.byKey(WK.acSideIcons), matching: find.byIcon(FluentIcons.archive)),
               findsNothing);
@@ -82,7 +82,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           await tester.tap(find.widgetWithText(GestureDetector, 'OK'));
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.byType(AppointmentCard), findsOneWidget);
           expect(
@@ -101,7 +101,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           await tester.tap(find.widgetWithText(GestureDetector, 'OK'));
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.byType(AppointmentCard), findsOneWidget);
           expect(
@@ -116,7 +116,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.enterText(find.byKey(WK.fieldAppointmentPrice), "100");
           await tester.enterText(find.byKey(WK.fieldAppointmentPayment), "50");
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.byType(AppointmentCard), findsOneWidget);
           expect(find.descendant(of: find.byKey(WK.acSideIcons), matching: find.byIcon(FluentIcons.money)),
@@ -128,7 +128,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.enterText(find.byKey(WK.fieldAppointmentPrice), "100");
           await tester.enterText(find.byKey(WK.fieldAppointmentPayment), "100");
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.byType(AppointmentCard), findsOneWidget);
           expect(
@@ -146,7 +146,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           await TestUtils.enterTime(tester, 6, 30, true);
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.byType(AppointmentCard), findsOneWidget);
           expect(find.text("${DateFormat("E d/MM yyyy").format(d)} - 06:30 AM"), findsOneWidget);
@@ -157,7 +157,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           await TestUtils.enterTime(tester, 7, 45, false);
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.byType(AppointmentCard), findsOneWidget);
           expect(find.text("${DateFormat("E d/MM yyyy").format(d)} - 07:45 PM"), findsOneWidget);
@@ -170,7 +170,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           await TestUtils.tapFromTagInput(tester, "Ali A. Saleem");
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
 
           expect(find.text("Doctors"), findsOneWidget);
@@ -182,7 +182,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           await TestUtils.tapFromTagInput(tester, "Alia A. Saleem");
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.text("Doctors"), findsOneWidget);
           expect(find.widgetWithText(AcrylicTitle, "Ali A. Saleem"), findsOneWidget);
@@ -198,7 +198,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           await TestUtils.tapFromTagInput(tester, "Dina Ismail");
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
 
           await tester.pumpAndSettle();
           expect(find.text("Doctors"), findsOneWidget);
@@ -212,7 +212,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           await tester.enterText(find.byKey(WK.fieldAppointmentPreOpNotes), "test pre-op notes");
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.text("Pre-op notes"), findsOneWidget);
           expect(find.text("test pre-op notes"), findsOneWidget);
@@ -225,7 +225,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           await tester.enterText(find.byKey(WK.fieldAppointmentPostOpNotes), "test operative details");
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.text("Post-op notes"), findsOneWidget);
           expect(find.text("test operative details"), findsOneWidget);
@@ -242,7 +242,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           expect(find.text("Print Prescription"), findsOneWidget);
           await TestUtils.inputTag(tester, WK.fieldAppointmentPrescriptions, "Paracetamol 500mg");
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.text("Prescription"), findsOneWidget);
           expect(find.text("Amoxicillin-500mg\nParacetamol-500mg"), findsOneWidget);
@@ -276,7 +276,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           expect(find.text("Print Prescription"), findsOneWidget);
 
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.text("Prescription"), findsNWidgets(2));
           expect(find.text("Amoxicillin-500mg\nParacetamol-500mg"), findsNWidgets(2));
@@ -289,7 +289,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           await TestUtils.enterTime(tester, 12, 00, true);
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.text("After 2 days"), findsOneWidget);
         },
@@ -300,7 +300,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
             if (editIcons.evaluate().isEmpty) break;
             await tester.tap(editIcons.at(0));
             await tester.pumpAndSettle();
-            await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Archive");
+            await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Archive");
             await tester.pumpAndSettle();
           }
           expect(find.byType(AppointmentCard), findsNothing);
@@ -322,7 +322,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
             await tester.pumpAndSettle();
             await TestUtils.enterDate(tester, date.year, date.month, date.day);
             await tester.pumpAndSettle();
-            await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+            await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
             await tester.pumpAndSettle();
           }
           final diff = find
@@ -348,7 +348,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
               .byType(AppointmentCard)
               .evaluate()
               .map((e) => e.widget as AppointmentCard)
-              .map((e) => e.appointment.date().toIso8601String().split("T").first)
+              .map((e) => e.appointment.date.toIso8601String().split("T").first)
               .toList();
 
           expect(
@@ -369,7 +369,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
             if (editIcons.evaluate().isEmpty) break;
             await tester.tap(editIcons.at(0));
             await tester.pumpAndSettle();
-            await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Archive");
+            await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Archive");
             await tester.pumpAndSettle();
           }
           expect(find.byType(AppointmentCard), findsNothing);
@@ -382,7 +382,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.enterText(find.byKey(WK.fieldAppointmentPrice), "10");
           await tester.enterText(find.byKey(WK.fieldAppointmentPayment), "5");
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.byType(PaymentPill), findsNWidgets(3));
           expect((find.byType(PaymentPill).evaluate().elementAt(0).widget as PaymentPill).title, "Price");
@@ -399,7 +399,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.enterText(find.byKey(WK.fieldAppointmentPrice), "10");
           await tester.enterText(find.byKey(WK.fieldAppointmentPayment), "10");
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.byType(PaymentPill), findsNWidgets(2));
           expect((find.byType(PaymentPill).evaluate().elementAt(0).widget as PaymentPill).title, "Price");
@@ -414,7 +414,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.enterText(find.byKey(WK.fieldAppointmentPrice), "5");
           await tester.enterText(find.byKey(WK.fieldAppointmentPayment), "10");
           await tester.pumpAndSettle();
-          await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
+          await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.byType(PaymentPill), findsNWidgets(3));
           expect((find.byType(PaymentPill).evaluate().elementAt(0).widget as PaymentPill).title, "Price");
@@ -434,7 +434,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
             if (editIcons.evaluate().isEmpty) break;
             await tester.tap(editIcons.at(0));
             await tester.pumpAndSettle();
-            await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Archive");
+            await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Archive");
             await tester.pumpAndSettle();
           }
           await tester.tap(find.byKey(const Key('closeModal')));

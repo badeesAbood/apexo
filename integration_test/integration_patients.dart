@@ -1,5 +1,5 @@
-import 'package:apexo/pages/shared/acrylic_title.dart';
-import 'package:apexo/pages/shared/datatable.dart';
+import 'package:apexo/common_widgets/acrylic_title.dart';
+import 'package:apexo/common_widgets/datatable.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
@@ -70,9 +70,9 @@ class PatientsIntegrationTest extends IntegrationTestBase {
   @override
   Map<String, Future<Null> Function()> get tests => {
         '01: Move to patients page++': () async {
-          await tester.tap(find.byKey(const Key('patients_page_button')));
+          await tester.tap(find.byKey(const Key('patients_screen_button')));
           await tester.pumpAndSettle();
-          expect(find.byKey(WK.patientsPage), findsOneWidget);
+          expect(find.byKey(WK.patientsScreen), findsOneWidget);
         },
         "02: should add patients++": () async {
           for (var patient in patientsFirstSet) {
@@ -125,13 +125,13 @@ class PatientsIntegrationTest extends IntegrationTestBase {
           }
         },
         "03: Filtering by pills": () async {
-          await tester.tap(find.byKey(const Key('doctors_page_button')));
+          await tester.tap(find.byKey(const Key('doctors_screen_button')));
           await tester.pumpAndSettle();
-          expect(find.byKey(WK.doctorsPage), findsOneWidget);
+          expect(find.byKey(WK.doctorsScreen), findsOneWidget);
 
-          await tester.tap(find.byKey(const Key('patients_page_button')));
+          await tester.tap(find.byKey(const Key('patients_screen_button')));
           await tester.pumpAndSettle();
-          expect(find.byKey(WK.patientsPage), findsOneWidget);
+          expect(find.byKey(WK.patientsScreen), findsOneWidget);
 
           await tester.tap(find.widgetWithText(DataTablePill, "parent").first);
           await tester.pumpAndSettle();

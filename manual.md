@@ -137,13 +137,13 @@ After creating some patients and appointments, you can see some statistics about
 
 ### Manage labworks
 
-This page has been designed to track labworks, their date, and whether they are delivered or not, paid or not.
+This screen has been designed to track labworks, their date, and whether they are delivered or not, paid or not.
 
 Each labwork can be tied to a specific patient, and specific doctor.
 
 ### Manage expenses and receipts
 
-You can also track expenses and receipts. In the expenses page add receipts that can hold information such as the date, amount, description, items, and more.
+You can also track expenses and receipts. In the expenses screen add receipts that can hold information such as the date, amount, description, items, and more.
 
 ### Setting
 

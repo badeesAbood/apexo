@@ -1,7 +1,7 @@
-import 'package:apexo/backend/utils/init_stores.dart';
-import 'package:apexo/backend/utils/logger.dart';
+import 'package:apexo/utils/init_stores.dart';
+import 'package:apexo/utils/logger.dart';
 import 'package:apexo/main.dart';
-import 'package:apexo/state/state.dart';
+import 'package:apexo/services/login.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';

@@ -4,21 +4,21 @@ import 'package:flutter/foundation.dart';
 class WK {
   static const fluentApp = Key("fluentApp");
   static const builder = Key("builder");
-  static const loginPage = Key("loginPage");
-  static const dashboardPage = Key("dashboardPage");
-  static const doctorsPage = Key("doctorsPage");
-  static const patientsPage = Key("patientsPage");
-  static const calendarPage = Key("calendarPage");
-  static const labworksPage = Key("labworksPage");
-  static const settingsPage = Key("settingsPage");
-  static const expensesPage = Key("expensesPage");
+  static const loginScreen = Key("loginScreen");
+  static const dashboardScreen = Key("dashboardScreen");
+  static const doctorsScreen = Key("doctorsScreen");
+  static const patientsScreen = Key("patientsScreen");
+  static const calendarScreen = Key("calendarScreen");
+  static const labworksScreen = Key("labworksScreen");
+  static const settingsScreen = Key("settingsScreen");
+  static const expensesScreen = Key("expensesScreen");
   static const serverField = Key("serverField");
   static const emailField = Key("emailField");
   static const passwordField = Key("passwordField");
   static const globalActions = Key("globalActions");
   static const backButton = Key("backButton");
   static const appLogo = Key("appLogo");
-  static const auxSection = Key("auxiliarySection");
+  static const currentUserSection = Key("currentUserSection");
   static const version = Key("version");
   static const loginLangComboBox = Key("loginLangComboBox");
   static const loginTab = Key("loginTab");
@@ -80,4 +80,5 @@ class WK {
   static const calendarSelected = Key("calendarSelected");
   static const calendarAppointmentTile = Key("calendarAppointmentTile");
   static const calendarDayButton = Key("calendarDayButton");
+  static const tabbedModalActions = Key("tabbedModalActions");
 }

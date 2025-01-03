@@ -1,8 +1,8 @@
 import 'package:apexo/pages/index.dart';
-import 'package:apexo/pages/shared/acrylic_title.dart';
-import 'package:apexo/pages/shared/appointment_card.dart';
-import 'package:apexo/pages/shared/archive_toggle.dart';
-import 'package:apexo/state/stores/doctors/doctors_store.dart';
+import 'package:apexo/common_widgets/acrylic_title.dart';
+import 'package:apexo/common_widgets/appointment_card.dart';
+import 'package:apexo/common_widgets/archive_toggle.dart';
+import 'package:apexo/features/doctors/doctors_store.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,9 +18,9 @@ class DoctorsPageIntegrationTest extends IntegrationTestBase {
   @override
   Map<String, Future<Null> Function()> get tests => {
         "01: Should move to doctors page++": () async {
-          await tester.tap(find.byKey(const Key('doctors_page_button')));
+          await tester.tap(find.byKey(const Key('doctors_screen_button')));
           await tester.pumpAndSettle();
-          expect(find.byKey(WK.doctorsPage), findsOneWidget);
+          expect(find.byKey(WK.doctorsScreen), findsOneWidget);
         },
         "02: should add doctors++": () async {
           await tester.tap(find.widgetWithText(GestureDetector, 'Add'));

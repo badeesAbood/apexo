@@ -9,7 +9,7 @@
 
 -   Web demo setup
 -   Splash screen for web
--   Fixed issue with statistics page done & missed chart
+-   Fixed issue with statistics screen done & missed chart
 
 
 ### ____0.2.3____

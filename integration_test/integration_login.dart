@@ -1,4 +1,4 @@
-import 'package:apexo/i18/index.dart';
+import 'package:apexo/services/localization/index.dart';
 import 'package:apexo/main.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
@@ -35,12 +35,12 @@ class LoginPageIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           await tester.tap(find.byKey(WK.btnLogin));
           await tester.pumpAndSettle();
-          expect(find.byKey(WK.dashboardPage), findsOneWidget);
+          expect(find.byKey(WK.dashboardScreen), findsOneWidget);
         },
         '03: Logout': () async {
           await tester.tap(find.byKey(WK.btnLogout));
           await tester.pumpAndSettle();
-          expect(find.byKey(WK.loginPage), findsOneWidget);
+          expect(find.byKey(WK.loginScreen), findsOneWidget);
         },
         '04: Failed login': () async {
           await tester.tap(find.widgetWithText(ClipRect, 'Login'));
@@ -68,7 +68,7 @@ class LoginPageIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           await tester.tap(find.byKey(WK.btnLogin));
           await tester.pumpAndSettle();
-          expect(find.byKey(WK.dashboardPage), findsOneWidget);
+          expect(find.byKey(WK.dashboardScreen), findsOneWidget);
         },
         '07: Logged in and showing email': () async {
           expect(find.text(testPBEmail), findsOneWidget);
@@ -78,7 +78,7 @@ class LoginPageIntegrationTest extends IntegrationTestBase {
           // and I can't figure out a way to actually restart the application
           await tester.pumpWidget(const ApexoApp());
           await tester.pumpAndSettle();
-          expect(find.byKey(WK.dashboardPage), findsOneWidget);
+          expect(find.byKey(WK.dashboardScreen), findsOneWidget);
           expect(find.text('alielselawi@gmail.com'), findsOneWidget);
         },
       };

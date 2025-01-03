@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:apexo/backend/utils/get_deterministic_item.dart';
+import 'package:apexo/utils/get_deterministic_item.dart';
 
 void main() {
   group('getDeterministicItem', () {

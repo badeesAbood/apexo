@@ -1,5 +1,5 @@
 import 'package:apexo/backend/observable/observable.dart';
-import 'package:apexo/i18/index.dart';
+import 'package:apexo/services/localization/index.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -10,13 +10,13 @@ void main() {
       locale.observe((e) {
         count++;
       });
-      expect(locale.selectedIndex, 0);
+      expect(locale.selectedLocale, 0);
       locale.setSelected(1);
-      expect(locale.selectedIndex, 1);
+      expect(locale.selectedLocale, 1);
       await Future.delayed(const Duration(milliseconds: 10));
       expect(count, 1);
       locale.setSelected(0);
-      expect(locale.selectedIndex, 0);
+      expect(locale.selectedLocale, 0);
       await Future.delayed(const Duration(milliseconds: 10));
       expect(count, 2);
     });

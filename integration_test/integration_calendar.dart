@@ -1,9 +1,9 @@
-import 'package:apexo/i18/index.dart';
+import 'package:apexo/services/localization/index.dart';
 import 'package:apexo/pages/index.dart';
-import 'package:apexo/pages/shared/acrylic_title.dart';
-import 'package:apexo/pages/shared/date_time_picker.dart';
-import 'package:apexo/pages/shared/week_calendar.dart';
-import 'package:apexo/state/stores/appointments/appointment_model.dart';
+import 'package:apexo/common_widgets/acrylic_title.dart';
+import 'package:apexo/common_widgets/date_time_picker.dart';
+import 'package:apexo/features/appointments/calendar_widget.dart';
+import 'package:apexo/features/appointments/appointment_model.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,11 +20,11 @@ class CalendarIntegrationTest extends IntegrationTestBase {
   @override
   Map<String, Future<Null> Function()> get tests => {
         "01: Should move to calendar page": () async {
-          await tester.tap(find.byKey(const Key('calendar_page_button')));
+          await tester.tap(find.byKey(const Key('calendar_screen_button')));
           await tester.pumpAndSettle();
-          await tester.tap(find.byKey(const Key('calendar_page_button')));
+          await tester.tap(find.byKey(const Key('calendar_screen_button')));
           await tester.pumpAndSettle();
-          expect(find.byKey(WK.calendarPage), findsOneWidget);
+          expect(find.byKey(WK.calendarScreen), findsOneWidget);
           expect(find.text(DateFormat("dd MMMM / yyyy").format(DateTime.now())), findsOneWidget);
         },
         "02: add button should work": () async {
@@ -108,11 +108,11 @@ class CalendarIntegrationTest extends IntegrationTestBase {
               break;
             }
           }
-          await tester.tap(find.byKey(const Key('doctors_page_button')));
+          await tester.tap(find.byKey(const Key('doctors_screen_button')));
           await tester.pumpAndSettle();
-          await tester.tap(find.byKey(const Key('calendar_page_button')));
+          await tester.tap(find.byKey(const Key('calendar_screen_button')));
           await tester.pumpAndSettle();
-          expect(find.byKey(WK.calendarPage), findsOneWidget);
+          expect(find.byKey(WK.calendarScreen), findsOneWidget);
           expect(find.text(DateFormat("dd MMMM / yyyy").format(DateTime.now())), findsOneWidget);
         },
         "05: Selecting a date should be reflected on title bar and 'Add'": () async {
@@ -184,9 +184,9 @@ class CalendarIntegrationTest extends IntegrationTestBase {
         },
         "09: Calendar tiles": () async {
           // just to reset the selected date to today
-          await tester.tap(find.byKey(const Key('doctors_page_button')));
+          await tester.tap(find.byKey(const Key('doctors_screen_button')));
           await tester.pumpAndSettle();
-          await tester.tap(find.byKey(const Key('calendar_page_button')));
+          await tester.tap(find.byKey(const Key('calendar_screen_button')));
           await tester.pumpAndSettle();
 
           final tiles = find.byKey(WK.calendarAppointmentTile);

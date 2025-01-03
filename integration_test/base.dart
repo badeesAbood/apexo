@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:apexo/backend/utils/logger.dart';
+import 'package:apexo/utils/logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Map<String, List<String>> passedTests = {};

@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:apexo/backend/observable/save_local.dart';
-import 'package:apexo/backend/observable/save_remote.dart';
-import 'package:apexo/backend/utils/init_pocketbase.dart';
-import 'package:apexo/backend/utils/logger.dart';
-import 'package:apexo/backend/utils/safe_dir.dart';
+import 'package:apexo/core/save_local.dart';
+import 'package:apexo/core/save_remote.dart';
+import 'package:apexo/utils/init_pocketbase.dart';
+import 'package:apexo/utils/logger.dart';
+import 'package:apexo/utils/safe_dir.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

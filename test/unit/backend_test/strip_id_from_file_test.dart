@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:apexo/backend/utils/strip_id_from_file.dart';
+import 'package:apexo/utils/strip_id_from_file.dart';
 
 void main() {
   group('stripIDFromFileName', () {

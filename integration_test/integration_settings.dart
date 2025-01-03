@@ -12,9 +12,9 @@ class SettingsIntegrationTest extends IntegrationTestBase {
   @override
   Map<String, Future<Null> Function()> get tests => {
         "01: Should move to settings page": () async {
-          await tester.tap(find.byKey(const Key('settings_page_button')));
+          await tester.tap(find.byKey(const Key('settings_screen_button')));
           await tester.pumpAndSettle();
-          expect(find.byKey(WK.settingsPage), findsOneWidget);
+          expect(find.byKey(WK.settingsScreen), findsOneWidget);
         },
         "02: Should be able to change currency": () async {
           await tester.tap(find.widgetWithText(GestureDetector, 'Currency'));
@@ -23,9 +23,9 @@ class SettingsIntegrationTest extends IntegrationTestBase {
           await tester.pump(const Duration(seconds: 1));
           await tester.tap(find.text("Save"));
           await tester.pump(const Duration(seconds: 1));
-          await tester.tap(find.byKey(const Key('calendar_page_button')));
+          await tester.tap(find.byKey(const Key('calendar_screen_button')));
           await tester.pump(const Duration(seconds: 1));
-          expect(find.byKey(WK.calendarPage), findsOneWidget);
+          expect(find.byKey(WK.calendarScreen), findsOneWidget);
           await tester.tap(find.widgetWithText(GestureDetector, 'Add'));
           await tester.pump(const Duration(seconds: 1));
           expect(find.text("New Patient"), findsOneWidget);
@@ -35,7 +35,7 @@ class SettingsIntegrationTest extends IntegrationTestBase {
           expect(find.text("Price in CCH"), findsOneWidget);
           await tester.tap(find.text("Cancel"));
           await tester.pump(const Duration(seconds: 1));
-          await tester.tap(find.byKey(const Key('settings_page_button')));
+          await tester.tap(find.byKey(const Key('settings_screen_button')));
           await tester.pump(const Duration(seconds: 1));
         },
         "03: should change language": () async {

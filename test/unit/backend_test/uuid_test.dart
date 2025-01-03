@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:apexo/backend/utils/uuid.dart';
+import 'package:apexo/utils/uuid.dart';
 
 void main() {
   group('uuid', () {
@@ -26,7 +26,5 @@ void main() {
       final id = uuid();
       expect(id.isNotEmpty, isTrue);
     });
-
-    
   });
 }

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:apexo/backend/utils/encode.dart';
+import 'package:apexo/utils/encode.dart';
 
 void main() {
   group('Encode and Decode Tests', () {
