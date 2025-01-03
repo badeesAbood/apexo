@@ -51,13 +51,13 @@ class Store<G extends Model> {
   bool deferredPresent = false;
   int lastProcessChanges = 0;
   bool? manualSyncOnly;
-  ObservableState isDemo;
-  ObservableState showArchived;
+  ObservableState<bool>? isDemo;
+  ObservableState<bool>? showArchived;
 
   Store({
     required this.modeling,
-    required this.isDemo,
-    required this.showArchived,
+    this.isDemo,
+    this.showArchived,
     this.local,
     this.remote,
     this.debounceMS = 100,
@@ -114,7 +114,7 @@ class Store<G extends Model> {
   }
 
   _processChanges() async {
-    if (isDemo()) notify();
+    if (isDemo?.call() ?? false) notify();
 
     if (local == null) {
       return;
@@ -183,7 +183,7 @@ class Store<G extends Model> {
   }
 
   Future<SyncResult> _syncTry() async {
-    if (isDemo()) return SyncResult(exception: "sync is disabled in demo mode");
+    if (isDemo?.call() ?? false) return SyncResult(exception: "sync is disabled in demo mode");
     if (local == null || remote == null) {
       return SyncResult(exception: "local/remote persistence layers are not defined");
     }
@@ -423,8 +423,8 @@ class Store<G extends Model> {
   }
 
   Map<String, G> get present {
-    return Map<String, G>.fromEntries(
-        docs.entries.where((entry) => (showArchived() || entry.value.archived != true) && entry.value.locked != true));
+    return Map<String, G>.fromEntries(docs.entries.where(
+        (entry) => ((showArchived?.call() ?? false) || entry.value.archived != true) && entry.value.locked != true));
   }
 
   bool has(String id) {
