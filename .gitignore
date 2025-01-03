@@ -12,7 +12,7 @@ migrate_working_dir/
 stest.dart
 apexo-files/
 test/secret.dart
-
+test.jpg
 # IntelliJ related
 *.iml
 *.ipr
