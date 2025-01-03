@@ -1,22 +1,22 @@
-import 'package:apexo/backend/observable/observable.dart';
-import 'package:apexo/services/localization/index.dart';
+import 'package:apexo/core/observable.dart';
+import 'package:apexo/services/localization/locale.dart';
 import 'package:test/test.dart';
 
 void main() {
   group("Internationalization", () {
-    test("i18 class is observable", () async {
-      expect(locale, isA<ObservableObject>());
+    test("is observable", () async {
+      expect(locale.selectedLocale, isA<ObservableState>());
       int count = 0;
-      locale.observe((e) {
+      locale.selectedLocale.observe((e) {
         count++;
       });
-      expect(locale.selectedLocale, 0);
+      expect(locale.selectedLocale(), 0);
       locale.setSelected(1);
-      expect(locale.selectedLocale, 1);
+      expect(locale.selectedLocale(), 1);
       await Future.delayed(const Duration(milliseconds: 10));
       expect(count, 1);
       locale.setSelected(0);
-      expect(locale.selectedLocale, 0);
+      expect(locale.selectedLocale(), 0);
       await Future.delayed(const Duration(milliseconds: 10));
       expect(count, 2);
     });

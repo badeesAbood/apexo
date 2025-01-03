@@ -86,7 +86,7 @@ class TestUtils {
 
   // Pocketbase and local hive setup
 
-  static final SaveLocal local = SaveLocal("test");
+  static final SaveLocal local = SaveLocal(name: "test", uniqueId: "test");
   static final SaveRemote remote = SaveRemote(storeName: "test", pbInstance: pb);
   static final pb = PocketBase(testPBServer);
   static Future<void> deleteRemoteData() async {

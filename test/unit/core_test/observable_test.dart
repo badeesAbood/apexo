@@ -1,6 +1,6 @@
-import 'package:apexo/backend/observable/model.dart';
+import 'package:apexo/core/model.dart';
+import 'package:apexo/core/observable.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:apexo/backend/observable/observable.dart';
 
 void main() {
   group("observable", () {

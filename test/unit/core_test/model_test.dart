@@ -1,5 +1,5 @@
+import 'package:apexo/core/model.dart';
 import 'package:test/test.dart';
-import 'package:apexo/backend/observable/model.dart';
 
 void main() {
   group("Model", () {
