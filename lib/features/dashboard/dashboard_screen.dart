@@ -100,10 +100,10 @@ class DashboardScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(15),
         child: StreamBuilder(
-            stream: dashboardCtrl.stream,
+            stream: dashboardCtrl.currentOpenTab.stream,
             builder: (context, snapshot) {
               return TabView(
-                currentIndex: dashboardCtrl.currentOpenTab,
+                currentIndex: dashboardCtrl.currentOpenTab(),
                 closeButtonVisibility: CloseButtonVisibilityMode.never,
                 header: const SizedBox(width: 5),
                 footer: IconButton(
@@ -112,7 +112,7 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   onPressed: () => routes.navigate(routes.getByIdentifier("statistics")!),
                 ),
-                onChanged: dashboardCtrl.openTab,
+                onChanged: (i) => dashboardCtrl.currentOpenTab(i),
                 tabs: [
                   Tab(
                     text: Txt(txt("appointments")),

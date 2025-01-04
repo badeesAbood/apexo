@@ -2,7 +2,7 @@ import 'package:apexo/core/observable.dart';
 import 'package:apexo/features/appointments/appointment_model.dart';
 import 'package:apexo/features/appointments/appointments_store.dart';
 
-class _DashboardController extends ObservableObject {
+class _DashboardController {
   _DashboardController() {
     appointments.observableMap.observe((e) {
       // nullify the cache
@@ -11,11 +11,7 @@ class _DashboardController extends ObservableObject {
     });
   }
 
-  int currentOpenTab = 0;
-  openTab(int tab) {
-    currentOpenTab = tab;
-    notify();
-  }
+  final currentOpenTab = ObservableState(0);
 
   List<Appointment>? _thisMonthAppointments;
   List<Appointment> get thisMonthAppointments {
