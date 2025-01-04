@@ -109,7 +109,7 @@ openSinglePatient({
                     value: routes.openPatient.gender,
                     onChanged: (value) {
                       routes.openPatient.gender = value ?? routes.openPatient.gender;
-                      state.notify();
+                      state.rebuildSheet();
                     },
                   ),
                 ),
@@ -201,7 +201,7 @@ TabbedModal appointmentsTab(BuildContext context) {
     closable: true,
     spacing: 0,
     padding: 0,
-    headerToggle: (state) => ArchiveToggle(notifier: state.notify),
+    headerToggle: (state) => ArchiveToggle(notifier: state.rebuildSheet),
     content: (state) => routes.openPatient.allAppointments.isEmpty
         ? [
             InfoBar(title: Txt(txt("noAppointmentsFound"))),

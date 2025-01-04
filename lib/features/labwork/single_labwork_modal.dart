@@ -53,7 +53,7 @@ openSingleLabwork({
                   value: o.patientID,
                   onChanged: (id) {
                     o.patientID = id;
-                    state.notify();
+                    state.rebuildSheet();
                   }),
             ),
             InfoLabel(
@@ -62,7 +62,7 @@ openSingleLabwork({
                   value: o.operatorsIDs,
                   onChanged: (ids) {
                     o.operatorsIDs = ids;
-                    state.notify();
+                    state.rebuildSheet();
                   }),
             ),
             InfoLabel(
@@ -101,7 +101,7 @@ openSingleLabwork({
                     checked: o.paid,
                     onChanged: (n) {
                       o.paid = n;
-                      state.notify();
+                      state.rebuildSheet();
                     },
                     content: o.paid ? Txt(txt("paid")) : Txt(txt("unpaid")),
                   ),
@@ -132,7 +132,7 @@ openSingleLabwork({
                           labPhoneController.text = phoneNumber;
                           o.phoneNumber = phoneNumber;
                         }
-                        state.notify();
+                        state.rebuildSheet();
                       },
                       items:
                           labworks.allLabs.map((name) => AutoSuggestBoxItem<String>(value: name, label: name)).toList(),
@@ -156,7 +156,7 @@ openSingleLabwork({
                       ),
                       onChanged: (text, reason) {
                         o.phoneNumber = text;
-                        state.notify();
+                        state.rebuildSheet();
                       },
                       trailingIcon: CallIconButton(phoneNumber: o.phoneNumber),
                       items: labworks.allPhones.map((pn) => AutoSuggestBoxItem<String>(value: pn, label: pn)).toList(),

@@ -28,7 +28,7 @@ class SheetState extends State<_Sheet> {
   startProgress() => mounted ? setState(() => progress = true) : null;
   endProgress() => mounted ? setState(() => progress = false) : null;
 
-  void notify() {
+  void rebuildSheet() {
     if (mounted) setState(() {});
   }
 

@@ -84,7 +84,7 @@ openSingleAppointment({
                       value: routes.openAppointment.patientID,
                       onChanged: (id) {
                         routes.openAppointment.patientID = id;
-                        state.notify();
+                        state.rebuildSheet();
                       }),
                 ),
                 const SizedBox(width: 5),
@@ -100,7 +100,7 @@ openSingleAppointment({
                           onSave: (patient) {
                             patients.set(patient);
                             routes.openAppointment.patientID = patient.id;
-                            state.notify();
+                            state.rebuildSheet();
                           },
                           editing: false,
                         );
@@ -113,7 +113,7 @@ openSingleAppointment({
                   value: routes.openAppointment.operatorsIDs,
                   onChanged: (s) {
                     routes.openAppointment.operatorsIDs = s;
-                    state.notify();
+                    state.rebuildSheet();
                   }),
             ),
             Column(
@@ -125,7 +125,7 @@ openSingleAppointment({
                     value: routes.openAppointment.date,
                     onChange: (d) {
                       routes.openAppointment.date = d;
-                      state.notify();
+                      state.rebuildSheet();
                     },
                     buttonText: txt("changeDate"),
                     buttonIcon: FluentIcons.calendar,
@@ -182,7 +182,7 @@ openSingleAppointment({
                 onChanged: (v) {
                   routes.openAppointment.postOpNotes = v;
                   routes.openAppointment.isDone = true;
-                  state.notify();
+                  state.rebuildSheet();
                 },
                 placeholder: "${txt("postOperativeNotes")}...",
               ),
@@ -195,7 +195,7 @@ openSingleAppointment({
                 onChanged: (s) {
                   routes.openAppointment.prescriptions = s.where((x) => x.value != null).map((x) => x.value!).toList();
                   routes.openAppointment.isDone = true;
-                  state.notify();
+                  state.rebuildSheet();
                 },
                 initialValue:
                     routes.openAppointment.prescriptions.map((p) => TagInputItem(value: p, label: p)).toList(),
@@ -236,7 +236,7 @@ openSingleAppointment({
                           paidController.text = routes.openAppointment.paid.toStringAsFixed(0);
                         }
                         routes.openAppointment.isDone = true;
-                        state.notify();
+                        state.rebuildSheet();
                       },
                       placeholder: txt("price"),
                       keyboardType: TextInputType.number,
@@ -255,7 +255,7 @@ openSingleAppointment({
                         didNotEditPaidYet = false;
                         routes.openAppointment.paid = double.tryParse(v) ?? 0;
                         routes.openAppointment.isDone = true;
-                        state.notify();
+                        state.rebuildSheet();
                       },
                       placeholder: txt("paid"),
                       keyboardType: TextInputType.number,
@@ -270,7 +270,7 @@ openSingleAppointment({
               checked: routes.openAppointment.isDone,
               onChanged: (checked) {
                 routes.openAppointment.isDone = checked == true;
-                state.notify();
+                state.rebuildSheet();
               },
               content: Txt(txt("isDone")),
             ),

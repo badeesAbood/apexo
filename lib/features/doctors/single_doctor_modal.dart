@@ -119,7 +119,7 @@ upcomingAppointmentsTab(BuildContext context) {
     closable: true,
     spacing: 0,
     padding: 0,
-    headerToggle: (state) => ArchiveToggle(notifier: state.notify),
+    headerToggle: (state) => ArchiveToggle(notifier: state.rebuildSheet),
     content: (state) => routes.openMember.upcomingAppointments.isEmpty
         ? const [
             InfoBar(title: Txt("No upcoming appointments found. Use the button below to register new one")),

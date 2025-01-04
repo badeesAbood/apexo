@@ -98,7 +98,7 @@ openSingleReceipt({
                     checked: o.paid,
                     onChanged: (n) {
                       o.paid = n;
-                      state.notify();
+                      state.rebuildSheet();
                     },
                     content: o.paid ? Txt(txt("paid")) : Txt(txt("due")),
                   ),
@@ -129,7 +129,7 @@ openSingleReceipt({
                           issuerPhoneController.text = phoneNumber;
                           o.phoneNumber = phoneNumber;
                         }
-                        state.notify();
+                        state.rebuildSheet();
                       },
                       items: expenses.allIssuers
                           .map((name) => AutoSuggestBoxItem<String>(value: name, label: name))
@@ -154,7 +154,7 @@ openSingleReceipt({
                       ),
                       onChanged: (text, reason) {
                         o.phoneNumber = text;
-                        state.notify();
+                        state.rebuildSheet();
                       },
                       trailingIcon: CallIconButton(phoneNumber: o.phoneNumber),
                       items: expenses.allPhones.map((pn) => AutoSuggestBoxItem<String>(value: pn, label: pn)).toList(),

@@ -63,7 +63,7 @@ class ImportDialog extends StatelessWidget {
                   // the photos would go to the correct appointment
                   final id = routes.openAppointment.id;
                   importResult(".");
-                  state.notify();
+                  state.rebuildSheet();
                   List<String> res;
                   try {
                     final response = await get(Uri.parse(
@@ -76,7 +76,7 @@ class ImportDialog extends StatelessWidget {
                     }
                   } catch (e) {
                     importResult(e.toString());
-                    state.notify();
+                    state.rebuildSheet();
                     return;
                   }
                   if (context.mounted) Navigator.pop(context);
