@@ -1,4 +1,9 @@
 
+### ____0.2.6____
+
+-   Multiple improvements in regard to performance and memory efficiency
+
+
 ### ____0.2.5____
 
 -   Fixed sorting of labworks and expenses
