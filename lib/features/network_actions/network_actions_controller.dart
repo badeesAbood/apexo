@@ -28,14 +28,16 @@ class NetworkAction {
   });
 }
 
-class _NetworkActions extends ObservableObject {
+class _NetworkActions {
   final isSyncing = ObservableState(0);
 
   Map<String, void Function()> syncCallbacks = {};
   Map<String, void Function()> reconnectCallbacks = {};
 
   resync() async {
+    isSyncing(isSyncing() + 1);
     await login.activate(login.url, [login.token], true);
+    isSyncing(isSyncing() - 1);
 
     for (var callback in syncCallbacks.values) {
       callback();
