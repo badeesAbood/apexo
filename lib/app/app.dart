@@ -55,7 +55,7 @@ class ApexoApp extends StatelessWidget {
                   });
                 }
                 return MStreamBuilder(
-                  streams: [launch.open.stream, routes.stream],
+                  streams: [launch.open.stream, routes.currentRouteIndex.stream],
                   key: WK.builder,
                   builder: (context, _) => PopScope(
                     canPop: false,
@@ -75,7 +75,7 @@ class ApexoApp extends StatelessWidget {
                               autoSuggestBox: const CurrentUser(key: WK.currentUserSection),
                               autoSuggestBoxReplacement: const Icon(FluentIcons.contact),
                               header: const AppLogo(),
-                              selected: routes.currentRouteIndex,
+                              selected: routes.currentRouteIndex(),
                               displayMode: PaneDisplayMode.auto,
                               items:
                                   List<NavigationPaneItem>.from(routes.allRoutes.where((p) => p.onFooter != true).map(

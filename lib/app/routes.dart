@@ -53,7 +53,7 @@ class Route {
   });
 }
 
-class Routes extends ObservableObject {
+class _Routes {
   List<Route> genAllRoutes() => [
         Route(
           title: txt("dashboard"),
@@ -148,7 +148,7 @@ class Routes extends ObservableObject {
 
   late List<Route> allRoutes = genAllRoutes();
 
-  int currentRouteIndex = 0;
+  final currentRouteIndex = ObservableState(0);
   List<int> history = [];
 
   // bottom sheets
@@ -161,30 +161,28 @@ class Routes extends ObservableObject {
   int selectedTabInSheet = 0;
 
   Route get currentRoute {
-    if (currentRouteIndex < 0 || currentRouteIndex >= allRoutes.length) {
+    if (currentRouteIndex() < 0 || currentRouteIndex() >= allRoutes.length) {
       return allRoutes.first;
     }
-    return allRoutes[currentRouteIndex];
+    return allRoutes[currentRouteIndex()];
   }
 
   goBack() {
     if (history.isNotEmpty) {
-      currentRouteIndex = history.removeLast();
+      currentRouteIndex(history.removeLast());
       if (currentRoute.onSelect != null) {
         currentRoute.onSelect!();
       }
     }
-    notify();
   }
 
   navigate(Route route) {
-    if (currentRouteIndex == allRoutes.indexOf(route)) return;
-    history.add(currentRouteIndex);
-    currentRouteIndex = allRoutes.indexOf(route);
+    if (currentRouteIndex() == allRoutes.indexOf(route)) return;
+    history.add(currentRouteIndex());
+    currentRouteIndex(allRoutes.indexOf(route));
     if (currentRoute.onSelect != null) {
       currentRoute.onSelect!();
     }
-    notify();
   }
 
   Route? getByIdentifier(String identifier) {
@@ -194,4 +192,4 @@ class Routes extends ObservableObject {
   }
 }
 
-final Routes routes = Routes();
+final routes = _Routes();
