@@ -11,11 +11,10 @@ import 'model.dart';
 /// when their properties change
 /// - ObservableBase: would rarely be useful
 /// - ObservableState: would be useful for storing standalone observable state (not part of a class)
-/// - ObservableObject: should be used when you want a collection of state (that are somehow related)
 /// - ObservablePersistingObject: same as above but with persistence
 /// - ObservableList: Typically used by stores
 
-typedef OEventCallback = void Function(List<OEvent>);
+typedef OEventCallback<V> = void Function(List<OEvent<V>> events);
 
 enum EventType {
   add,
@@ -23,17 +22,18 @@ enum EventType {
   remove,
 }
 
-class OEvent {
+class OEvent<V> {
   final EventType type;
   final String id;
-  OEvent.add(this.id) : type = EventType.add;
-  OEvent.modify(this.id) : type = EventType.modify;
-  OEvent.remove(this.id) : type = EventType.remove;
+  final V value;
+  OEvent.add(this.id, this.value) : type = EventType.add;
+  OEvent.modify(this.id, this.value) : type = EventType.modify;
+  OEvent.remove(this.id, this.value) : type = EventType.remove;
 }
 
 /// Base observable class
 /// the observable functionality of the application is all based on this class
-class ObservableBase {
+class ObservableBase<V> {
   ObservableBase() {
     stream.listen((events) {
       for (var observer in observers) {
@@ -46,16 +46,26 @@ class ObservableBase {
     });
   }
 
-  final StreamController<List<OEvent>> _controller = StreamController<List<OEvent>>.broadcast();
-  final List<OEventCallback> observers = [];
-  Stream<List<OEvent>> get stream => _controller.stream;
+  final StreamController<List<OEvent<V>>> _controller = StreamController<List<OEvent<V>>>.broadcast();
+  final List<OEventCallback<V>> observers = [];
+  Stream<List<OEvent<V>>> get stream => _controller.stream;
   double _silent = 0;
+  final List<OEvent<V>> _nextEvents = [];
+  Timer? _timer;
 
-  void notifyObservers(List<OEvent> events) {
-    if (_silent == 0) _controller.add(events);
+  void notifyObservers(List<OEvent<V>> events) {
+    if (_silent != 0) return;
+    _nextEvents.addAll(events);
+    if (_timer != null) {
+      _timer!.cancel();
+    }
+    _timer = Timer(const Duration(milliseconds: 50), () {
+      _controller.add(_nextEvents);
+      _nextEvents.clear();
+    });
   }
 
-  int observe(OEventCallback callback) {
+  int observe(OEventCallback<V> callback) {
     int existing = observers.indexWhere((o) => o == callback);
     if (existing > -1) {
       return existing;
@@ -64,7 +74,7 @@ class ObservableBase {
     return observers.length - 1;
   }
 
-  void unObserve(OEventCallback callback) {
+  void unObserve(OEventCallback<V> callback) {
     observers.removeWhere((existing) => existing == callback);
   }
 
@@ -90,7 +100,7 @@ class ObservableBase {
 /// Creates a standalone observable value
 /// this can be accessed by calling it "()"
 /// and can be set by passing a value when calling it "(value)"
-class ObservableState<T> extends ObservableObject {
+class ObservableState<T> extends ObservableBase<T> {
   T _value;
 
   ObservableState(this._value);
@@ -98,25 +108,15 @@ class ObservableState<T> extends ObservableObject {
   T call([T? newValue]) {
     if (newValue != null) {
       _value = newValue;
-      notify();
+      notifyObservers([OEvent.modify("__self__", _value)]);
     }
     return _value;
   }
 }
 
-/// creates an observable class that can be composed of multiple values
-/// Modifiers should be written as methods of this class
-/// and should call notify() when the value is changed
-class ObservableObject extends ObservableBase {
-  void notify() {
-    notifyObservers([OEvent.modify("__self__")]);
-  }
-}
-
-/// Behaves much like ObservableObject
-/// but also persists its data to a hive box
+/// Persists its data to a hive box
 /// however only data that are defined in toJson and fromJson will be persisted
-abstract class ObservablePersistingObject extends ObservableObject {
+abstract class ObservablePersistingObject extends ObservableBase<Map<String, dynamic>> {
   ObservablePersistingObject(this.identifier) {
     box = () async {
       await safeHiveInit();
@@ -134,16 +134,20 @@ abstract class ObservablePersistingObject extends ObservableObject {
       return;
     }
     fromJson(jsonDecode(value));
-    super.notify(); // calling it from super so we don't have to reload from box
+    super.notifyObservers(
+        [OEvent.modify("__self__", toJson())]); // calling it from super so we don't have to reload from box
   }
 
   @override
-  void notify() {
-    super.notify();
+  void notifyObservers(List<OEvent<Map<String, dynamic>>> events) {
+    super.notifyObservers(events);
     box.then((loadedBox) {
       loadedBox.put(identifier, jsonEncode(toJson()));
     });
   }
+
+  // a short hand for calling notifyObservers
+  notifyAndPersist() => notifyObservers([OEvent.modify("__self__", toJson())]);
 
   fromJson(Map<String, dynamic> json);
   Map<String, dynamic> toJson();
@@ -152,7 +156,7 @@ abstract class ObservablePersistingObject extends ObservableObject {
 /// creates an observable dictionary
 /// values of this dictionary should extend Model
 /// this is typically used by stores (dictionaries of models)
-class ObservableDict<G extends Model> extends ObservableBase {
+class ObservableDict<G extends Model> extends ObservableBase<G?> {
   final Map<String, G> _dictionary = {};
 
   G? get(String id) {
@@ -163,7 +167,7 @@ class ObservableDict<G extends Model> extends ObservableBase {
     bool isNew = !_dictionary.containsKey(item.id);
     _dictionary[item.id] = item;
     notifyObservers([
-      if (isNew) OEvent.add(item.id) else OEvent.modify(item.id),
+      if (isNew) OEvent.add(item.id, item) else OEvent.modify(item.id, item),
     ]);
   }
 
@@ -171,23 +175,23 @@ class ObservableDict<G extends Model> extends ObservableBase {
     for (var item in items) {
       _dictionary[item.id] = item;
     }
-    notifyObservers(items.map((e) => OEvent.add(e.id)).toList());
+    notifyObservers(items.map((item) => OEvent.add(item.id, item)).toList());
   }
 
   void remove(String id) {
     if (_dictionary.containsKey(id)) {
       _dictionary.remove(id);
-      notifyObservers([OEvent.remove(id)]);
+      notifyObservers([OEvent.remove(id, null)]);
     }
   }
 
   void clear() {
     _dictionary.clear();
-    notifyObservers([OEvent.remove('__removed_all__')]);
+    notifyObservers([OEvent.remove('__removed_all__', null)]);
   }
 
   void notifyView() {
-    notifyObservers([OEvent.modify('__ignore_view__')]);
+    notifyObservers([OEvent.modify('__ignore_view__', null)]);
   }
 
   List<G> get values => _dictionary.values.toList();
