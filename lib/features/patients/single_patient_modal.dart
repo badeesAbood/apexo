@@ -34,11 +34,7 @@ openSinglePatient({
   showTabbedModal(
       key: Key(o.id),
       context: context,
-      streams: [
-        patients.observableObject.stream,
-        appointments.observableObject.stream,
-        doctors.observableObject.stream
-      ],
+      streams: [patients.observableMap.stream, appointments.observableMap.stream, doctors.observableMap.stream],
       onArchive: o.archived != true && editing ? () => patients.set(o..archived = true) : null,
       onRestore: o.archived == true && editing ? () => patients.set(o..archived = null) : null,
       onSave: () {

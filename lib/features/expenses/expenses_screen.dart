@@ -21,7 +21,7 @@ class ExpensesScreen extends StatelessWidget {
         children: [
           Expanded(
             child: StreamBuilder(
-                stream: expenses.observableObject.stream,
+                stream: expenses.observableMap.stream,
                 builder: (context, snapshot) {
                   return DataTable<Expense>(
                     compact: true,

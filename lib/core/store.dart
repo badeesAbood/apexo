@@ -41,7 +41,7 @@ class Store<G extends Model> {
   late Future<void> loaded;
   final Function? onSyncStart;
   final Function? onSyncEnd;
-  final ObservableDict<G> observableObject;
+  final ObservableDict<G> observableMap;
   final Set<String> changes = {};
   SaveLocal? local;
   SaveRemote? remote;
@@ -64,7 +64,7 @@ class Store<G extends Model> {
     this.onSyncStart,
     this.onSyncEnd,
     this.manualSyncOnly,
-  }) : observableObject = ObservableDict() {
+  }) : observableMap = ObservableDict() {
     // loading from local
     loaded = deleteMemoryAndLoadFromPersistence();
   }
@@ -75,7 +75,7 @@ class Store<G extends Model> {
     _setupSyncJobTimer();
 
     // setting up observers
-    observableObject.observe((events) {
+    observableMap.observe((events) {
       if (events[0].type == EventType.modify && events[0].id == "__ignore_view__") {
         // this is a view change not a storage change
         return;
@@ -96,12 +96,12 @@ class Store<G extends Model> {
     Iterable<String> all = await local!.getAll();
     Iterable<G> modeled = all.map((x) => modeling(_deSerialize(x)));
     // silent for persistence
-    observableObject.silently(() {
-      observableObject.clear();
-      observableObject.setAll(modeled.toList());
+    observableMap.silently(() {
+      observableMap.clear();
+      observableMap.setAll(modeled.toList());
     });
     // but loud for view
-    observableObject.notifyView();
+    observableMap.notifyView();
     return;
   }
 
@@ -121,7 +121,7 @@ class Store<G extends Model> {
     }
 
     if (changes.isEmpty) return;
-    if (observableObject.docs.isEmpty) return;
+    if (observableMap.docs.isEmpty) return;
     onSyncStart?.call();
     lastProcessChanges = DateTime.now().millisecondsSinceEpoch;
 
@@ -130,7 +130,7 @@ class Store<G extends Model> {
     List<String> changesToProcess = [...changes];
 
     for (String element in changesToProcess) {
-      G? item = observableObject.get(element);
+      G? item = observableMap.get(element);
       if (item == null) {
         changes.remove(element);
         continue;
@@ -419,7 +419,7 @@ class Store<G extends Model> {
 
   /// Returns a list of all the documents in the local database
   Map<String, G> get docs {
-    return Map<String, G>.unmodifiable(observableObject.docs);
+    return Map<String, G>.unmodifiable(observableMap.docs);
   }
 
   Map<String, G> get present {
@@ -428,36 +428,36 @@ class Store<G extends Model> {
   }
 
   bool has(String id) {
-    return observableObject.docs.containsKey(id);
+    return observableMap.docs.containsKey(id);
   }
 
   /// gets a document by id
   G? get(String id) {
-    return observableObject.docs[id];
+    return observableMap.docs[id];
   }
 
   /// adds a document
   void set(G item) {
-    observableObject.set(item);
+    observableMap.set(item);
   }
 
   /// adds a list of documents
   void setAll(List<G> items) {
-    observableObject.setAll(items);
+    observableMap.setAll(items);
   }
 
   /// archives a document by id (the concept of deletion is not supported here)
   void archive(String id) {
     G? item = get(id);
     if (item == null) return;
-    observableObject.set(item..archived = true);
+    observableMap.set(item..archived = true);
   }
 
   /// un-archives a document by id (the concept of deletion is not supported here)
   void unarchive(String id) {
     G? item = get(id);
     if (item == null) return;
-    observableObject.set(item..archived = false);
+    observableMap.set(item..archived = false);
   }
 
   /// archives a document by id (the concept of deletion is not supported here)
@@ -533,7 +533,7 @@ class Store<G extends Model> {
 
   /// notifies the view that the store has changed
   void notify() {
-    observableObject.notifyView();
+    observableMap.notifyView();
   }
 
   Future<void> waitUntilChangesAreProcessed() async {

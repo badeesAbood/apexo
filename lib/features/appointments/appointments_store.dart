@@ -35,11 +35,11 @@ class Appointments extends Store<Appointment> {
   init() {
     super.init();
 
-    observableObject.observe((_) => _allPrescriptions = null);
-    observableObject.observe((_) {
+    observableMap.observe((_) => _allPrescriptions = null);
+    observableMap.observe((_) {
       byPatient = {};
       byDoctor = {};
-      for (var appointment in observableObject.values) {
+      for (var appointment in observableMap.values) {
         final patientID = appointment.patientID ?? "";
         final isDone = appointment.isDone;
         final isUpcoming = appointment.date.isAfter(DateTime.now());

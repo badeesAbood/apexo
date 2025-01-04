@@ -28,7 +28,7 @@ openSingleDoctor({
   final o = routes.openMember;
   showTabbedModal(
       key: Key(o.id),
-      streams: [appointments.observableObject.stream, doctors.observableObject.stream],
+      streams: [appointments.observableMap.stream, doctors.observableMap.stream],
       context: context,
       onArchive: o.archived != true && editing ? () => doctors.set(o..archived = true) : null,
       onRestore: o.archived == true && editing ? () => doctors.set(o..archived = null) : null,

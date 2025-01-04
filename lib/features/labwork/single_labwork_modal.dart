@@ -27,7 +27,7 @@ openSingleLabwork({
   showTabbedModal(
       key: Key(o.id),
       context: context,
-      streams: [labworks.observableObject.stream],
+      streams: [labworks.observableMap.stream],
       onArchive: o.archived != true && editing ? () => labworks.set(o..archived = true) : null,
       onRestore: o.archived == true && editing ? () => labworks.set(o..archived = null) : null,
       onSave: () => labworks.set(routes.openLabwork),

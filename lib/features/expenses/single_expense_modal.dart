@@ -27,7 +27,7 @@ openSingleReceipt({
   showTabbedModal(
       key: Key(o.id),
       context: context,
-      streams: [expenses.observableObject.stream],
+      streams: [expenses.observableMap.stream],
       onArchive: o.archived != true && editing ? () => expenses.set(o..archived = true) : null,
       onRestore: o.archived == true && editing ? () => expenses.set(o..archived = null) : null,
       onSave: () => expenses.set(routes.openExpense),

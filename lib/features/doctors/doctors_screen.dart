@@ -20,7 +20,7 @@ class DoctorsScreen extends StatelessWidget {
       key: WK.doctorsScreen,
       padding: EdgeInsets.zero,
       content: StreamBuilder(
-          stream: doctors.observableObject.stream,
+          stream: doctors.observableMap.stream,
           builder: (context, snapshot) {
             return DataTable<Doctor>(
               items: doctors.present.values.toList(),

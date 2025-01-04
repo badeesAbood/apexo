@@ -21,7 +21,7 @@ class LabworksScreen extends StatelessWidget {
         children: [
           Expanded(
             child: StreamBuilder(
-                stream: labworks.observableObject.stream,
+                stream: labworks.observableMap.stream,
                 builder: (context, snapshot) {
                   return DataTable<Labwork>(
                     compact: true,

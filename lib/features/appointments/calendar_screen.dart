@@ -19,8 +19,8 @@ class CalendarScreen extends StatelessWidget {
     return ScaffoldPage(
       key: WK.calendarScreen,
       padding: EdgeInsets.zero,
-      content: StreamBuilder(
-          stream: appointments.observableObject.stream,
+      content: MStreamBuilder(
+          streams: [appointments.observableMap.stream, appointments.doctorId.stream],
           builder: (context, snapshot) {
             return WeekAgendaCalendar<Appointment>(
               items: appointments.filtered.values.toList(),

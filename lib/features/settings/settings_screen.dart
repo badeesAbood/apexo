@@ -176,7 +176,7 @@ class SettingsItemState extends State<SettingsItem> {
         content: SizedBox(
           width: 400,
           child: MStreamBuilder(
-              streams: [globalSettings.observableObject.stream, localSettings.stream],
+              streams: [globalSettings.observableMap.stream, localSettings.stream],
               builder: (context, _) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

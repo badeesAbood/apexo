@@ -4,7 +4,7 @@ import 'package:apexo/features/appointments/appointments_store.dart';
 
 class _DashboardController extends ObservableObject {
   _DashboardController() {
-    appointments.observableObject.observe((e) {
+    appointments.observableMap.observe((e) {
       // nullify the cache
       _thisMonthAppointments = null;
       _todayAppointments = null;

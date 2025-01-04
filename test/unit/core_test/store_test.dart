@@ -43,7 +43,7 @@ void main() {
         debounceMS: 100,
       );
 
-      store.observableObject.clear();
+      store.observableMap.clear();
       await store.loaded;
       await store.local!.clear();
       await store.deleteMemoryAndLoadFromPersistence();
@@ -70,7 +70,7 @@ void main() {
 
     test("store add method works and calls observers", () async {
       final List<String> observedChangesIds = [];
-      store.observableObject.observe((events) {
+      store.observableMap.observe((events) {
         observedChangesIds.addAll(events.map((e) => e.id));
       });
 
@@ -84,7 +84,7 @@ void main() {
 
     test("store setAll method works and calls observers", () async {
       int observerCalled = 0;
-      store.observableObject.observe((events) {
+      store.observableMap.observe((events) {
         if (events.first.id != "__ignore_view__") observerCalled++;
       });
       expect(store.docs.length, 0);
@@ -102,7 +102,7 @@ void main() {
     test("store delete method works and calls observers", () async {
       await store.loaded;
       int observerCalled = 0;
-      store.observableObject.observe((events) {
+      store.observableMap.observe((events) {
         if (events.first.id != "__ignore_view__") observerCalled++;
       });
       expect(store.docs.length, 0);
@@ -117,7 +117,7 @@ void main() {
 
     test("store archive method works and calls observers", () async {
       int observerCalled = 0;
-      store.observableObject.observe((events) {
+      store.observableMap.observe((events) {
         observerCalled++;
       });
 
@@ -133,7 +133,7 @@ void main() {
 
     test("store unarchive method works and calls observers", () async {
       int observerCalled = 0;
-      store.observableObject.observe((events) {
+      store.observableMap.observe((events) {
         observerCalled++;
       });
 
@@ -206,7 +206,7 @@ void main() {
     test("store reload doesn't inform observers", () async {
       await (await local.mainHiveBox).put("id4", '{"id":"id4"}');
       int observersCalled = 0;
-      store.observableObject.observe((events) {
+      store.observableMap.observe((events) {
         if (events.first.id != "__ignore_view__") observersCalled++;
       });
       await store.reload();
@@ -238,7 +238,7 @@ void main() {
         manualSyncOnly: true,
       );
 
-      store.observableObject.clear();
+      store.observableMap.clear();
       await store.loaded;
       await store.local!.clear();
       await store.deleteMemoryAndLoadFromPersistence();
