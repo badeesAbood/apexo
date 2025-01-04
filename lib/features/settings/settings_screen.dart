@@ -74,7 +74,7 @@ class SettingsScreen extends StatelessWidget {
               value: localSettings.locale,
               apply: (newVal) {
                 localSettings.locale = newVal;
-                localSettings.notify();
+                localSettings.notifyAndPersist();
                 networkActions.resync();
               },
             ),
@@ -111,7 +111,7 @@ class SettingsScreen extends StatelessWidget {
               value: localSettings.dateFormat,
               apply: (newVal) {
                 localSettings.dateFormat = newVal;
-                localSettings.notify();
+                localSettings.notifyAndPersist();
               },
             ),
             if (login.isAdmin && network.isOnline()) ...[

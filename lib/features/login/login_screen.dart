@@ -49,7 +49,7 @@ class Login extends StatelessWidget {
                               locale.selectedLocale(localeIndex);
                             }
                             localSettings.locale = code ?? "en";
-                            localSettings.notify();
+                            localSettings.notifyAndPersist();
                           },
                         );
                       }),

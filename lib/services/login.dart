@@ -51,7 +51,7 @@ class _LoginService extends ObservablePersistingObject {
     password = "";
     token = "";
     pb!.authStore.clear();
-    notify();
+    notifyAndPersist();
     return loginCtrl.finishedLoginProcess();
   }
 
@@ -155,7 +155,7 @@ class _LoginService extends ObservablePersistingObject {
       try {
         final secondStage = await callback();
         if (online && launch.isDemo() == false) await secondStage();
-        notify(); // this would persist the data to the disk so we don't have to login again
+        notifyAndPersist(); // this would persist the data to the disk so we don't have to login again
       } catch (e, s) {
         logger("Error during running activators: $e", s);
       }

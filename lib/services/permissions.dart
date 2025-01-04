@@ -16,7 +16,7 @@ class _Permissions extends ObservablePersistingObject {
 
   reset() {
     editingList = [...list];
-    notify();
+    notifyAndPersist();
   }
 
   save() async {
@@ -33,7 +33,7 @@ class _Permissions extends ObservablePersistingObject {
     }
 
     await reloadFromRemote();
-    notify();
+    notifyAndPersist();
   }
 
   Future<void> reloadFromRemote() async {
@@ -41,7 +41,7 @@ class _Permissions extends ObservablePersistingObject {
     if (login.pb == null || login.token.isEmpty || login.pb!.authStore.isValid == false) {
       return;
     }
-    notify();
+    notifyAndPersist();
     try {
       list = List<bool>.from(jsonDecode(
           (await login.pb!.collection("data").getOne("permissions____")).get<Map<String, dynamic>>("data")["value"]));
@@ -53,9 +53,9 @@ class _Permissions extends ObservablePersistingObject {
     } catch (e, s) {
       logger("Error when getting full list of permissions service: $e", s);
     }
-    notify();
+    notifyAndPersist();
     routes.allRoutes = routes.genAllRoutes();
-    routes.notify();
+    routes.currentRouteIndex(routes.currentRouteIndex());
   }
 
   _Permissions() : super("permissions");
@@ -69,7 +69,7 @@ class _Permissions extends ObservablePersistingObject {
       list.addAll(List.generate(initialNumberOfPermissions - list.length, (index) => false));
     }
     editingList = [...list];
-    routes.notify();
+    routes.currentRouteIndex(routes.currentRouteIndex());
     reloadFromRemote();
   }
 

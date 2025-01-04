@@ -38,7 +38,7 @@ class PermissionsSettings extends StatelessWidget {
                                 checked: permissions.editingList[index],
                                 onChanged: (val) {
                                   permissions.editingList[index] = val;
-                                  permissions.notify();
+                                  permissions.notifyAndPersist();
                                 },
                                 content: Txt("${txt("usersCanAccess")} ${txt(permissionsTitles[index])}"),
                               )),
