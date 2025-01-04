@@ -1,3 +1,4 @@
+import 'package:apexo/core/observable.dart';
 import 'package:apexo/features/login/login_controller.dart';
 import 'package:apexo/services/archived.dart';
 import 'package:apexo/services/launch.dart';
@@ -117,22 +118,17 @@ class Appointments extends Store<Appointment> {
     };
   }
 
-  String doctorId = "";
+  final doctorId = ObservableState("");
 
   Map<String, Appointment> get filtered {
-    if (doctorId.isEmpty) return present;
+    if (doctorId().isEmpty) return present;
     return Map<String, Appointment>.fromEntries(
-        present.entries.where((entry) => entry.value.operatorsIDs.contains(doctorId)));
+        present.entries.where((entry) => entry.value.operatorsIDs.contains(doctorId())));
   }
 
   List<String>? _allPrescriptions;
   List<String> get allPrescriptions {
     return _allPrescriptions ??= Set<String>.from(present.values.expand((doc) => doc.prescriptions)).toList();
-  }
-
-  filterByDoctor(String? value) {
-    doctorId = value ?? "";
-    notify();
   }
 }
 
