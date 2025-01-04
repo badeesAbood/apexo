@@ -76,7 +76,7 @@ class Store<G extends Model> {
 
     // setting up observers
     observableMap.observe((events) {
-      if (events[0].type == EventType.modify && events[0].id == "__ignore_view__") {
+      if (events[0].type == DictEventType.modify && events[0].id == "__ignore_view__") {
         // this is a view change not a storage change
         return;
       }
