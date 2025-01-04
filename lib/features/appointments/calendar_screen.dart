@@ -1,3 +1,4 @@
+import 'package:apexo/core/multi_stream_builder.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:apexo/features/appointments/single_appointment_modal.dart';
 import 'package:apexo/common_widgets/archive_toggle.dart';
@@ -40,8 +41,8 @@ class CalendarScreen extends StatelessWidget {
                       return ComboBoxItem(value: e.id, child: Txt(doctorName));
                     }),
                   ],
-                  onChanged: appointments.filterByDoctor,
-                  value: appointments.doctorId,
+                  onChanged: (id) => appointments.doctorId(id ?? ""),
+                  value: appointments.doctorId(),
                 ),
                 const SizedBox(width: 5),
                 ArchiveToggle(notifier: appointments.notify)
