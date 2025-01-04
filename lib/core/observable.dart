@@ -14,7 +14,7 @@ import 'model.dart';
 /// - ObservablePersistingObject: same as above but with persistence
 /// - ObservableList: Typically used by stores
 
-typedef OEventCallback<V> = void Function(List<OEvent<V>> events);
+typedef OEventCallback<V> = void Function(List<OEvent> events);
 
 enum EventType {
   add,
@@ -22,13 +22,12 @@ enum EventType {
   remove,
 }
 
-class OEvent<V> {
+class OEvent {
   final EventType type;
   final String id;
-  final V value;
-  OEvent.add(this.id, this.value) : type = EventType.add;
-  OEvent.modify(this.id, this.value) : type = EventType.modify;
-  OEvent.remove(this.id, this.value) : type = EventType.remove;
+  OEvent.add(this.id) : type = EventType.add;
+  OEvent.modify(this.id) : type = EventType.modify;
+  OEvent.remove(this.id) : type = EventType.remove;
 }
 
 /// Base observable class
@@ -46,14 +45,14 @@ class ObservableBase<V> {
     });
   }
 
-  final StreamController<List<OEvent<V>>> _controller = StreamController<List<OEvent<V>>>.broadcast();
+  final StreamController<List<OEvent>> _controller = StreamController<List<OEvent>>.broadcast();
   final List<OEventCallback<V>> observers = [];
-  Stream<List<OEvent<V>>> get stream => _controller.stream;
+  Stream<List<OEvent>> get stream => _controller.stream;
   double _silent = 0;
-  final List<OEvent<V>> _nextEvents = [];
+  final List<OEvent> _nextEvents = [];
   Timer? _timer;
 
-  void notifyObservers(List<OEvent<V>> events) {
+  void notifyObservers(List<OEvent> events) {
     if (_silent != 0) return;
     _nextEvents.addAll(events);
     if (_timer != null) {
@@ -108,7 +107,7 @@ class ObservableState<T> extends ObservableBase<T> {
   T call([T? newValue]) {
     if (newValue != null) {
       _value = newValue;
-      notifyObservers([OEvent.modify("__self__", _value)]);
+      notifyObservers([OEvent.modify("__self__")]);
     }
     return _value;
   }
@@ -134,12 +133,11 @@ abstract class ObservablePersistingObject extends ObservableBase<Map<String, dyn
       return;
     }
     fromJson(jsonDecode(value));
-    super.notifyObservers(
-        [OEvent.modify("__self__", toJson())]); // calling it from super so we don't have to reload from box
+    super.notifyObservers([OEvent.modify("__self__")]); // calling it from super so we don't have to reload from box
   }
 
   @override
-  void notifyObservers(List<OEvent<Map<String, dynamic>>> events) {
+  void notifyObservers(List<OEvent> events) {
     super.notifyObservers(events);
     box.then((loadedBox) {
       loadedBox.put(identifier, jsonEncode(toJson()));
@@ -147,7 +145,7 @@ abstract class ObservablePersistingObject extends ObservableBase<Map<String, dyn
   }
 
   // a short hand for calling notifyObservers
-  notifyAndPersist() => notifyObservers([OEvent.modify("__self__", toJson())]);
+  notifyAndPersist() => notifyObservers([OEvent.modify("__self__")]);
 
   fromJson(Map<String, dynamic> json);
   Map<String, dynamic> toJson();
@@ -167,7 +165,7 @@ class ObservableDict<G extends Model> extends ObservableBase<G?> {
     bool isNew = !_dictionary.containsKey(item.id);
     _dictionary[item.id] = item;
     notifyObservers([
-      if (isNew) OEvent.add(item.id, item) else OEvent.modify(item.id, item),
+      if (isNew) OEvent.add(item.id) else OEvent.modify(item.id),
     ]);
   }
 
@@ -175,23 +173,23 @@ class ObservableDict<G extends Model> extends ObservableBase<G?> {
     for (var item in items) {
       _dictionary[item.id] = item;
     }
-    notifyObservers(items.map((item) => OEvent.add(item.id, item)).toList());
+    notifyObservers(items.map((item) => OEvent.add(item.id)).toList());
   }
 
   void remove(String id) {
     if (_dictionary.containsKey(id)) {
       _dictionary.remove(id);
-      notifyObservers([OEvent.remove(id, null)]);
+      notifyObservers([OEvent.remove(id)]);
     }
   }
 
   void clear() {
     _dictionary.clear();
-    notifyObservers([OEvent.remove('__removed_all__', null)]);
+    notifyObservers([OEvent.remove('__removed_all__')]);
   }
 
   void notifyView() {
-    notifyObservers([OEvent.modify('__ignore_view__', null)]);
+    notifyObservers([OEvent.modify('__ignore_view__')]);
   }
 
   List<G> get values => _dictionary.values.toList();
