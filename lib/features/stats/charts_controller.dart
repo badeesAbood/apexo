@@ -1,4 +1,5 @@
 import 'package:apexo/core/observable.dart';
+import 'package:apexo/services/archived.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:apexo/features/appointments/appointment_model.dart';
 import 'package:apexo/features/appointments/appointments_store.dart';
@@ -19,53 +20,44 @@ class Period {
   Period(this.start, this.end, this.label);
 }
 
-class _ChartsController extends ObservableObject {
-  String doctorID = "";
-  DateTime start = DateTime(DateTime.now().year, DateTime.now().month, 1);
-  DateTime end = DateTime(DateTime.now().year, DateTime.now().month, 1).add(const Duration(days: 31));
-  StatsInterval interval = StatsInterval.days;
+class _ChartsController {
+  final doctorID = ObservableState("");
+  final start = ObservableState(DateTime(DateTime.now().year, DateTime.now().month, 1));
+  final end = ObservableState(DateTime(DateTime.now().year, DateTime.now().month, 1).add(const Duration(days: 31)));
+  final interval = ObservableState(StatsInterval.days);
   String get intervalString {
-    return "${chartsCtrl.interval.name[0].toUpperCase()}${chartsCtrl.interval.name.substring(1).toLowerCase()}";
+    return "${chartsCtrl.interval().name[0].toUpperCase()}${chartsCtrl.interval().name.substring(1).toLowerCase()}";
   }
 
-  filteredAppointmentsObserver(e) => _filteredAppointments = null;
+  _nullifyCache(_) {
+    _filteredAppointments = null;
+    _filteredReceipts = null;
+  }
+
   List<Appointment>? _filteredAppointments;
   List<Appointment> get filteredAppointments {
     if (_filteredAppointments != null) return _filteredAppointments!;
     List<Appointment> res = [];
     for (var appointment in appointments.present.values) {
-      if (appointment.date.isAfter(end)) continue;
-      if (appointment.date.isBefore(start)) continue;
-      if (doctorID.isNotEmpty && !appointment.operatorsIDs.contains(doctorID)) continue;
+      if (appointment.date.isAfter(end())) continue;
+      if (appointment.date.isBefore(start())) continue;
+      if (doctorID().isNotEmpty && !appointment.operatorsIDs.contains(doctorID())) continue;
       res.add(appointment);
     }
     _filteredAppointments = res..sort((a, b) => a.date.compareTo(b.date));
-    if (!observers.contains(filteredAppointmentsObserver)) {
-      observe(filteredAppointmentsObserver);
-    }
-    if (!appointments.observableObject.observers.contains(filteredAppointmentsObserver)) {
-      appointments.observableObject.observe(filteredAppointmentsObserver);
-    }
     return _filteredAppointments!;
   }
 
-  _filteredReceiptsObserver(e) => _filteredReceipts = null;
   List<Expense>? _filteredReceipts;
   List<Expense> get filteredReceipts {
     if (_filteredReceipts != null) return _filteredReceipts!;
     List<Expense> res = [];
     for (var receipt in expenses.present.values) {
-      if (receipt.date.isAfter(end)) continue;
-      if (receipt.date.isBefore(start)) continue;
+      if (receipt.date.isAfter(end())) continue;
+      if (receipt.date.isBefore(start())) continue;
       res.add(receipt);
     }
     _filteredReceipts = res..sort((a, b) => a.date.compareTo(b.date));
-    if (!observers.contains(_filteredReceiptsObserver)) {
-      observe(_filteredReceiptsObserver);
-    }
-    if (!expenses.observableObject.observers.contains(_filteredReceiptsObserver)) {
-      expenses.observableObject.observe(_filteredReceiptsObserver);
-    }
     return _filteredReceipts!;
   }
 
@@ -190,10 +182,10 @@ class _ChartsController extends ObservableObject {
   List<Period> get periods {
     List<Period> periods = [];
 
-    DateTime currentStart = _normalizeStart(DateTime(start.year, start.month, start.day));
+    DateTime currentStart = _normalizeStart(DateTime(start().year, start().month, start().day));
     DateTime nextPeriod = _addInterval(currentStart).subtract(const Duration(seconds: 1));
 
-    while (currentStart.isBefore(end) || currentStart.isAtSameMomentAs(end)) {
+    while (currentStart.isBefore(end()) || currentStart.isAtSameMomentAs(end())) {
       periods.add(Period(currentStart, nextPeriod, _getLabel(currentStart)));
       currentStart = nextPeriod.add(const Duration(days: 1));
       nextPeriod = _addInterval(nextPeriod);
@@ -207,9 +199,9 @@ class _ChartsController extends ObservableObject {
 
   resetSelected() {
     final now = DateTime.now();
-    start = DateTime(now.year, now.month, 1);
-    end = DateTime(now.year, now.month, 1).add(const Duration(days: 31));
-    interval = StatsInterval.days;
+    start(DateTime(now.year, now.month, 1));
+    end(DateTime(now.year, now.month, 1).add(const Duration(days: 31)));
+    interval(StatsInterval.days);
   }
 
   int _daysSinceWeekStart(DateTime date) {
@@ -252,7 +244,7 @@ class _ChartsController extends ObservableObject {
   }
 
   DateTime _normalizeStart(DateTime start) {
-    switch (interval) {
+    switch (interval()) {
       case StatsInterval.days:
         return start;
       case StatsInterval.weeks:
@@ -268,7 +260,7 @@ class _ChartsController extends ObservableObject {
 
   String _getLabel(DateTime start) {
     final df = localSettings.dateFormat.startsWith("d") == true ? "dd/MM" : "MM/dd";
-    switch (interval) {
+    switch (interval()) {
       case StatsInterval.days:
         return DateFormat("$df/yy", locale.s.$code).format(start);
       case StatsInterval.weeks:
@@ -290,7 +282,7 @@ class _ChartsController extends ObservableObject {
   }
 
   DateTime _addInterval(DateTime input) {
-    switch (interval) {
+    switch (interval()) {
       case StatsInterval.days:
         return input.add(const Duration(days: 1));
       case StatsInterval.weeks:
@@ -349,54 +341,61 @@ class _ChartsController extends ObservableObject {
     if (periods.isEmpty) return;
 
     if (useCached) {
-      if (interval == StatsInterval.weeks) {
-        _cachedPeriod = [start, end];
+      if (interval() == StatsInterval.weeks) {
+        _cachedPeriod = [start(), end()];
       }
 
-      if (interval == StatsInterval.days && _cachedPeriod != null) {
-        start = _cachedPeriod![0];
-        end = _cachedPeriod![1];
+      if (interval() == StatsInterval.days && _cachedPeriod != null) {
+        start(_cachedPeriod![0]);
+        end(_cachedPeriod![1]);
       }
     } else {
       _cachedPeriod = null;
     }
 
-    start = periods.first.start;
-    end = periods.last.end;
+    start(periods.first.start);
+    end(periods.last.end);
   }
 
   void toggleInterval() {
-    int currentIndex = StatsInterval.values.indexOf(interval);
+    int currentIndex = StatsInterval.values.indexOf(interval());
     if (currentIndex == StatsInterval.values.length - 1) {
-      interval = StatsInterval.values[0];
+      interval(StatsInterval.values[0]);
     } else {
-      interval = StatsInterval.values[currentIndex + 1];
+      interval(StatsInterval.values[currentIndex + 1]);
     }
     normalizeSelectedRange(true);
-    notify();
   }
 
   void filterByDoctor(String? value) {
-    doctorID = value ?? "";
-    notify();
+    doctorID(value ?? "");
   }
 
   rangePicker(BuildContext context) async {
     final selectedRange = await showDateRangePicker(
       currentDate: DateTime.now(),
-      initialDateRange: DateTimeRange(start: start, end: end),
+      initialDateRange: DateTimeRange(start: start(), end: end()),
       context: context,
       firstDate: DateTime.now().subtract(const Duration(days: 9999)),
       lastDate: DateTime.now().add(const Duration(days: 9999)),
     );
 
     if (selectedRange != null) {
-      interval = StatsInterval.days;
-      start = selectedRange.start;
-      end = selectedRange.end;
+      interval(StatsInterval.days);
+      start(selectedRange.start);
+      end(selectedRange.end);
       normalizeSelectedRange(false);
-      notify();
     }
+  }
+
+  _ChartsController() {
+    final filters = List<ObservableState<DateTime>>.from([start, end]);
+    for (final ObservableState<DateTime> filter in filters) {
+      filter.observe(_nullifyCache);
+    }
+    doctorID.observe(_nullifyCache);
+    // also bind to showArchived
+    showArchived.observe((_) => start(start()));
   }
 }
 

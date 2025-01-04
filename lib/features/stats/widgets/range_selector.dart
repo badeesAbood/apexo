@@ -1,3 +1,4 @@
+import 'package:apexo/core/multi_stream_builder.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:apexo/features/stats/charts_controller.dart';
 import 'package:apexo/features/settings/settings_stores.dart';
@@ -23,8 +24,8 @@ class ChartsRangeSelector extends StatelessWidget {
     final df = localSettings.dateFormat.startsWith("d") == true ? "dd/MM" : "MM/dd";
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15),
-      child: StreamBuilder(
-          stream: chartsCtrl.stream,
+      child: MStreamBuilder(
+          streams: [chartsCtrl.start.stream, chartsCtrl.end.stream, chartsCtrl.interval.stream],
           builder: (context, snapshot) {
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -45,7 +46,7 @@ class ChartsRangeSelector extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Txt(txt("start"), style: _textStyle),
-                          Txt(DateFormat("$df/yyyy", locale.s.$code).format(chartsCtrl.start), style: _textStyle),
+                          Txt(DateFormat("$df/yyyy", locale.s.$code).format(chartsCtrl.start()), style: _textStyle),
                         ],
                       ),
                     ],
@@ -60,7 +61,7 @@ class ChartsRangeSelector extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Icon(
-                            _icons[StatsInterval.values.indexOf(chartsCtrl.interval)],
+                            _icons[StatsInterval.values.indexOf(chartsCtrl.interval())],
                             size: 20,
                             color: _color,
                           ),
@@ -80,7 +81,7 @@ class ChartsRangeSelector extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Txt(txt("end"), style: _textStyle),
-                          Txt(DateFormat("$df/yyyy", locale.s.$code).format(chartsCtrl.end), style: _textStyle),
+                          Txt(DateFormat("$df/yyyy", locale.s.$code).format(chartsCtrl.end()), style: _textStyle),
                         ],
                       ),
                       const SizedBox(width: 10),
