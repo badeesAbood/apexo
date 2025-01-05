@@ -325,7 +325,7 @@ Appointment _demoAppointment() {
       .subtract(Duration(hours: Random().nextInt(24 * 200)));
   final future = date.isAfter(DateTime.now());
   return Appointment.fromJson({
-    "date": date.millisecondsSinceEpoch,
+    "date": date.millisecondsSinceEpoch / 60000,
     "isDone": future
         ? false
         : Random().nextInt(10) == 5
