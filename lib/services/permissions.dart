@@ -7,7 +7,7 @@ import 'package:apexo/utils/logger.dart';
 import 'package:apexo/services/login.dart';
 
 class _Permissions extends ObservablePersistingObject {
-  List<bool> list = launch.isDemo() ? [true, true, true, true, true, true] : [false, false, false, false, false, false];
+  List<bool> list = launch.isDemo ? [true, true, true, true, true, true] : [false, false, false, false, false, false];
   List<bool> editingList = [false, false, false, false, false, false];
 
   bool get edited {

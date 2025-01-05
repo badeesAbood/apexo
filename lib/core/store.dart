@@ -51,7 +51,7 @@ class Store<G extends Model> {
   bool deferredPresent = false;
   int lastProcessChanges = 0;
   bool? manualSyncOnly;
-  ObservableState<bool>? isDemo;
+  bool? isDemo;
   ObservableState<bool>? showArchived;
 
   Store({
@@ -114,7 +114,7 @@ class Store<G extends Model> {
   }
 
   _processChanges() async {
-    if (isDemo?.call() ?? false) notify();
+    if (isDemo == true) notify();
 
     if (local == null) {
       return;
@@ -183,7 +183,7 @@ class Store<G extends Model> {
   }
 
   Future<SyncResult> _syncTry() async {
-    if (isDemo?.call() ?? false) return SyncResult(exception: "sync is disabled in demo mode");
+    if (isDemo == true) return SyncResult(exception: "sync is disabled in demo mode");
     if (local == null || remote == null) {
       return SyncResult(exception: "local/remote persistence layers are not defined");
     }

@@ -65,7 +65,7 @@ class DashboardScreen extends StatelessWidget {
         ),
       ),
       const Divider(),
-      if (!launch.isDemo())
+      if (!launch.isDemo)
         Padding(
           padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
           child: InfoBar(

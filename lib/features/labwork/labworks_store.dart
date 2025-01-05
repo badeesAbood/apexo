@@ -37,7 +37,7 @@ class Labworks extends Store<Labwork> {
       local = SaveLocal(name: _storeName, uniqueId: simpleHash(login.url));
       await deleteMemoryAndLoadFromPersistence();
 
-      if (launch.isDemo()) {
+      if (launch.isDemo) {
         if (docs.isEmpty) setAll(demoLabworks(25));
       } else {
         remote = SaveRemote(

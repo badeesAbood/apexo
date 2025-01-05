@@ -90,7 +90,7 @@ class _LoginService extends ObservablePersistingObject {
       url = inputURL;
     }
 
-    if (online && launch.isDemo() == false) {
+    if (online && launch.isDemo == false) {
       try {
         // email and password authentication
         if (credentials.length == 2) {
@@ -154,7 +154,7 @@ class _LoginService extends ObservablePersistingObject {
     for (var callback in activators.values) {
       try {
         final secondStage = await callback();
-        if (online && launch.isDemo() == false) await secondStage();
+        if (online && launch.isDemo == false) await secondStage();
         notifyAndPersist(); // this would persist the data to the disk so we don't have to login again
       } catch (e, s) {
         logger("Error during running activators: $e", s);

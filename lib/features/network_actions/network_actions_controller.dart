@@ -50,7 +50,7 @@ class _NetworkActions {
         tooltip: "Synchronize",
         iconData: FluentIcons.sync,
         onPressed: () async {
-          if (launch.isDemo()) return;
+          if (launch.isDemo) return;
           await resync();
         },
         badge: isSyncing() > 0 ? "${isSyncing()}" : syncCallbacks.length.toString(),
@@ -64,7 +64,7 @@ class _NetworkActions {
         iconData:
             (network.isOnline() && !loginCtrl.proceededOffline()) ? FluentIcons.streaming : FluentIcons.streaming_off,
         onPressed: () async {
-          if (launch.isDemo()) return;
+          if (launch.isDemo) return;
           await login.activate(login.url, [login.token], true);
           for (var callback in reconnectCallbacks.values) {
             callback();

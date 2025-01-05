@@ -35,7 +35,7 @@ class Doctors extends Store<Doctor> {
       local = SaveLocal(name: _storeName, uniqueId: simpleHash(login.url));
       await deleteMemoryAndLoadFromPersistence();
 
-      if (launch.isDemo()) {
+      if (launch.isDemo) {
         if (docs.isEmpty) setAll(demoDoctors(5));
       } else {
         remote = SaveRemote(

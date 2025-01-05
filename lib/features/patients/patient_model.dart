@@ -75,7 +75,7 @@ class Patient extends Model {
 
   @override
   get avatar {
-    if (launch.isDemo()) return "https://person.alisaleem.workers.dev/";
+    if (launch.isDemo) return "https://person.alisaleem.workers.dev/";
     return imgs.isNotEmpty ? imgs.first : null;
   }
 

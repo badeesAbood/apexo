@@ -92,7 +92,7 @@ class Appointments extends Store<Appointment> {
       local = SaveLocal(name: _storeName, uniqueId: simpleHash(login.url));
       await deleteMemoryAndLoadFromPersistence();
 
-      if (launch.isDemo()) {
+      if (launch.isDemo) {
         if (docs.isEmpty) setAll(demoAppointments(1000));
       } else {
         remote = SaveRemote(

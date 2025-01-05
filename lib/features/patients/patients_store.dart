@@ -37,7 +37,7 @@ class Patients extends Store<Patient> {
       local = SaveLocal(name: _storeName, uniqueId: simpleHash(login.url));
       await deleteMemoryAndLoadFromPersistence();
 
-      if (launch.isDemo()) {
+      if (launch.isDemo) {
         if (docs.isEmpty) setAll(demoPatients(100));
       } else {
         remote = SaveRemote(

@@ -9,7 +9,7 @@ import 'package:apexo/features/doctors/doctors_store.dart';
 class Appointment extends Model {
   @override
   String? get avatar {
-    if (launch.isDemo()) return "https://person.alisaleem.workers.dev/";
+    if (launch.isDemo) return "https://person.alisaleem.workers.dev/";
     if (imgs.isEmpty) return null;
     return imgs.first;
   }

@@ -32,7 +32,7 @@ class _AcrylicTitleState extends State<AcrylicTitle> {
               BoxDecoration(color: color, borderRadius: BorderRadius.circular(100), boxShadow: kElevationToShadow[1]),
           child: FutureBuilder(
               future: widget.item.avatar != null
-                  ? (launch.isDemo()
+                  ? (launch.isDemo
                       ? demoAvatarRequestQue.add(() => getImage(widget.item.id, widget.item.avatar!))
                       : getImage(widget.item.id, widget.item.avatar!))
                   : null,
