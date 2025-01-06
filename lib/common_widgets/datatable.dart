@@ -585,7 +585,7 @@ class _DataTableSearchFieldState extends State<DataTableSearchField> {
                 ),
           key: WK.dataTableSearch,
           placeholder:
-              widget.placeholder.isEmpty ? txt("searchPlaceholder") : "${txt("filter")}: ${widget.placeholder}",
+              widget.placeholder.isEmpty ? "🔍 ${txt("searchPlaceholder")}" : "${txt("filter")}: ${widget.placeholder}",
           onChanged: widget.onChanged,
           controller: _controller,
           decoration: BoxDecoration(
