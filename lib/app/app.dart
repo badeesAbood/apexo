@@ -1,3 +1,4 @@
+import 'package:apexo/app/navbar.dart';
 import 'package:apexo/app/routes.dart';
 import 'package:apexo/common_widgets/back_button.dart';
 import 'package:apexo/common_widgets/dialogs/first_launch_dialog.dart';
@@ -25,12 +26,15 @@ class ApexoApp extends StatelessWidget {
             key: WK.fluentApp,
             locale: Locale(locale.s.$code),
             themeMode: ThemeMode.dark,
+            //theme: FluentThemeData.dark(), // TODO: this is how to implement dark mode
             home: MStreamBuilder(
               streams: [
                 version.latest.stream,
                 version.current.stream,
                 launch.dialogShown.stream,
-                launch.isFirstLaunch.stream
+                launch.isFirstLaunch.stream,
+                launch.open.stream,
+                routes.showBottomNav.stream,
               ],
               builder: (BuildContext context, _) {
                 if (version.newVersionAvailable) {
@@ -54,57 +58,75 @@ class ApexoApp extends StatelessWidget {
                     }
                   });
                 }
-                return MStreamBuilder(
-                  streams: [launch.open.stream, routes.currentRouteIndex.stream],
-                  key: WK.builder,
-                  builder: (context, _) => PopScope(
-                    canPop: false,
-                    onPopInvokedWithResult: (_, __) => routes.goBack(), // TODO: test this on your phone
-                    child: NavigationView(
-                      appBar: NavigationAppBar(
-                        automaticallyImplyLeading: false,
-                        title: launch.open() ? Txt(routes.currentRoute.title) : Txt(txt("login")),
-                        leading: routes.history.isEmpty ? null : const BackButton(key: WK.backButton),
-                        // ignore: prefer_const_constructors
-                        actions: NetworkActions(key: WK.globalActions),
-                      ),
-                      content: launch.open() ? null : const Login(key: WK.loginScreen),
-                      pane: !launch.open()
-                          ? null
-                          : NavigationPane(
-                              autoSuggestBox: const CurrentUser(key: WK.currentUserSection),
-                              autoSuggestBoxReplacement: const Icon(FluentIcons.contact),
-                              header: const AppLogo(),
-                              selected: routes.currentRouteIndex(),
-                              displayMode: PaneDisplayMode.auto,
-                              items:
-                                  List<NavigationPaneItem>.from(routes.allRoutes.where((p) => p.onFooter != true).map(
-                                        (route) => PaneItem(
-                                          key: Key("${route.identifier}_screen_button"),
-                                          icon: route.accessible ? Icon(route.icon) : const Icon(FluentIcons.lock),
-                                          body: route.accessible ? (route.screen)() : const SizedBox(),
-                                          title: Txt(route.title),
-                                          onTap: () => route.accessible ? routes.navigate(route) : null,
-                                          enabled: route.accessible,
-                                        ),
-                                      )),
-                              footerItems: [
-                                ...routes.allRoutes.where((p) => p.onFooter == true).map(
-                                      (route) => PaneItem(
-                                        icon: Icon(route.icon),
-                                        body: (route.screen)(),
-                                        title: Txt(route.title),
-                                        onTap: () => routes.navigate(route),
-                                      ),
-                                    ),
-                              ],
-                            ),
-                    ),
-                  ),
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [buildAppLayout(), if (routes.showBottomNav() && launch.open()) const BottomNavBar()],
                 );
               },
             ),
           );
         });
+  }
+
+  MStreamBuilder<Object> buildAppLayout() {
+    return MStreamBuilder(
+      streams: [launch.open.stream, routes.currentRouteIndex.stream],
+      key: WK.builder,
+      builder: (context, _) => PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (_, __) => routes.goBack(), // TODO: test this on your phone
+        child: NavigationView(
+          appBar: NavigationAppBar(
+            automaticallyImplyLeading: false,
+            title: launch.open() ? Txt(routes.currentRoute.title) : Txt(txt("login")),
+            leading: routes.history.isEmpty ? null : const BackButton(key: WK.backButton),
+            // ignore: prefer_const_constructors
+            actions: NetworkActions(key: WK.globalActions),
+          ),
+          onDisplayModeChanged: (mode) {
+            if (mode == PaneDisplayMode.minimal) {
+              routes.showBottomNav(true);
+            } else {
+              routes.showBottomNav(false);
+            }
+          },
+          content: launch.open() ? null : const Login(key: WK.loginScreen),
+          pane: !launch.open()
+              ? null
+              : NavigationPane(
+                  autoSuggestBox: const CurrentUser(key: WK.currentUserSection),
+                  autoSuggestBoxReplacement: const Icon(FluentIcons.contact),
+                  header: const AppLogo(),
+                  selected: routes.currentRouteIndex(),
+                  displayMode: PaneDisplayMode.auto,
+                  toggleable: false,
+                  items: List<NavigationPaneItem>.from(routes.allRoutes.where((p) => p.onFooter != true).map(
+                        (route) => PaneItem(
+                          key: Key("${route.identifier}_screen_button"),
+                          icon: route.accessible ? Icon(route.icon) : const Icon(FluentIcons.lock),
+                          body: route.accessible
+                              ? Padding(
+                                  padding: EdgeInsets.only(bottom: routes.showBottomNav() ? 60 : 0),
+                                  child: (route.screen)())
+                              : const SizedBox(),
+                          title: Txt(route.title),
+                          onTap: () => route.accessible ? routes.navigate(route) : null,
+                          enabled: route.accessible,
+                        ),
+                      )),
+                  footerItems: [
+                    ...routes.allRoutes.where((p) => p.onFooter == true).map(
+                          (route) => PaneItem(
+                            icon: Icon(route.icon),
+                            body: (route.screen)(),
+                            title: Txt(route.title),
+                            onTap: () => routes.navigate(route),
+                          ),
+                        ),
+                  ],
+                ),
+        ),
+      ),
+    );
   }
 }

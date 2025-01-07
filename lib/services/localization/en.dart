@@ -22,6 +22,8 @@ class En {
     "restore": "Restore",
     "logout": "Logout",
     "noResultsFound": "No results found",
+    "home": "Home",
+    "calendar": "Calendar",
 
     // call
     "callLaboratory": "Call Laboratory",

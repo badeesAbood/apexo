@@ -32,6 +32,7 @@ class Route {
   String title;
   String identifier;
   Widget Function() screen;
+  String navbarTitle;
 
   /// show in the navigation pane and thus being activated
   bool accessible;
@@ -47,6 +48,7 @@ class Route {
     required this.identifier,
     required this.icon,
     required this.screen,
+    this.navbarTitle = "",
     this.accessible = true,
     this.onFooter = false,
     this.onSelect,
@@ -61,6 +63,7 @@ class _Routes {
           icon: FluentIcons.home,
           screen: DashboardScreen.new,
           accessible: true,
+          navbarTitle: txt("home"),
           onSelect: () {
             chartsCtrl.resetSelected();
             patients.synchronize();
@@ -80,6 +83,7 @@ class _Routes {
         Route(
           title: txt("patients"),
           identifier: "patients",
+          navbarTitle: txt("patients"),
           icon: FluentIcons.medication_admin,
           screen: PatientsScreen.new,
           accessible: permissions.list[1] || login.isAdmin,
@@ -90,6 +94,7 @@ class _Routes {
         Route(
           title: txt("appointments"),
           identifier: "calendar",
+          navbarTitle: txt("calendar"),
           icon: FluentIcons.calendar,
           screen: CalendarScreen.new,
           accessible: permissions.list[2] || login.isAdmin,
@@ -100,6 +105,7 @@ class _Routes {
         Route(
           title: txt("labworks"),
           identifier: "labworks",
+          navbarTitle: txt("labworks"),
           icon: FluentIcons.manufacturing,
           screen: LabworksScreen.new,
           accessible: permissions.list[3] || login.isAdmin,
@@ -110,6 +116,7 @@ class _Routes {
         Route(
           title: txt("expenses"),
           identifier: "expenses",
+          navbarTitle: txt("expenses"),
           icon: FluentIcons.receipt_processing,
           screen: ExpensesScreen.new,
           accessible: permissions.list[4] || login.isAdmin,
@@ -147,7 +154,8 @@ class _Routes {
       ];
 
   late List<Route> allRoutes = genAllRoutes();
-
+  final showBottomNav = ObservableState(false);
+  final bottomNavFlyoutController = FlyoutController();
   final currentRouteIndex = ObservableState(0);
   List<int> history = [];
 

@@ -21,6 +21,8 @@ class Ar implements En {
     "restore": "استعادة",
     "logout": "خروج",
     "noResultsFound": "لم يتم العثور على نتائج",
+    "home": "الرئيسية",
+    "calendar": "الرزنامة",
 
     // call
     "callLaboratory": "اتصل بالمختبر",
