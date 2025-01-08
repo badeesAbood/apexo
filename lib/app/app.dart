@@ -106,7 +106,7 @@ class ApexoApp extends StatelessWidget {
                           icon: route.accessible ? Icon(route.icon) : const Icon(FluentIcons.lock),
                           body: route.accessible
                               ? Padding(
-                                  padding: EdgeInsets.only(bottom: routes.showBottomNav() ? 60 : 0),
+                                  padding: EdgeInsets.only(bottom: routes.showBottomNav() ? 55 : 0),
                                   child: (route.screen)())
                               : const SizedBox(),
                           title: Txt(route.title),

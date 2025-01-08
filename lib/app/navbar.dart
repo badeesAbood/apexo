@@ -11,13 +11,12 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned(
       bottom: 0,
-      height: 73,
+      height: 55,
       width: MediaQuery.of(context).size.width,
-      child: Padding(
-        padding: const EdgeInsets.all(9),
+      child: Container(
+        decoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.grey.withValues(alpha: 0.2)))),
         child: Acrylic(
-          elevation: 20,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+          elevation: 30,
           child: Padding(
             padding: const EdgeInsets.all(5),
             child: StreamBuilder(
