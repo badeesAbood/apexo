@@ -85,7 +85,7 @@ class WeekAgendaCalendarState<Item extends Appointment> extends State<WeekAgenda
         Acrylic(
           elevation: 150,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 13),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
