@@ -11,7 +11,8 @@ class AcrylicTitle extends StatefulWidget {
   final Model item;
   final double radius;
   final double maxWidth;
-  const AcrylicTitle({super.key, required this.item, this.radius = 15, this.maxWidth = 130.0});
+  final IconData? icon;
+  const AcrylicTitle({super.key, required this.item, this.radius = 15, this.maxWidth = 130.0, this.icon});
 
   @override
   State<AcrylicTitle> createState() => _AcrylicTitleState();
@@ -48,7 +49,9 @@ class _AcrylicTitleState extends State<AcrylicTitle> {
                   child: widget.item.archived == true
                       ? Icon(FluentIcons.archive, size: widget.radius)
                       : snapshot.data == null
-                          ? Txt(widget.item.title.substring(0, 1))
+                          ? widget.icon == null
+                              ? Txt(widget.item.title.substring(0, 1))
+                              : Icon(widget.icon, size: widget.radius)
                           : null,
                 );
               }),
