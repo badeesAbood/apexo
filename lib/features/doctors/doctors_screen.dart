@@ -1,4 +1,6 @@
+import 'package:apexo/core/multi_stream_builder.dart';
 import 'package:apexo/features/appointments/appointment_model.dart';
+import 'package:apexo/features/appointments/appointments_store.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:apexo/features/appointments/open_appointment_panel.dart';
 import 'package:apexo/common_widgets/archive_selected.dart';
@@ -19,8 +21,8 @@ class DoctorsScreen extends StatelessWidget {
     return ScaffoldPage(
       key: WK.doctorsScreen,
       padding: EdgeInsets.zero,
-      content: StreamBuilder(
-          stream: doctors.observableMap.stream,
+      content: MStreamBuilder(
+          streams: [doctors.observableMap.stream, appointments.observableMap.stream],
           builder: (context, snapshot) {
             return DataTable<Doctor>(
               items: doctors.present.values.toList(),
