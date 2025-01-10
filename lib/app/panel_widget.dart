@@ -94,8 +94,8 @@ class _PanelScreenState extends State<PanelScreen> {
           padding: EdgeInsets.all(widget.panel.tabs[widget.panel.selectedTab()].padding.toDouble()),
           constraints: BoxConstraints(
               minHeight: widget.panel.tabs[widget.panel.selectedTab()].footer == null
-                  ? widget.height - 156
-                  : widget.height - 200),
+                  ? widget.height - 161
+                  : widget.height - 206),
           child: widget.panel.tabs[widget.panel.selectedTab()].body,
         ),
       ),
