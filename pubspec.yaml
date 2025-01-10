@@ -15,7 +15,6 @@ dependencies:
   cupertino_icons: ^1.0.6
   fluent_ui: ^4.4.0
   hive_flutter: ^1.1.0
-  modal_bottom_sheet: ^3.0.0
   flutter_svg: ^2.0.10+1
   intl: ^0.19.0
   table_calendar: ^3.1.2

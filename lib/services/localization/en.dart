@@ -73,6 +73,8 @@ class En {
 
     // doctors
     "doctor": "Doctor",
+    "newDoctor": "New Doctor",
+    "doctorDetails": "Doctor Details",
     "pastAppointments": "Past appointments",
     "upcomingAppointments": "Upcoming appointments",
     "doctorName": "Doctor name",
@@ -123,6 +125,7 @@ class En {
     "isDone": "Appointment is done",
 
     // patients
+    "patientDetails": "Patient Details",
     "age": "Age",
     "gender": "Gender",
     "last visit": "Last visit",

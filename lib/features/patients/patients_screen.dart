@@ -1,10 +1,10 @@
 import 'package:apexo/common_widgets/dialogs/export_patients_dialog.dart';
+import 'package:apexo/features/appointments/appointment_model.dart';
 import 'package:apexo/services/localization/locale.dart';
-import 'package:apexo/features/appointments/single_appointment_modal.dart';
-import 'package:apexo/features/patients/single_patient_modal.dart';
+import 'package:apexo/features/appointments/open_appointment_panel.dart';
+import 'package:apexo/features/patients/open_patient_panel.dart';
 import 'package:apexo/common_widgets/archive_selected.dart';
 import 'package:apexo/common_widgets/archive_toggle.dart';
-import 'package:apexo/features/appointments/appointments_store.dart';
 import 'package:apexo/features/patients/patient_model.dart';
 import 'package:apexo/features/patients/patients_store.dart';
 import 'package:apexo/widget_keys.dart';
@@ -29,14 +29,7 @@ class PatientsScreen extends StatelessWidget {
               actions: [
                 DataTableAction(
                   callback: (_) async {
-                    openSinglePatient(
-                      context: context,
-                      json: {},
-                      editing: false,
-                      title: txt("addNewPatient"),
-                      onSave: patients.set,
-                      showContinue: true,
-                    );
+                    openPatient();
                   },
                   icon: FluentIcons.add_friend,
                   title: txt("add"),
@@ -55,15 +48,7 @@ class PatientsScreen extends StatelessWidget {
                 ),
               ],
               furtherActions: [const SizedBox(width: 5), ArchiveToggle(notifier: patients.notify)],
-              onSelect: (item) {
-                openSinglePatient(
-                  context: context,
-                  json: item.toJson(),
-                  editing: true,
-                  title: txt("editPatient"),
-                  onSave: patients.set,
-                );
-              },
+              onSelect: openPatient,
               itemActions: [
                 ItemAction(
                   icon: FluentIcons.add_event,
@@ -72,13 +57,7 @@ class PatientsScreen extends StatelessWidget {
                     final patient = patients.get(id);
                     if (patient == null) return;
                     if (context.mounted) {
-                      openSingleAppointment(
-                        context: context,
-                        json: {"patientID": id},
-                        title: txt("addAppointment"),
-                        onSave: appointments.set,
-                        editing: false,
-                      );
+                      openAppointment(Appointment.fromJson({"patientID": id}));
                     }
                   },
                 ),

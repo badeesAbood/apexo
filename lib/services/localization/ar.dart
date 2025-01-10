@@ -71,6 +71,8 @@ class Ar implements En {
 
     // doctors
     "doctor": "طبيب",
+    "newDoctor": "طبيب جديد",
+    "doctorDetails": "تفاصيل الطبيب",
     "pastAppointments": "المواعيد السابقة",
     "upcomingAppointments": "المواعيد القادمة",
     "doctorName": "اسم الطبيب",
@@ -121,6 +123,7 @@ class Ar implements En {
     "isDone": "تم الانتهاء منه",
 
     // patients
+    "patientDetails": "تفاصيل المريض",
     "age": "العمر",
     "gender": "الجنس",
     "last visit": "آخر زيارة",

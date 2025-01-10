@@ -1,5 +1,5 @@
 import 'package:apexo/services/localization/locale.dart';
-import 'package:apexo/features/doctors/single_doctor_modal.dart';
+import 'package:apexo/features/doctors/open_doctor_panel.dart';
 import 'package:apexo/common_widgets/tag_input.dart';
 import 'package:apexo/features/doctors/doctor_model.dart';
 import 'package:apexo/features/doctors/doctors_store.dart';
@@ -22,15 +22,7 @@ class OperatorsPicker extends StatelessWidget {
       initialValue: value.map((id) => TagInputItem(value: id, label: doctors.get(id)!.title)).toList(),
       onItemTap: (tag) {
         Doctor? tapped = doctors.get(tag.value ?? "");
-        Map<String, dynamic> json = tapped != null ? tapped.toJson() : {};
-        Navigator.of(context).pop();
-        openSingleDoctor(
-          context: context,
-          json: json,
-          title: txt("doctor"),
-          onSave: doctors.set,
-          editing: true,
-        );
+        openDoctor(tapped);
       },
       strict: true,
       limit: 999,

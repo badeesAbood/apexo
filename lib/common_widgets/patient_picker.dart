@@ -1,5 +1,5 @@
 import 'package:apexo/services/localization/locale.dart';
-import 'package:apexo/features/patients/single_patient_modal.dart';
+import 'package:apexo/features/patients/open_patient_panel.dart';
 import 'package:apexo/common_widgets/tag_input.dart';
 import 'package:apexo/features/patients/patient_model.dart';
 import 'package:apexo/features/patients/patients_store.dart';
@@ -17,15 +17,7 @@ class PatientPicker extends StatelessWidget {
       key: WK.fieldPatient,
       onItemTap: (tag) {
         Patient? tapped = patients.get(tag.value ?? "");
-        Map<String, dynamic> json = tapped != null ? tapped.toJson() : {};
-        Navigator.of(context).pop();
-        openSinglePatient(
-          context: context,
-          json: json,
-          title: "Patient Details",
-          onSave: patients.set,
-          editing: true,
-        );
+        openPatient(tapped);
       },
       suggestions: patients.present.values.map((e) => TagInputItem(value: e.id, label: e.title)).toList(),
       onChanged: (s) {

@@ -1,5 +1,5 @@
 import 'package:apexo/services/localization/locale.dart';
-import 'package:apexo/features/labwork/single_labwork_modal.dart';
+import 'package:apexo/features/labwork/open_labwork_panel.dart';
 import 'package:apexo/common_widgets/archive_selected.dart';
 import 'package:apexo/common_widgets/archive_toggle.dart';
 import 'package:apexo/features/labwork/labwork_model.dart';
@@ -28,27 +28,14 @@ class LabworksScreen extends StatelessWidget {
                     items: labworks.present.values.toList(),
                     actions: [
                       DataTableAction(
-                        callback: (_) => openSingleLabwork(
-                          context: context,
-                          json: {},
-                          title: txt("newLabwork"),
-                          onSave: labworks.set,
-                          editing: false,
-                        ),
+                        callback: (_) => openLabwork(),
                         icon: FluentIcons.manufacturing,
                         title: txt("add"),
                       ),
                       archiveSelected(labworks)
                     ],
                     furtherActions: [const SizedBox(width: 5), ArchiveToggle(notifier: labworks.notify)],
-                    onSelect: (item) => {
-                      openSingleLabwork(
-                          context: context,
-                          json: item.toJson(),
-                          title: txt("labwork"),
-                          onSave: labworks.set,
-                          editing: true)
-                    },
+                    onSelect: openLabwork,
                     itemActions: [
                       ItemAction(
                         icon: FluentIcons.phone,

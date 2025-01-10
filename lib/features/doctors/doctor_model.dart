@@ -1,4 +1,5 @@
 import 'package:apexo/core/model.dart';
+import 'package:apexo/services/archived.dart';
 import 'package:apexo/services/login.dart';
 import 'package:apexo/features/appointments/appointment_model.dart';
 import 'package:apexo/features/appointments/appointments_store.dart';
@@ -8,17 +9,23 @@ final allDays = StartingDayOfWeek.values.map((e) => e.name).toList();
 
 class Doctor extends Model {
   List<Appointment> get allAppointments {
-    return appointments.byDoctor[id]?["all"] ?? []
+    return (appointments.byDoctor[id]?["all"] ?? [])
+        .where((appointment) => appointment.archived != true || showArchived())
+        .toList()
       ..sort((a, b) => a.date.compareTo(b.date));
   }
 
   List<Appointment> get upcomingAppointments {
-    return appointments.byDoctor[id]?["upcoming"] ?? []
+    return (appointments.byDoctor[id]?["upcoming"] ?? [])
+        .where((appointment) => appointment.archived != true || showArchived())
+        .toList()
       ..sort((a, b) => a.date.compareTo(b.date));
   }
 
   List<Appointment> get pastDoneAppointments {
-    return appointments.byDoctor[id]?["past"] ?? []
+    return (appointments.byDoctor[id]?["past"] ?? [])
+        .where((appointment) => appointment.archived != true || showArchived())
+        .toList()
       ..sort((a, b) => a.date.compareTo(b.date));
   }
 

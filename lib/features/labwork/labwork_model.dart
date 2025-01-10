@@ -69,7 +69,7 @@ class Labwork extends Model {
     /* 3 */ if (note != d.note) json['note'] = note;
     /* 4 */ if (price != d.price) json['price'] = price;
     /* 5 */ if (paid != d.paid) json['paid'] = paid;
-    /* 6 */ if (date != d.date) json['date'] = (date.millisecondsSinceEpoch / (60 * 60 * 1000)).round();
+    /* 6 */ json['date'] = (date.millisecondsSinceEpoch / (60 * 60 * 1000)).round();
     /* 7 */ if (lab != d.lab) json['lab'] = lab;
     /* 8 */ if (phoneNumber != d.phoneNumber) json['phoneNumber'] = phoneNumber;
     return json;

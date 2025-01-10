@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:apexo/app/routes.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:apexo/features/patients/patient_model.dart';
 import 'package:fluent_ui/fluent_ui.dart';
@@ -154,7 +153,7 @@ class _DentalChartState extends State<DentalChart> {
                         child: Txt(txt("save")),
                         onPressed: () {
                           setState(() {
-                            routes.openPatient.teeth[openTooth] = _noteController.text;
+                            widget.patient.teeth[openTooth] = _noteController.text;
                             openTooth = "";
                           });
                         })

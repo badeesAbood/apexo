@@ -4,16 +4,14 @@ import 'package:apexo/utils/color_based_on_payment.dart';
 import 'package:apexo/utils/colors_without_yellow.dart';
 import 'package:apexo/utils/get_deterministic_item.dart';
 import 'package:apexo/services/localization/locale.dart';
-import 'package:apexo/features/appointments/single_appointment_modal.dart';
-import 'package:apexo/features/patients/single_patient_modal.dart';
+import 'package:apexo/features/appointments/open_appointment_panel.dart';
+import 'package:apexo/features/patients/open_patient_panel.dart';
 import 'package:apexo/common_widgets/acrylic_title.dart';
 import 'package:apexo/common_widgets/grid_gallery.dart';
-import 'package:apexo/features/doctors/single_doctor_modal.dart';
+import 'package:apexo/features/doctors/open_doctor_panel.dart';
 import 'package:apexo/features/appointments/appointment_model.dart';
 import 'package:apexo/features/appointments/appointments_store.dart';
-import 'package:apexo/features/patients/patients_store.dart';
 import 'package:apexo/features/settings/settings_stores.dart';
-import 'package:apexo/features/doctors/doctors_store.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:intl/intl.dart' as intl;
@@ -78,13 +76,7 @@ class AppointmentCard extends StatelessWidget {
                             txt("patient"),
                             GestureDetector(
                                 onTap: () {
-                                  openSinglePatient(
-                                    context: context,
-                                    json: appointment.patient!.toJson(),
-                                    title: txt("patient"),
-                                    onSave: patients.set,
-                                    editing: true,
-                                  );
+                                  openPatient(appointment.patient);
                                 },
                                 child: AcrylicTitle(item: appointment.patient!)),
                             FluentIcons.medical,
@@ -98,13 +90,7 @@ class AppointmentCard extends StatelessWidget {
                               children: appointment.operators
                                   .map((e) => GestureDetector(
                                       onTap: () {
-                                        openSingleDoctor(
-                                          context: context,
-                                          json: e.toJson(),
-                                          title: txt("doctor"),
-                                          onSave: doctors.set,
-                                          editing: true,
-                                        );
+                                        openDoctor(e);
                                       },
                                       child: AcrylicTitle(item: e, maxWidth: 115)))
                                   .toList(),
@@ -344,13 +330,7 @@ class AppointmentCard extends StatelessWidget {
         IconButton(
           icon: const Icon(FluentIcons.edit, size: 17),
           onPressed: () {
-            openSingleAppointment(
-              context: context,
-              json: appointment.toJson(),
-              title: txt("editingAppointment"),
-              onSave: appointments.set,
-              editing: true,
-            );
+            openAppointment(appointment);
           },
           iconButtonMode: IconButtonMode.large,
         )

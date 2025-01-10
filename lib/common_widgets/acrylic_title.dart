@@ -7,23 +7,21 @@ import '../core/model.dart';
 import '../utils/get_deterministic_item.dart';
 import '../utils/colors_without_yellow.dart';
 
-class AcrylicTitle extends StatefulWidget {
+class AcrylicTitle extends StatelessWidget {
   final Model item;
   final double radius;
   final double maxWidth;
   final IconData? icon;
-  const AcrylicTitle({super.key, required this.item, this.radius = 15, this.maxWidth = 130.0, this.icon});
+  final Color? predefinedColor;
+  const AcrylicTitle(
+      {super.key, required this.item, this.radius = 15, this.maxWidth = 130.0, this.icon, this.predefinedColor});
 
-  @override
-  State<AcrylicTitle> createState() => _AcrylicTitleState();
-}
-
-class _AcrylicTitleState extends State<AcrylicTitle> {
   @override
   Widget build(BuildContext context) {
-    final Color color = (widget.item.archived == true
-        ? Colors.grey.withValues(alpha: 0.2)
-        : getDeterministicItem(colorsWithoutYellow, (widget.item.title)));
+    final Color color = predefinedColor ??
+        (item.archived == true
+            ? Colors.grey.withValues(alpha: 0.2)
+            : getDeterministicItem(colorsWithoutYellow, (item.title)));
     return SizedBox(
       width: 200,
       child: Row(children: [
@@ -32,26 +30,26 @@ class _AcrylicTitleState extends State<AcrylicTitle> {
           decoration:
               BoxDecoration(color: color, borderRadius: BorderRadius.circular(100), boxShadow: kElevationToShadow[1]),
           child: FutureBuilder(
-              future: widget.item.avatar != null
+              future: item.avatar != null
                   ? (launch.isDemo
-                      ? demoAvatarRequestQue.add(() => getImage(widget.item.id, widget.item.avatar!))
-                      : getImage(widget.item.id, widget.item.avatar!))
+                      ? demoAvatarRequestQue.add(() => getImage(item.id, item.avatar!))
+                      : getImage(item.id, item.avatar!))
                   : null,
               builder: (context, snapshot) {
-                if (widget.item.title.isEmpty) {
-                  widget.item.title = " ";
+                if (item.title.isEmpty) {
+                  item.title = " ";
                 }
                 return CircleAvatar(
-                  key: Key(widget.item.id),
-                  radius: widget.radius,
+                  key: Key(item.id),
+                  radius: radius,
                   backgroundColor: color,
                   backgroundImage: (snapshot.data != null) ? snapshot.data : null,
-                  child: widget.item.archived == true
-                      ? Icon(FluentIcons.archive, size: widget.radius)
+                  child: item.archived == true
+                      ? Icon(FluentIcons.archive, size: radius)
                       : snapshot.data == null
-                          ? widget.icon == null
-                              ? Txt(widget.item.title.substring(0, 1))
-                              : Icon(widget.icon, size: widget.radius)
+                          ? icon == null
+                              ? Txt(item.title.substring(0, 1))
+                              : Icon(icon, size: radius)
                           : null,
                 );
               }),
@@ -64,11 +62,10 @@ class _AcrylicTitleState extends State<AcrylicTitle> {
             ),
             luminosityAlpha: 0.3,
             child: Container(
-              constraints:
-                  BoxConstraints(minWidth: widget.maxWidth < 100 ? widget.maxWidth : 100, maxWidth: widget.maxWidth),
+              constraints: BoxConstraints(minWidth: maxWidth < 100 ? maxWidth : 100, maxWidth: maxWidth),
               padding: const EdgeInsets.fromLTRB(12, 5, 12, 5),
               child: Txt(
-                widget.item.title,
+                item.title,
                 overflow: TextOverflow.ellipsis,
               ),
             ),

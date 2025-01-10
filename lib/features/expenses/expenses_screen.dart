@@ -1,5 +1,5 @@
 import 'package:apexo/services/localization/locale.dart';
-import 'package:apexo/features/expenses/single_expense_modal.dart';
+import 'package:apexo/features/expenses/open_expense_panel.dart';
 import 'package:apexo/common_widgets/archive_selected.dart';
 import 'package:apexo/common_widgets/archive_toggle.dart';
 import 'package:apexo/common_widgets/datatable.dart';
@@ -29,12 +29,7 @@ class ExpensesScreen extends StatelessWidget {
                     actions: [
                       DataTableAction(
                         callback: (_) {
-                          openSingleReceipt(
-                              context: context,
-                              json: {},
-                              title: txt("newReceipt"),
-                              onSave: expenses.set,
-                              editing: false);
+                          openExpense();
                         },
                         icon: FluentIcons.bill,
                         title: txt("add"),
@@ -42,14 +37,7 @@ class ExpensesScreen extends StatelessWidget {
                       archiveSelected(expenses)
                     ],
                     furtherActions: [const SizedBox(width: 5), ArchiveToggle(notifier: expenses.notify)],
-                    onSelect: (item) => {
-                      openSingleReceipt(
-                          context: context,
-                          json: item.toJson(),
-                          title: txt("receipt"),
-                          onSave: expenses.set,
-                          editing: true)
-                    },
+                    onSelect: (item) => {openExpense(item)},
                     itemActions: [
                       ItemAction(
                         icon: FluentIcons.phone,

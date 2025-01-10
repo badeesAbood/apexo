@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:apexo/core/model.dart';
+import 'package:apexo/core/store.dart';
 import 'package:apexo/features/dashboard/dashboard_screen.dart';
 import 'package:apexo/features/expenses/expenses_screen.dart';
 import 'package:apexo/features/labwork/labworks_screen.dart';
@@ -26,6 +30,45 @@ import 'package:apexo/features/settings/settings_screen.dart';
 import '../core/observable.dart';
 import "../features/appointments/appointments_store.dart";
 import "../features/settings/settings_stores.dart";
+
+class PanelTab {
+  final String title;
+  final IconData icon;
+  final Widget body;
+  final double padding;
+  final bool onlyIfSaved;
+  final Widget? footer;
+  PanelTab({
+    required this.title,
+    required this.icon,
+    required this.body,
+    this.footer,
+    this.onlyIfSaved = false,
+    this.padding = 10,
+  });
+}
+
+class Panel<T extends Model> {
+  final T item;
+  final Store store;
+  final List<PanelTab> tabs;
+  String? title;
+  final inProgress = ObservableState(false);
+  final selectedTab = ObservableState<int>(0);
+  final ObservableState<bool> enableSaveButton = ObservableState(false);
+  late String savedJson;
+  late String identifier;
+  final Completer<T> result = Completer<T>();
+  Panel({
+    required this.item,
+    required this.store,
+    required this.tabs,
+    this.title,
+  }) {
+    identifier = store.get(item.id) == null ? "new+${store.local?.name}" : item.id;
+    savedJson = jsonEncode(item.toJson());
+  }
+}
 
 class Route {
   IconData icon;
@@ -56,6 +99,18 @@ class Route {
 }
 
 class _Routes {
+  final ObservableState<List<Panel>> panels = ObservableState([]);
+  void openPanel(Panel panel) {
+    final foundPanel = panels().indexWhere((element) => element.identifier == panel.identifier);
+    if (foundPanel > -1) {
+      // bring to front
+      panels(panels()..add(panels().removeAt(foundPanel)));
+    } else {
+      // add to end
+      panels(panels()..add(panel));
+    }
+  }
+
   List<Route> genAllRoutes() => [
         Route(
           title: txt("dashboard"),
@@ -176,6 +231,9 @@ class _Routes {
   }
 
   goBack() {
+    if (panels().isNotEmpty) {
+      return panels(panels()..removeLast());
+    }
     if (history.isNotEmpty) {
       currentRouteIndex(history.removeLast());
       if (currentRoute.onSelect != null) {

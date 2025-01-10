@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:apexo/services/localization/locale.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
@@ -17,7 +18,7 @@ FlTitlesData titles(List<String> labels) {
               offset: const Offset(0, -10),
               child: Transform.rotate(
                 angle: math.pi / -4,
-                child: Text(
+                child: Txt(
                   labels[value.toInt()],
                   style: const TextStyle(fontSize: 12, color: Colors.black),
                 ),

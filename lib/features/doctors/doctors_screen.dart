@@ -1,9 +1,9 @@
+import 'package:apexo/features/appointments/appointment_model.dart';
 import 'package:apexo/services/localization/locale.dart';
-import 'package:apexo/features/appointments/single_appointment_modal.dart';
+import 'package:apexo/features/appointments/open_appointment_panel.dart';
 import 'package:apexo/common_widgets/archive_selected.dart';
 import 'package:apexo/common_widgets/archive_toggle.dart';
-import 'package:apexo/features/doctors/single_doctor_modal.dart';
-import 'package:apexo/features/appointments/appointments_store.dart';
+import 'package:apexo/features/doctors/open_doctor_panel.dart';
 import 'package:apexo/features/doctors/doctors_store.dart';
 import 'package:apexo/features/doctors/doctor_model.dart';
 import 'package:apexo/widget_keys.dart';
@@ -26,41 +26,22 @@ class DoctorsScreen extends StatelessWidget {
               items: doctors.present.values.toList(),
               actions: [
                 DataTableAction(
-                  callback: (_) => openSingleDoctor(
-                    context: context,
-                    json: {},
-                    title: "${txt("add")} ${txt("doctor")}",
-                    onSave: doctors.set,
-                    editing: false,
-                    showContinue: true,
-                  ),
+                  callback: (_) => openDoctor(),
                   icon: FluentIcons.medical,
                   title: txt("add"),
                 ),
                 archiveSelected(doctors)
               ],
               furtherActions: [const SizedBox(width: 5), ArchiveToggle(notifier: doctors.notify)],
-              onSelect: (item) => openSingleDoctor(
-                context: context,
-                json: item.toJson(),
-                title: "${txt("edit")} ${txt("doctor")}",
-                onSave: doctors.set,
-                editing: true,
-              ),
+              onSelect: (item) => openDoctor(item),
               itemActions: [
                 ItemAction(
                   icon: FluentIcons.add_event,
                   title: txt("addAppointment"),
                   callback: (id) async {
-                    openSingleAppointment(
-                      context: context,
-                      json: {
-                        "operatorsIDs": [id]
-                      },
-                      title: txt("addAppointment"),
-                      onSave: appointments.set,
-                      editing: false,
-                    );
+                    openAppointment(Appointment.fromJson({
+                      "operatorsIDs": [id]
+                    }));
                   },
                 ),
                 ItemAction(

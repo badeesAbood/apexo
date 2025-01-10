@@ -36,8 +36,6 @@ class WK {
   static const dataTableListView = Key("dataTableListView");
   static const toggleSortDirection = Key("toggleSortDirection");
   static const closeModal = Key("closeModal");
-  static const tabbedModalBack = Key("tabbedModalBack");
-  static const tabbedModalNext = Key("tabbedModalNext");
   static const fieldDutyDays = Key("fieldDutyDays");
   static const fieldDoctorEmail = Key("fieldDoctorEmail");
   static const fieldDoctorName = Key("fieldDoctorName");
@@ -80,5 +78,4 @@ class WK {
   static const calendarSelected = Key("calendarSelected");
   static const calendarAppointmentTile = Key("calendarAppointmentTile");
   static const calendarDayButton = Key("calendarDayButton");
-  static const tabbedModalActions = Key("tabbedModalActions");
 }

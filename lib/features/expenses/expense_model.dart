@@ -51,7 +51,7 @@ class Expense extends Model {
     /* 1 */ if (note != d.note) json['note'] = note;
     /* 2 */ if (amount != d.amount) json['amount'] = amount;
     /* 3 */ if (paid != d.paid) json['paid'] = paid;
-    /* 4 */ if (date != d.date) json['date'] = (date.millisecondsSinceEpoch / (60 * 60 * 1000)).round();
+    /* 4 */ json['date'] = (date.millisecondsSinceEpoch / (60 * 60 * 1000)).round();
     /* 5 */ if (issuer != d.issuer) json['issuer'] = issuer;
     /* 6 */ if (phoneNumber != d.phoneNumber) json['phoneNumber'] = phoneNumber;
     /* 7 */ if (items.isNotEmpty) json['items'] = items;
