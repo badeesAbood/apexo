@@ -13,8 +13,16 @@ class AcrylicTitle extends StatelessWidget {
   final double maxWidth;
   final IconData? icon;
   final Color? predefinedColor;
-  const AcrylicTitle(
-      {super.key, required this.item, this.radius = 15, this.maxWidth = 130.0, this.icon, this.predefinedColor});
+  final double? fontSize;
+  const AcrylicTitle({
+    super.key,
+    required this.item,
+    this.radius = 15,
+    this.maxWidth = 130.0,
+    this.icon,
+    this.predefinedColor,
+    this.fontSize,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +75,7 @@ class AcrylicTitle extends StatelessWidget {
               child: Txt(
                 item.title,
                 overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: fontSize ?? 14),
               ),
             ),
           ),
