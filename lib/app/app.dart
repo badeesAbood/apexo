@@ -169,27 +169,6 @@ class ApexoApp extends StatelessWidget {
                           panel: routes.panels().last,
                         ),
                 ),
-                AnimatedPositioned(
-                    top: 2,
-                    right: locale.s.$direction == Direction.ltr ? (hideSidePanel ? -400 : 325) : null,
-                    left: locale.s.$direction == Direction.ltr ? null : (hideSidePanel ? -400 : 325),
-                    duration: const Duration(milliseconds: 350),
-                    child: Acrylic(
-                      elevation: 20,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                          side: BorderSide(color: Colors.grey.withValues(alpha: 0.3))),
-                      child: Container(
-                        height: 25,
-                        width: 25,
-                        alignment: AlignmentDirectional.center,
-                        decoration: const BoxDecoration(shape: BoxShape.circle),
-                        child: Text(
-                          routes.panels().length.toString(),
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-                      ),
-                    ))
               ],
             ),
           );

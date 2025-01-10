@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:apexo/app/routes.dart';
 import 'package:apexo/common_widgets/acrylic_title.dart';
 import 'package:apexo/core/model.dart';
+import 'package:apexo/core/multi_stream_builder.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
@@ -23,6 +24,7 @@ class PanelScreen extends StatefulWidget {
 class _PanelScreenState extends State<PanelScreen> {
   late bool isNew;
   final FocusNode focusNode = FocusNode();
+  final panelSwitchController = FlyoutController();
   late Timer saveButtonCheckTimer;
 
   @override
@@ -56,15 +58,15 @@ class _PanelScreenState extends State<PanelScreen> {
         }
       },
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(5),
         child: Acrylic(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(3),
             side: BorderSide(color: Colors.grey.withValues(alpha: 0.25)),
           ),
           elevation: 120,
-          child: StreamBuilder(
-              stream: locale.selectedLocale.stream,
+          child: MStreamBuilder(
+              streams: [locale.selectedLocale.stream, widget.panel.selectedTab.stream],
               builder: (context, snapshot) {
                 return Column(
                   key: Key(locale.selectedLocale().toString()),
@@ -92,8 +94,8 @@ class _PanelScreenState extends State<PanelScreen> {
           padding: EdgeInsets.all(widget.panel.tabs[widget.panel.selectedTab()].padding.toDouble()),
           constraints: BoxConstraints(
               minHeight: widget.panel.tabs[widget.panel.selectedTab()].footer == null
-                  ? widget.height - 166
-                  : widget.height - 213),
+                  ? widget.height - 156
+                  : widget.height - 200),
           child: widget.panel.tabs[widget.panel.selectedTab()].body,
         ),
       ),
@@ -257,7 +259,7 @@ class _PanelScreenState extends State<PanelScreen> {
 
   Widget _buildPanelHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
       color: Colors.grey.withValues(alpha: 0.1),
       child: StreamBuilder(
           stream: widget.panel.inProgress.stream,
@@ -267,22 +269,68 @@ class _PanelScreenState extends State<PanelScreen> {
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                AcrylicTitle(
-                  item: widget.panel.title != null ? Model.fromJson({"title": widget.panel.title}) : widget.panel.item,
-                  icon: widget.panel.item.archived == true
-                      ? FluentIcons.archive
-                      : isNew
-                          ? FluentIcons.add
-                          : FluentIcons.edit,
-                  predefinedColor: widget.panel.item.archived == true ? Colors.grey : null,
+                SizedBox(
+                  width: 173,
+                  child: AcrylicTitle(
+                    radius: 13,
+                    fontSize: 13,
+                    item:
+                        widget.panel.title != null ? Model.fromJson({"title": widget.panel.title}) : widget.panel.item,
+                    icon: widget.panel.item.archived == true
+                        ? FluentIcons.archive
+                        : isNew
+                            ? FluentIcons.add
+                            : FluentIcons.edit,
+                    predefinedColor: widget.panel.item.archived == true ? Colors.grey : null,
+                  ),
                 ),
                 Txt(txt(storeSingularName), style: TextStyle(fontSize: 12, color: Colors.grey.withValues(alpha: 0.7))),
-                widget.panel.inProgress()
-                    ? const SizedBox(height: 20, width: 20, child: ProgressRing())
-                    : IconButton(icon: const Icon(FluentIcons.cancel), onPressed: routes.goBack)
+                Row(children: [
+                  if (routes.panels().length > 1)
+                    FlyoutTarget(
+                      controller: panelSwitchController,
+                      child: IconButton(
+                          icon: Row(
+                            children: [
+                              const Icon(FluentIcons.reopen_pages),
+                              const SizedBox(width: 2),
+                              Text(
+                                routes.panels().length.toString(),
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
+                          onPressed: openPanelSwitch),
+                    ),
+                  widget.panel.inProgress()
+                      ? const SizedBox(height: 20, width: 20, child: ProgressRing())
+                      : IconButton(icon: const Icon(FluentIcons.cancel), onPressed: routes.goBack)
+                ])
               ],
             );
           }),
+    );
+  }
+
+  void openPanelSwitch() {
+    panelSwitchController.showFlyout(
+      barrierDismissible: false,
+      dismissWithEsc: true,
+      dismissOnPointerMoveAway: true,
+      builder: (context) => MenuFlyout(items: [
+        ...routes.panels().where((panel) => routes.panels().indexOf(panel) < routes.panels().length - 1).map((panel) {
+          final singularStoreName = panel.store.local!.name.substring(0, panel.store.local!.name.length - 1);
+          return MenuFlyoutItem(
+            leading: Icon(panel.icon),
+            trailing: panel.inProgress()
+                ? const SizedBox(height: 20, width: 20, child: ProgressRing())
+                : Icon(panel.store.get(panel.item.id) == null ? FluentIcons.add : FluentIcons.edit),
+            text: Txt("${txt(singularStoreName)}: ${panel.title ?? panel.item.title}"),
+            onPressed: () => routes.bringPanelToFront(routes.panels().indexOf(panel)),
+            closeAfterClick: true,
+          );
+        })
+      ]),
     );
   }
 }
