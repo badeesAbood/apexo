@@ -12,14 +12,9 @@ import 'package:apexo/services/backups.dart';
 import 'package:apexo/features/stats/charts_controller.dart';
 import 'package:apexo/services/permissions.dart';
 import 'package:apexo/services/login.dart';
-import 'package:apexo/features/appointments/appointment_model.dart';
-import 'package:apexo/features/expenses/expense_model.dart';
 import 'package:apexo/features/expenses/expenses_store.dart';
-import 'package:apexo/features/labwork/labwork_model.dart';
 import 'package:apexo/features/labwork/labworks_store.dart';
-import 'package:apexo/features/patients/patient_model.dart';
 import 'package:apexo/features/patients/patients_store.dart';
-import 'package:apexo/features/doctors/doctor_model.dart';
 import 'package:apexo/features/doctors/doctors_store.dart';
 import 'package:apexo/services/users.dart';
 import 'package:fluent_ui/fluent_ui.dart';
@@ -217,13 +212,6 @@ class _Routes {
   final bottomNavFlyoutController = FlyoutController();
   final currentRouteIndex = ObservableState(0);
   List<int> history = [];
-
-  // bottom sheets
-  Patient openPatient = Patient.fromJson({});
-  Appointment openAppointment = Appointment.fromJson({});
-  Doctor openMember = Doctor.fromJson({});
-  Labwork openLabwork = Labwork.fromJson({});
-  Expense openExpense = Expense.fromJson({});
 
   int selectedTabInSheet = 0;
 
