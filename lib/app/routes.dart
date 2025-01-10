@@ -104,11 +104,15 @@ class _Routes {
     final foundPanel = panels().indexWhere((element) => element.identifier == panel.identifier);
     if (foundPanel > -1) {
       // bring to front
-      panels(panels()..add(panels().removeAt(foundPanel)));
+      bringPanelToFront(foundPanel);
     } else {
       // add to end
       panels(panels()..add(panel));
     }
+  }
+
+  void bringPanelToFront(int index) {
+    panels(panels()..add(panels().removeAt(index)));
   }
 
   List<Route> genAllRoutes() => [
