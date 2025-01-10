@@ -16,6 +16,7 @@ void openExpense([Expense? expense]) {
   routes.openPanel(Panel(
     item: editingCopy,
     store: expenses,
+    icon: FluentIcons.receipt_processing,
     title: expenses.get(editingCopy.id) == null ? txt("newReceipt") : editingCopy.title,
     tabs: [
       PanelTab(

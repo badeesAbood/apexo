@@ -17,6 +17,7 @@ void openLabwork([Labwork? labwork]) {
   routes.openPanel(Panel(
     item: editingCopy,
     store: labworks,
+    icon: FluentIcons.manufacturing,
     title: labworks.get(editingCopy.id) == null ? txt("newLabwork") : editingCopy.title,
     tabs: [
       PanelTab(

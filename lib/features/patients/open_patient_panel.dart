@@ -23,6 +23,7 @@ Future<Patient> openPatient([Patient? patient]) {
   final panel = Panel<Patient>(
     item: editingCopy,
     store: patients,
+    icon: FluentIcons.medication_admin,
     title: patients.get(editingCopy.id) == null ? txt("newPatient") : editingCopy.title,
     tabs: [
       PanelTab(

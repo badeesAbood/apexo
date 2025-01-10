@@ -21,6 +21,7 @@ void openDoctor([Doctor? doctor]) {
   routes.openPanel(Panel(
     item: editingCopy,
     store: doctors,
+    icon: FluentIcons.medical,
     title: doctors.get(editingCopy.id) == null ? txt("newDoctor") : editingCopy.title,
     tabs: [
       PanelTab(

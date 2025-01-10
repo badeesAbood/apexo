@@ -47,6 +47,7 @@ class Panel<T extends Model> {
   final T item;
   final Store store;
   final List<PanelTab> tabs;
+  final IconData icon;
   String? title;
   final inProgress = ObservableState(false);
   final selectedTab = ObservableState<int>(0);
@@ -58,6 +59,7 @@ class Panel<T extends Model> {
     required this.item,
     required this.store,
     required this.tabs,
+    required this.icon,
     this.title,
   }) {
     identifier = store.get(item.id) == null ? "new+${store.local?.name}" : item.id;

@@ -28,6 +28,7 @@ void openAppointment([Appointment? appointment]) {
   final panel = Panel(
     item: editingCopy,
     store: appointments,
+    icon: FluentIcons.calendar,
     title: appointments.get(editingCopy.id) == null ? txt("addAppointment") : editingCopy.title,
     tabs: [],
   );
