@@ -318,14 +318,16 @@ class _PanelScreenState extends State<PanelScreen> {
       dismissWithEsc: true,
       dismissOnPointerMoveAway: true,
       builder: (context) => MenuFlyout(items: [
-        ...routes.panels().where((panel) => routes.panels().indexOf(panel) < routes.panels().length - 1).map((panel) {
+        ...routes.panels().map((panel) {
           final singularStoreName = panel.store.local!.name.substring(0, panel.store.local!.name.length - 1);
           return MenuFlyoutItem(
+            selected: panel == widget.panel,
             leading: Icon(panel.icon),
             trailing: panel.inProgress()
                 ? const SizedBox(height: 20, width: 20, child: ProgressRing())
                 : Icon(panel.store.get(panel.item.id) == null ? FluentIcons.add : FluentIcons.edit),
-            text: Txt("${txt(singularStoreName)}: ${panel.title ?? panel.item.title}"),
+            text: Txt("${txt(singularStoreName)}: ${panel.title ?? panel.item.title}",
+                style: TextStyle(fontWeight: panel == widget.panel ? FontWeight.w500 : null)),
             onPressed: () => routes.bringPanelToFront(routes.panels().indexOf(panel)),
             closeAfterClick: true,
           );
