@@ -45,7 +45,7 @@ void openAppointment([Appointment? appointment]) {
     ),
     PanelTab(
       title: txt("gallery"),
-      icon: FluentIcons.photo,
+      icon: FluentIcons.camera,
       body: _AppointmentGallery(panel),
       onlyIfSaved: true,
       footer: kIsWeb ? null : _AppointmentGalleryFooter(panel), // TODO: image upload isn't supported on web
