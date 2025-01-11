@@ -318,7 +318,7 @@ class _PanelScreenState extends State<PanelScreen> {
       dismissWithEsc: true,
       dismissOnPointerMoveAway: true,
       builder: (context) => MenuFlyout(items: [
-        ...routes.panels().map((panel) {
+        ...([...routes.panels()]..sort((a, b) => b.creationDate - a.creationDate)).map((panel) {
           final singularStoreName = panel.store.local!.name.substring(0, panel.store.local!.name.length - 1);
           return MenuFlyoutItem(
             selected: panel == widget.panel,

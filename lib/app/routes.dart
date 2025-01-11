@@ -55,6 +55,7 @@ class Panel<T extends Model> {
   late String savedJson;
   late String identifier;
   final Completer<T> result = Completer<T>();
+  final int creationDate = DateTime.now().millisecondsSinceEpoch;
   Panel({
     required this.item,
     required this.store,
