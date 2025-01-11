@@ -49,38 +49,42 @@ class _PanelScreenState extends State<PanelScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return KeyboardListener(
-      autofocus: true,
-      focusNode: focusNode,
-      onKeyEvent: (value) {
-        if (value is KeyDownEvent && value.logicalKey == LogicalKeyboardKey.escape && routes.panels().isNotEmpty) {
-          routes.goBack();
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(5),
-        child: Acrylic(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(3),
-            side: BorderSide(color: Colors.grey.withValues(alpha: 0.25)),
+    return ScaffoldPage(
+      resizeToAvoidBottomInset: true,
+      padding: EdgeInsets.zero,
+      content: KeyboardListener(
+        autofocus: true,
+        focusNode: focusNode,
+        onKeyEvent: (value) {
+          if (value is KeyDownEvent && value.logicalKey == LogicalKeyboardKey.escape && routes.panels().isNotEmpty) {
+            routes.goBack();
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(5),
+          child: Acrylic(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(3),
+              side: BorderSide(color: Colors.grey.withValues(alpha: 0.25)),
+            ),
+            elevation: 120,
+            child: MStreamBuilder(
+                streams: [locale.selectedLocale.stream, widget.panel.selectedTab.stream],
+                builder: (context, snapshot) {
+                  return Column(
+                    key: Key(locale.selectedLocale().toString()),
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildPanelHeader(),
+                      _buildTabsControllers(),
+                      _buildTabBody(),
+                      if (widget.panel.tabs[widget.panel.selectedTab()].footer != null)
+                        widget.panel.tabs[widget.panel.selectedTab()].footer!,
+                      _buildBottomControls(),
+                    ],
+                  );
+                }),
           ),
-          elevation: 120,
-          child: MStreamBuilder(
-              streams: [locale.selectedLocale.stream, widget.panel.selectedTab.stream],
-              builder: (context, snapshot) {
-                return Column(
-                  key: Key(locale.selectedLocale().toString()),
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildPanelHeader(),
-                    _buildTabsControllers(),
-                    _buildTabBody(),
-                    if (widget.panel.tabs[widget.panel.selectedTab()].footer != null)
-                      widget.panel.tabs[widget.panel.selectedTab()].footer!,
-                    _buildBottomControls(),
-                  ],
-                );
-              }),
         ),
       ),
     );
