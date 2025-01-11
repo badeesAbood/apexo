@@ -156,7 +156,7 @@ class ApexoApp extends StatelessWidget {
                   ),
                 ),
                 AnimatedPositioned(
-                  width: 350,
+                  width: (constraints.maxWidth < 490 && routes.minimizePanels()) ? constraints.maxWidth : 350,
                   height: routes.minimizePanels() ? 56 : constraints.maxHeight,
                   top: routes.minimizePanels() ? null : 0,
                   bottom: routes.minimizePanels() ? 0 : null,
@@ -169,8 +169,8 @@ class ApexoApp extends StatelessWidget {
                           top: routes.minimizePanels() ? false : true,
                           child: PanelScreen(
                             key: Key(routes.panels().last.identifier),
-                            height: constraints.maxHeight,
-                            width: constraints.maxWidth,
+                            layoutHeight: constraints.maxHeight,
+                            layoutWidth: constraints.maxWidth,
                             panel: routes.panels().last,
                           ),
                         ),

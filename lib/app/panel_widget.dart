@@ -9,13 +9,13 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
 
 class PanelScreen extends StatefulWidget {
-  final double height;
-  final double width;
+  final double layoutHeight;
+  final double layoutWidth;
   final Panel panel;
   const PanelScreen({
     required this.panel,
-    this.height = 500,
-    this.width = 500,
+    this.layoutHeight = 500,
+    this.layoutWidth = 500,
     super.key,
   });
 
@@ -106,8 +106,8 @@ class _PanelScreenState extends State<PanelScreen> {
           padding: EdgeInsets.all(widget.panel.tabs[widget.panel.selectedTab()].padding.toDouble()),
           constraints: BoxConstraints(
               minHeight: widget.panel.tabs[widget.panel.selectedTab()].footer == null
-                  ? widget.height - 161
-                  : widget.height - 206),
+                  ? widget.layoutHeight - 161
+                  : widget.layoutHeight - 206),
           child: widget.panel.tabs[widget.panel.selectedTab()].body,
         ),
       ),
@@ -325,7 +325,7 @@ class _PanelScreenState extends State<PanelScreen> {
                         onPressed: openPanelSwitch,
                       ),
                     ),
-                  if (widget.width < 710) // minimization is useless in big screens
+                  if (widget.layoutWidth < 710) // minimization is useless in big screens
                     IconButton(
                       icon: Icon(routes.minimizePanels() ? FluentIcons.chevron_up : FluentIcons.chevron_down),
                       onPressed: () => routes.minimizePanels(!routes.minimizePanels()),
@@ -344,7 +344,7 @@ class _PanelScreenState extends State<PanelScreen> {
 
   void openPanelSwitch() {
     panelSwitchController.showFlyout(
-      barrierDismissible: widget.width < 710,
+      barrierDismissible: widget.layoutWidth < 710,
       dismissWithEsc: true,
       dismissOnPointerMoveAway: true,
       builder: (context) => MenuFlyout(items: [
