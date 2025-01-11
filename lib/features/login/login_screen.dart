@@ -187,11 +187,13 @@ class Login extends StatelessWidget {
     return InfoLabel(
       label: txt("serverUrl"),
       child: CupertinoTextField(
-          key: WK.serverField,
-          controller: loginCtrl.urlField,
-          textDirection: TextDirection.ltr,
-          enabled: loginCtrl.loadingIndicator().isEmpty,
-          placeholder: "https://[pocketbase server]"),
+        key: WK.serverField,
+        controller: loginCtrl.urlField,
+        textDirection: TextDirection.ltr,
+        enabled: loginCtrl.loadingIndicator().isEmpty,
+        placeholder: "https://[pocketbase server]",
+        onSubmitted: (_) => fieldSubmit(),
+      ),
     );
   }
 
@@ -204,6 +206,7 @@ class Login extends StatelessWidget {
         textDirection: TextDirection.ltr,
         enabled: loginCtrl.loadingIndicator().isEmpty,
         placeholder: "email@domain.com",
+        onSubmitted: (_) => fieldSubmit(),
       ),
     );
   }
@@ -212,23 +215,34 @@ class Login extends StatelessWidget {
     return InfoLabel(
       label: txt("password"),
       child: CupertinoTextField(
-          key: WK.passwordField,
-          textDirection: TextDirection.ltr,
-          controller: loginCtrl.passwordField,
-          enabled: loginCtrl.loadingIndicator().isEmpty,
-          obscureText: loginCtrl.obscureText(),
-          suffix: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: IconButton(
-              onPressed: () => loginCtrl.obscureText(!loginCtrl.obscureText()),
-              icon: const Icon(FluentIcons.red_eye, size: 18),
-              style: !loginCtrl.obscureText()
-                  ? ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(Colors.grey.withValues(alpha: 0.1)),
-                    )
-                  : null,
-            ),
-          )),
+        key: WK.passwordField,
+        textDirection: TextDirection.ltr,
+        controller: loginCtrl.passwordField,
+        enabled: loginCtrl.loadingIndicator().isEmpty,
+        obscureText: loginCtrl.obscureText(),
+        suffix: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: IconButton(
+            onPressed: () => loginCtrl.obscureText(!loginCtrl.obscureText()),
+            icon: const Icon(FluentIcons.red_eye, size: 18),
+            style: !loginCtrl.obscureText()
+                ? ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(Colors.grey.withValues(alpha: 0.1)),
+                  )
+                : null,
+          ),
+        ),
+        onSubmitted: (_) => fieldSubmit(),
+      ),
     );
+  }
+
+  void fieldSubmit() {
+    if (loginCtrl.loadingIndicator().isNotEmpty) return;
+    if (loginCtrl.selectedTab() == 0) {
+      loginCtrl.loginButton();
+    } else if (loginCtrl.selectedTab() == 1) {
+      loginCtrl.resetButton();
+    }
   }
 }
