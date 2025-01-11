@@ -82,34 +82,51 @@ class WeekAgendaCalendarState<Item extends Appointment> extends State<WeekAgenda
     var itemsForSelectedDay = _getItemsForSelectedDay();
     return Column(
       children: [
-        Acrylic(
-          elevation: 150,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                    onPressed: () => widget.onAddNew(selectedDate),
-                    icon: Row(
-                      children: [
-                        const Icon(FluentIcons.add_event, size: 17),
-                        const SizedBox(width: 10),
-                        Txt(txt("add"))
-                      ],
-                    )),
-                Row(
-                  children: widget.actions ?? [],
-                ),
-              ],
-            ),
-          ),
-        ),
+        _buildCommandBar(),
         _buildCalendar(),
         const SizedBox(height: 1),
-        _buildCurrentDayTitleBar(itemsForSelectedDay),
-        itemsForSelectedDay.isEmpty ? _buildEmptyDayMessage() : _buildAppointmentsList(itemsForSelectedDay),
+        Expanded(
+          child: GestureDetector(
+            onHorizontalDragEnd: (details) {
+              if (details.velocity.pixelsPerSecond.dx > 0) {
+                setState(() {
+                  selectedDate = selectedDate.subtract(const Duration(days: 1));
+                });
+              } else {
+                setState(() {
+                  selectedDate = selectedDate.add(const Duration(days: 1));
+                });
+              }
+            },
+            child: Column(children: [
+              _buildCurrentDayTitleBar(itemsForSelectedDay),
+              itemsForSelectedDay.isEmpty ? _buildEmptyDayMessage() : _buildAppointmentsList(itemsForSelectedDay),
+            ]),
+          ),
+        ),
       ],
+    );
+  }
+
+  Acrylic _buildCommandBar() {
+    return Acrylic(
+      elevation: 150,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+                onPressed: () => widget.onAddNew(selectedDate),
+                icon: Row(
+                  children: [const Icon(FluentIcons.add_event, size: 17), const SizedBox(width: 10), Txt(txt("add"))],
+                )),
+            Row(
+              children: widget.actions ?? [],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
