@@ -1,4 +1,5 @@
 import 'package:apexo/app/routes.dart';
+import 'package:apexo/common_widgets/appointment_card.dart';
 import 'package:apexo/features/dashboard/dashboard_controller.dart';
 import 'package:apexo/services/launch.dart';
 import 'package:apexo/services/localization/locale.dart';
@@ -41,58 +42,70 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(key: WK.dashboardScreen, crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Padding(
-        padding: const EdgeInsets.all(15),
-        child: Row(
-          children: [
-            const Icon(FluentIcons.medical),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Column(
+        key: WK.dashboardScreen,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Txt(
-                  "${txt("hello")} $currentName",
-                  style: const TextStyle(fontSize: 20),
+                Row(
+                  children: [
+                    const Icon(FluentIcons.medical),
+                    const SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Txt(
+                          "${txt("hello")} $currentName",
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                        Txt(
+                          DateFormat("MMMM d yyyy, hh:mm:a", locale.s.$code).format(DateTime.now()),
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                Txt(
-                  DateFormat("MMMM d yyyy, hh:mm:a", locale.s.$code).format(DateTime.now()),
-                  style: const TextStyle(fontSize: 14),
-                ),
+                if (!launch.isDemo)
+                  Tooltip(
+                    message: dashboardMessage,
+                    child: PaymentPill(
+                      finalTextColor: login.isAdmin ? Colors.blue : Colors.warningPrimaryColor,
+                      title: txt("mode"),
+                      amount: mode,
+                    ),
+                  ),
               ],
             ),
-          ],
-        ),
+          ),
+          const Divider(),
+          if (permissions.list[5] || login.isAdmin) ...[
+            buildTopSquares(),
+            buildDashboardCharts()
+          ] else if (permissions.list[2] && dashboardCtrl.todayAppointments.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+              child: Txt(txt("patientsToday")),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+              height: 50,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: dashboardCtrl.todayAppointments.map((e) => AcrylicTitle(item: e)).toList(),
+              ),
+            )
+          ]
+        ],
       ),
-      const Divider(),
-      if (!launch.isDemo)
-        Padding(
-          padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
-          child: InfoBar(
-            title: Txt(mode),
-            severity: login.isAdmin ? InfoBarSeverity.success : InfoBarSeverity.warning,
-            content: Txt(dashboardMessage),
-          ),
-        ),
-      if (permissions.list[5] || login.isAdmin) ...[
-        buildTopSquares(),
-        buildDashboardCharts()
-      ] else if (permissions.list[2] && dashboardCtrl.todayAppointments.isNotEmpty) ...[
-        const SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-          child: Txt(txt("patientsToday")),
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-          height: 50,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: dashboardCtrl.todayAppointments.map((e) => AcrylicTitle(item: e)).toList(),
-          ),
-        )
-      ]
-    ]);
+    );
   }
 
   Expanded buildDashboardCharts() {
