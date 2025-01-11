@@ -82,7 +82,7 @@ class ApexoApp extends StatelessWidget {
       key: WK.builder,
       builder: (context, _) => PopScope(
         canPop: false,
-        onPopInvokedWithResult: (_, __) => routes.goBack(), // TODO: test this on your phone
+        onPopInvokedWithResult: (_, __) => routes.goBack(),
         child: LayoutBuilder(builder: (context, constraints) {
           final hideSidePanel = routes.panels().isEmpty || !launch.open();
           return Container(
