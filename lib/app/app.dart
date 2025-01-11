@@ -24,6 +24,7 @@ class ApexoApp extends StatelessWidget {
     return StreamBuilder(
         stream: locale.selectedLocale.stream,
         builder: (context, _) {
+          showDialogsIfNeeded(context);
           return FluentApp(
             key: WK.fluentApp,
             locale: Locale(locale.s.$code),
@@ -41,27 +42,6 @@ class ApexoApp extends StatelessWidget {
                 routes.minimizePanels.stream
               ],
               builder: (BuildContext context, _) {
-                if (version.newVersionAvailable) {
-                  Future.delayed(const Duration(milliseconds: 100), () {
-                    if ((!launch.dialogShown()) && context.mounted) {
-                      launch.dialogShown(true);
-                      showDialog(context: context, builder: (BuildContext context) => const NewVersionDialog());
-                    }
-                  });
-                }
-
-                if (launch.isFirstLaunch()) {
-                  Future.delayed(const Duration(milliseconds: 100), () {
-                    if ((!launch.dialogShown()) && context.mounted) {
-                      launch.dialogShown(true);
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return const FirstLaunchDialog();
-                          });
-                    }
-                  });
-                }
                 return Stack(
                   fit: StackFit.expand,
                   children: [
@@ -73,6 +53,32 @@ class ApexoApp extends StatelessWidget {
             ),
           );
         });
+  }
+
+  void showDialogsIfNeeded(BuildContext context) {
+    if (version.newVersionAvailable) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if ((!launch.dialogShown()) && context.mounted) {
+          launch.dialogShown(true);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => const NewVersionDialog(),
+          );
+        }
+      });
+    }
+
+    if (launch.isFirstLaunch()) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if ((!launch.dialogShown()) && context.mounted) {
+          launch.dialogShown(true);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => const FirstLaunchDialog(),
+          );
+        }
+      });
+    }
   }
 
   Widget buildAppLayout() {
@@ -89,97 +95,102 @@ class ApexoApp extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                AnimatedPositioned(
-                  duration: const Duration(milliseconds: 300),
-                  top: 0,
-                  left: locale.s.$direction == Direction.rtl ? null : 0,
-                  right: locale.s.$direction == Direction.rtl ? 0 : null,
-                  height: constraints.maxHeight,
-                  width: (!hideSidePanel) && constraints.maxWidth > 710
-                      ? constraints.maxWidth - 355
-                      : constraints.maxWidth,
-                  child: Container(
-                    decoration: BoxDecoration(boxShadow: kElevationToShadow[6]),
-                    child: NavigationView(
-                      appBar: NavigationAppBar(
-                        automaticallyImplyLeading: false,
-                        title: launch.open() ? Txt(routes.currentRoute.title) : Txt(txt("login")),
-                        leading: routes.history.isEmpty ? null : const BackButton(key: WK.backButton),
-                        // ignore: prefer_const_constructors
-                        actions: NetworkActions(key: WK.globalActions),
-                      ),
-                      onDisplayModeChanged: (mode) {
-                        if (mode == PaneDisplayMode.minimal) {
-                          routes.showBottomNav(true);
-                        } else {
-                          routes.showBottomNav(false);
-                        }
-                      },
-                      content: launch.open() ? null : const Login(key: WK.loginScreen),
-                      pane: !launch.open()
-                          ? null
-                          : NavigationPane(
-                              autoSuggestBox: const CurrentUser(key: WK.currentUserSection),
-                              autoSuggestBoxReplacement: const Icon(FluentIcons.contact),
-                              header: const AppLogo(),
-                              selected: routes.currentRouteIndex(),
-                              displayMode: PaneDisplayMode.auto,
-                              toggleable: false,
-                              items:
-                                  List<NavigationPaneItem>.from(routes.allRoutes.where((p) => p.onFooter != true).map(
-                                        (route) => PaneItem(
-                                          key: Key("${route.identifier}_screen_button"),
-                                          icon: route.accessible ? Icon(route.icon) : const Icon(FluentIcons.lock),
-                                          body: route.accessible
-                                              ? Padding(
-                                                  padding: EdgeInsets.only(bottom: routes.showBottomNav() ? 60 : 0),
-                                                  child: (route.screen)(),
-                                                )
-                                              : const SizedBox(),
-                                          title: Txt(route.title),
-                                          onTap: () => route.accessible ? routes.navigate(route) : null,
-                                          enabled: route.accessible,
-                                        ),
-                                      )),
-                              footerItems: [
-                                ...routes.allRoutes.where((p) => p.onFooter == true).map(
-                                      (route) => PaneItem(
-                                        icon: Icon(route.icon),
-                                        body: (route.screen)(),
-                                        title: Txt(route.title),
-                                        onTap: () => routes.navigate(route),
-                                      ),
-                                    ),
-                              ],
-                            ),
-                    ),
-                  ),
-                ),
-                AnimatedPositioned(
-                  width: (constraints.maxWidth < 490 && routes.minimizePanels()) ? constraints.maxWidth : 350,
-                  height: routes.minimizePanels() ? 56 : constraints.maxHeight,
-                  top: routes.minimizePanels() ? null : 0,
-                  bottom: routes.minimizePanels() ? 0 : null,
-                  left: locale.s.$direction == Direction.ltr ? null : (hideSidePanel ? -400 : 0),
-                  right: locale.s.$direction == Direction.ltr ? (hideSidePanel ? -400 : 0) : null,
-                  duration: const Duration(milliseconds: 200),
-                  child: hideSidePanel
-                      ? const SizedBox()
-                      : SafeArea(
-                          top: routes.minimizePanels() ? false : true,
-                          child: PanelScreen(
-                            key: Key(routes.panels().last.identifier),
-                            layoutHeight: constraints.maxHeight,
-                            layoutWidth: constraints.maxWidth,
-                            panel: routes.panels().last,
-                          ),
-                        ),
-                ),
+                _buildPositionedMainScreen(constraints, hideSidePanel),
+                _buildPositionedPanel(constraints, hideSidePanel),
               ],
             ),
           );
         }),
       ),
+    );
+  }
+
+  AnimatedPositioned _buildPositionedMainScreen(BoxConstraints constraints, bool hideSidePanel) {
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 300),
+      top: 0,
+      left: locale.s.$direction == Direction.rtl ? null : 0,
+      right: locale.s.$direction == Direction.rtl ? 0 : null,
+      height: constraints.maxHeight,
+      width: (!hideSidePanel) && constraints.maxWidth > 710 ? constraints.maxWidth - 355 : constraints.maxWidth,
+      child: Container(
+        decoration: BoxDecoration(boxShadow: kElevationToShadow[6]),
+        child: NavigationView(
+          appBar: NavigationAppBar(
+            automaticallyImplyLeading: false,
+            title: launch.open() ? Txt(routes.currentRoute.title) : Txt(txt("login")),
+            leading: routes.history.isEmpty ? null : const BackButton(key: WK.backButton),
+            // ignore: prefer_const_constructors
+            actions: NetworkActions(key: WK.globalActions),
+          ),
+          onDisplayModeChanged: (mode) {
+            if (mode == PaneDisplayMode.minimal) {
+              routes.showBottomNav(true);
+            } else {
+              routes.showBottomNav(false);
+            }
+          },
+          content: launch.open() ? null : const Login(key: WK.loginScreen),
+          pane: !launch.open()
+              ? null
+              : NavigationPane(
+                  autoSuggestBox: const CurrentUser(key: WK.currentUserSection),
+                  autoSuggestBoxReplacement: const Icon(FluentIcons.contact),
+                  header: const AppLogo(),
+                  selected: routes.currentRouteIndex(),
+                  displayMode: PaneDisplayMode.auto,
+                  toggleable: false,
+                  items: List<NavigationPaneItem>.from(routes.allRoutes.where((p) => p.onFooter != true).map(
+                        (route) => PaneItem(
+                          key: Key("${route.identifier}_screen_button"),
+                          icon: route.accessible ? Icon(route.icon) : const Icon(FluentIcons.lock),
+                          body: route.accessible
+                              ? Padding(
+                                  padding: EdgeInsets.only(bottom: routes.showBottomNav() ? 60 : 0),
+                                  child: (route.screen)(),
+                                )
+                              : const SizedBox(),
+                          title: Txt(route.title),
+                          onTap: () => route.accessible ? routes.navigate(route) : null,
+                          enabled: route.accessible,
+                        ),
+                      )),
+                  footerItems: [
+                    ...routes.allRoutes.where((p) => p.onFooter == true).map(
+                          (route) => PaneItem(
+                            icon: Icon(route.icon),
+                            body: (route.screen)(),
+                            title: Txt(route.title),
+                            onTap: () => routes.navigate(route),
+                          ),
+                        ),
+                  ],
+                ),
+        ),
+      ),
+    );
+  }
+
+  AnimatedPositioned _buildPositionedPanel(BoxConstraints constraints, bool hideSidePanel) {
+    return AnimatedPositioned(
+      width: (constraints.maxWidth < 490 && routes.minimizePanels()) ? constraints.maxWidth : 350,
+      height: routes.minimizePanels() ? 56 : constraints.maxHeight,
+      top: routes.minimizePanels() ? null : 0,
+      bottom: routes.minimizePanels() ? 0 : null,
+      left: locale.s.$direction == Direction.ltr ? null : (hideSidePanel ? -400 : 0),
+      right: locale.s.$direction == Direction.ltr ? (hideSidePanel ? -400 : 0) : null,
+      duration: const Duration(milliseconds: 200),
+      child: hideSidePanel
+          ? const SizedBox()
+          : SafeArea(
+              top: routes.minimizePanels() ? false : true,
+              child: PanelScreen(
+                key: Key(routes.panels().last.identifier),
+                layoutHeight: constraints.maxHeight,
+                layoutWidth: constraints.maxWidth,
+                panel: routes.panels().last,
+              ),
+            ),
     );
   }
 }
