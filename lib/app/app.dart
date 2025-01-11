@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:apexo/app/navbar_widget.dart';
 import 'package:apexo/app/panel_widget.dart';
 import 'package:apexo/app/routes.dart';
@@ -15,6 +16,7 @@ import 'package:apexo/common_widgets/logo.dart';
 import 'package:apexo/services/version.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/foundation.dart';
 
 class ApexoApp extends StatelessWidget {
   const ApexoApp({super.key});
@@ -157,7 +159,7 @@ class ApexoApp extends StatelessWidget {
                   ),
                   AnimatedPositioned(
                     width: 350,
-                    height: constraints.maxHeight,
+                    height: constraints.maxHeight - ((Platform.isWindows || kIsWeb) ? 0 : 35),
                     top: 0,
                     left: locale.s.$direction == Direction.ltr ? null : (hideSidePanel ? -400 : 0),
                     right: locale.s.$direction == Direction.ltr ? (hideSidePanel ? -400 : 0) : null,
