@@ -161,7 +161,7 @@ class ApexoApp extends StatelessWidget {
                     top: 0,
                     left: locale.s.$direction == Direction.ltr ? null : (hideSidePanel ? -400 : 0),
                     right: locale.s.$direction == Direction.ltr ? (hideSidePanel ? -400 : 0) : null,
-                    duration: const Duration(milliseconds: 350),
+                    duration: const Duration(milliseconds: 200),
                     child: hideSidePanel
                         ? const SizedBox()
                         : PanelScreen(
