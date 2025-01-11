@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:apexo/app/navbar_widget.dart';
 import 'package:apexo/app/panel_widget.dart';
 import 'package:apexo/app/routes.dart';
@@ -16,7 +15,6 @@ import 'package:apexo/common_widgets/logo.dart';
 import 'package:apexo/services/version.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter/foundation.dart';
 
 class ApexoApp extends StatelessWidget {
   const ApexoApp({super.key});
@@ -87,93 +85,93 @@ class ApexoApp extends StatelessWidget {
           final hideSidePanel = routes.panels().isEmpty || !launch.open();
           return Container(
             color: Colors.white.withValues(alpha: 0.97),
-            child: SafeArea(
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  AnimatedPositioned(
-                    duration: const Duration(milliseconds: 300),
-                    top: 0,
-                    left: locale.s.$direction == Direction.rtl ? null : 0,
-                    right: locale.s.$direction == Direction.rtl ? 0 : null,
-                    height: constraints.maxHeight,
-                    width: (!hideSidePanel) && constraints.maxWidth > 710
-                        ? constraints.maxWidth - 355
-                        : constraints.maxWidth,
-                    child: Container(
-                      decoration: BoxDecoration(boxShadow: kElevationToShadow[6]),
-                      child: NavigationView(
-                        appBar: NavigationAppBar(
-                          automaticallyImplyLeading: false,
-                          title: launch.open() ? Txt(routes.currentRoute.title) : Txt(txt("login")),
-                          leading: routes.history.isEmpty ? null : const BackButton(key: WK.backButton),
-                          // ignore: prefer_const_constructors
-                          actions: NetworkActions(key: WK.globalActions),
-                        ),
-                        onDisplayModeChanged: (mode) {
-                          if (mode == PaneDisplayMode.minimal) {
-                            routes.showBottomNav(true);
-                          } else {
-                            routes.showBottomNav(false);
-                          }
-                        },
-                        content: launch.open() ? null : const Login(key: WK.loginScreen),
-                        pane: !launch.open()
-                            ? null
-                            : NavigationPane(
-                                autoSuggestBox: const CurrentUser(key: WK.currentUserSection),
-                                autoSuggestBoxReplacement: const Icon(FluentIcons.contact),
-                                header: const AppLogo(),
-                                selected: routes.currentRouteIndex(),
-                                displayMode: PaneDisplayMode.auto,
-                                toggleable: false,
-                                items:
-                                    List<NavigationPaneItem>.from(routes.allRoutes.where((p) => p.onFooter != true).map(
-                                          (route) => PaneItem(
-                                            key: Key("${route.identifier}_screen_button"),
-                                            icon: route.accessible ? Icon(route.icon) : const Icon(FluentIcons.lock),
-                                            body: route.accessible
-                                                ? Padding(
-                                                    padding: EdgeInsets.only(bottom: routes.showBottomNav() ? 55 : 0),
-                                                    child: (route.screen)(),
-                                                  )
-                                                : const SizedBox(),
-                                            title: Txt(route.title),
-                                            onTap: () => route.accessible ? routes.navigate(route) : null,
-                                            enabled: route.accessible,
-                                          ),
-                                        )),
-                                footerItems: [
-                                  ...routes.allRoutes.where((p) => p.onFooter == true).map(
-                                        (route) => PaneItem(
-                                          icon: Icon(route.icon),
-                                          body: (route.screen)(),
-                                          title: Txt(route.title),
-                                          onTap: () => routes.navigate(route),
-                                        ),
-                                      ),
-                                ],
-                              ),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                AnimatedPositioned(
+                  duration: const Duration(milliseconds: 300),
+                  top: 0,
+                  left: locale.s.$direction == Direction.rtl ? null : 0,
+                  right: locale.s.$direction == Direction.rtl ? 0 : null,
+                  height: constraints.maxHeight,
+                  width: (!hideSidePanel) && constraints.maxWidth > 710
+                      ? constraints.maxWidth - 355
+                      : constraints.maxWidth,
+                  child: Container(
+                    decoration: BoxDecoration(boxShadow: kElevationToShadow[6]),
+                    child: NavigationView(
+                      appBar: NavigationAppBar(
+                        automaticallyImplyLeading: false,
+                        title: launch.open() ? Txt(routes.currentRoute.title) : Txt(txt("login")),
+                        leading: routes.history.isEmpty ? null : const BackButton(key: WK.backButton),
+                        // ignore: prefer_const_constructors
+                        actions: NetworkActions(key: WK.globalActions),
                       ),
+                      onDisplayModeChanged: (mode) {
+                        if (mode == PaneDisplayMode.minimal) {
+                          routes.showBottomNav(true);
+                        } else {
+                          routes.showBottomNav(false);
+                        }
+                      },
+                      content: launch.open() ? null : const Login(key: WK.loginScreen),
+                      pane: !launch.open()
+                          ? null
+                          : NavigationPane(
+                              autoSuggestBox: const CurrentUser(key: WK.currentUserSection),
+                              autoSuggestBoxReplacement: const Icon(FluentIcons.contact),
+                              header: const AppLogo(),
+                              selected: routes.currentRouteIndex(),
+                              displayMode: PaneDisplayMode.auto,
+                              toggleable: false,
+                              items:
+                                  List<NavigationPaneItem>.from(routes.allRoutes.where((p) => p.onFooter != true).map(
+                                        (route) => PaneItem(
+                                          key: Key("${route.identifier}_screen_button"),
+                                          icon: route.accessible ? Icon(route.icon) : const Icon(FluentIcons.lock),
+                                          body: route.accessible
+                                              ? Padding(
+                                                  padding: EdgeInsets.only(bottom: routes.showBottomNav() ? 60 : 0),
+                                                  child: (route.screen)(),
+                                                )
+                                              : const SizedBox(),
+                                          title: Txt(route.title),
+                                          onTap: () => route.accessible ? routes.navigate(route) : null,
+                                          enabled: route.accessible,
+                                        ),
+                                      )),
+                              footerItems: [
+                                ...routes.allRoutes.where((p) => p.onFooter == true).map(
+                                      (route) => PaneItem(
+                                        icon: Icon(route.icon),
+                                        body: (route.screen)(),
+                                        title: Txt(route.title),
+                                        onTap: () => routes.navigate(route),
+                                      ),
+                                    ),
+                              ],
+                            ),
                     ),
                   ),
-                  AnimatedPositioned(
-                    width: 350,
-                    height: constraints.maxHeight - ((Platform.isWindows || kIsWeb) ? 0 : 35),
-                    top: 0,
-                    left: locale.s.$direction == Direction.ltr ? null : (hideSidePanel ? -400 : 0),
-                    right: locale.s.$direction == Direction.ltr ? (hideSidePanel ? -400 : 0) : null,
-                    duration: const Duration(milliseconds: 200),
-                    child: hideSidePanel
-                        ? const SizedBox()
-                        : PanelScreen(
+                ),
+                AnimatedPositioned(
+                  width: 350,
+                  height: constraints.maxHeight,
+                  top: 0,
+                  left: locale.s.$direction == Direction.ltr ? null : (hideSidePanel ? -400 : 0),
+                  right: locale.s.$direction == Direction.ltr ? (hideSidePanel ? -400 : 0) : null,
+                  duration: const Duration(milliseconds: 200),
+                  child: hideSidePanel
+                      ? const SizedBox()
+                      : SafeArea(
+                          child: PanelScreen(
                             key: Key(routes.panels().last.identifier),
                             height: constraints.maxHeight,
                             panel: routes.panels().last,
                           ),
-                  ),
-                ],
-              ),
+                        ),
+                ),
+              ],
             ),
           );
         }),
