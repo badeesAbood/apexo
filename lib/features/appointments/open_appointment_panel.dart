@@ -251,7 +251,13 @@ class _AppointmentDetailsState extends State<_AppointmentDetails> {
                 key: WK.fieldAppointmentDate,
                 value: widget.appointment.date,
                 onChange: (d) {
-                  widget.appointment.date = d;
+                  widget.appointment.date = DateTime(
+                    d.year,
+                    d.month,
+                    d.day,
+                    widget.appointment.date.hour,
+                    widget.appointment.date.minute,
+                  );
                 },
                 buttonText: txt("changeDate"),
                 buttonIcon: FluentIcons.calendar,
