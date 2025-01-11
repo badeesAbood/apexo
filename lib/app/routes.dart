@@ -98,6 +98,8 @@ class Route {
 
 class _Routes {
   final ObservableState<List<Panel>> panels = ObservableState([]);
+  final minimizePanels = ObservableState(false);
+
   void openPanel(Panel panel) {
     final foundPanel = panels().indexWhere((element) => element.identifier == panel.identifier);
     if (foundPanel > -1) {
@@ -106,11 +108,13 @@ class _Routes {
     } else {
       // add to end
       panels(panels()..add(panel));
+      routes.minimizePanels(false);
     }
   }
 
   void bringPanelToFront(int index) {
     panels(panels()..add(panels().removeAt(index)));
+    routes.minimizePanels(false);
   }
 
   List<Route> genAllRoutes() => [

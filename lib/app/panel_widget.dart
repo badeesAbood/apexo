@@ -10,10 +10,12 @@ import 'package:flutter/services.dart';
 
 class PanelScreen extends StatefulWidget {
   final double height;
+  final double width;
   final Panel panel;
   const PanelScreen({
     required this.panel,
     this.height = 500,
+    this.width = 500,
     super.key,
   });
 
@@ -69,18 +71,24 @@ class _PanelScreenState extends State<PanelScreen> {
             ),
             elevation: 120,
             child: MStreamBuilder(
-                streams: [locale.selectedLocale.stream, widget.panel.selectedTab.stream],
+                streams: [
+                  locale.selectedLocale.stream,
+                  widget.panel.selectedTab.stream,
+                  routes.minimizePanels.stream,
+                ],
                 builder: (context, snapshot) {
                   return Column(
                     key: Key(locale.selectedLocale().toString()),
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _buildPanelHeader(),
-                      _buildTabsControllers(),
-                      _buildTabBody(),
-                      if (widget.panel.tabs[widget.panel.selectedTab()].footer != null)
-                        widget.panel.tabs[widget.panel.selectedTab()].footer!,
-                      _buildBottomControls(),
+                      if (routes.minimizePanels() == false) ...[
+                        _buildTabsControllers(),
+                        _buildTabBody(),
+                        if (widget.panel.tabs[widget.panel.selectedTab()].footer != null)
+                          widget.panel.tabs[widget.panel.selectedTab()].footer!,
+                        _buildBottomControls(),
+                      ],
                     ],
                   );
                 }),
@@ -263,7 +271,7 @@ class _PanelScreenState extends State<PanelScreen> {
 
   Widget _buildPanelHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+      padding: const EdgeInsets.symmetric(vertical: 2.8, horizontal: 5),
       color: Colors.grey.withValues(alpha: 0.1),
       child: StreamBuilder(
           stream: widget.panel.inProgress.stream,
@@ -274,8 +282,9 @@ class _PanelScreenState extends State<PanelScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(
-                  width: 173,
+                  width: 155.5,
                   child: AcrylicTitle(
+                    maxWidth: 116,
                     radius: 13,
                     fontSize: 13,
                     item:
@@ -288,24 +297,33 @@ class _PanelScreenState extends State<PanelScreen> {
                     predefinedColor: widget.panel.item.archived == true ? Colors.grey : null,
                   ),
                 ),
-                Txt(txt(storeSingularName), style: TextStyle(fontSize: 12, color: Colors.grey.withValues(alpha: 0.7))),
+                Txt(
+                  txt(storeSingularName),
+                  style: TextStyle(fontSize: 10.5, color: Colors.grey.withValues(alpha: 0.7)),
+                  overflow: TextOverflow.fade,
+                ),
                 Row(children: [
                   if (routes.panels().length > 1)
                     FlyoutTarget(
                       controller: panelSwitchController,
                       child: IconButton(
-                          icon: Row(
-                            children: [
-                              const Icon(FluentIcons.reopen_pages),
-                              const SizedBox(width: 2),
-                              Text(
-                                routes.panels().length.toString(),
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                              )
-                            ],
-                          ),
-                          onPressed: openPanelSwitch),
+                        icon: Row(
+                          children: [
+                            const Icon(FluentIcons.reopen_pages),
+                            const SizedBox(width: 2),
+                            Text(
+                              routes.panels().length.toString(),
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
+                        onPressed: openPanelSwitch,
+                      ),
                     ),
+                  IconButton(
+                    icon: Icon(routes.minimizePanels() ? FluentIcons.chevron_up : FluentIcons.chevron_down),
+                    onPressed: () => routes.minimizePanels(!routes.minimizePanels()),
+                  ),
                   widget.panel.inProgress()
                       ? const SizedBox(height: 20, width: 20, child: ProgressRing())
                       : IconButton(icon: const Icon(FluentIcons.cancel), onPressed: routes.goBack)
@@ -318,7 +336,7 @@ class _PanelScreenState extends State<PanelScreen> {
 
   void openPanelSwitch() {
     panelSwitchController.showFlyout(
-      barrierDismissible: false,
+      barrierDismissible: widget.width < 710,
       dismissWithEsc: true,
       dismissOnPointerMoveAway: true,
       builder: (context) => MenuFlyout(items: [

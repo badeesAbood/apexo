@@ -38,6 +38,7 @@ class ApexoApp extends StatelessWidget {
                 launch.open.stream,
                 routes.showBottomNav.stream,
                 routes.panels.stream,
+                routes.minimizePanels.stream
               ],
               builder: (BuildContext context, _) {
                 if (version.newVersionAvailable) {
@@ -156,17 +157,20 @@ class ApexoApp extends StatelessWidget {
                 ),
                 AnimatedPositioned(
                   width: 350,
-                  height: constraints.maxHeight,
-                  top: 0,
+                  height: routes.minimizePanels() ? 55 : constraints.maxHeight,
+                  top: routes.minimizePanels() ? null : 0,
+                  bottom: routes.minimizePanels() ? 0 : null,
                   left: locale.s.$direction == Direction.ltr ? null : (hideSidePanel ? -400 : 0),
                   right: locale.s.$direction == Direction.ltr ? (hideSidePanel ? -400 : 0) : null,
                   duration: const Duration(milliseconds: 200),
                   child: hideSidePanel
                       ? const SizedBox()
                       : SafeArea(
+                          top: routes.minimizePanels() ? false : true,
                           child: PanelScreen(
                             key: Key(routes.panels().last.identifier),
                             height: constraints.maxHeight,
+                            width: constraints.maxWidth,
                             panel: routes.panels().last,
                           ),
                         ),
