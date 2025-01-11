@@ -18,7 +18,7 @@ class BottomNavBar extends StatelessWidget {
         child: Acrylic(
           elevation: 30,
           child: Padding(
-            padding: const EdgeInsets.all(5),
+            padding: const EdgeInsets.all(1),
             child: StreamBuilder(
                 stream: routes.currentRouteIndex.stream,
                 builder: (context, snapshot) {
@@ -76,27 +76,28 @@ class BottomNavBarButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      style: active
-          ? ButtonStyle(
-              backgroundColor: WidgetStatePropertyAll(Colors.blue.withValues(alpha: 0.05)),
-              shape: WidgetStatePropertyAll(
-                RoundedRectangleGradientBorder(
-                  borderRadius: BorderRadius.circular(7),
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomLeft,
-                    end: Alignment.topRight,
-                    colors: [Colors.blue, Colors.blue.withValues(alpha: 0.3), Colors.blue],
-                  ),
-                  width: 0.3,
-                  strokeAlign: 1,
-                ),
-              ),
-            )
-          : null,
       icon: Column(
         children: [
-          Icon(icon, color: active ? Colors.blue : null),
-          Txt(title, style: TextStyle(fontSize: 11, color: active ? Colors.blue : null)),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+            decoration: BoxDecoration(
+              color: active ? Colors.blue : null,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              color: active ? Colors.white : null,
+              size: 18,
+            ),
+          ),
+          Txt(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: active ? Colors.blue : Colors.grey.withValues(alpha: 0.8),
+            ),
+          ),
         ],
       ),
       onPressed: () => routes.navigate(routes.getByIdentifier(identifier)!),
