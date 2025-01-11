@@ -281,26 +281,31 @@ class _PanelScreenState extends State<PanelScreen> {
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(
-                  width: 155.5,
-                  child: AcrylicTitle(
-                    maxWidth: 116,
-                    radius: 13,
-                    fontSize: 13,
-                    item:
-                        widget.panel.title != null ? Model.fromJson({"title": widget.panel.title}) : widget.panel.item,
-                    icon: widget.panel.item.archived == true
-                        ? FluentIcons.archive
-                        : isNew
-                            ? FluentIcons.add
-                            : FluentIcons.edit,
-                    predefinedColor: widget.panel.item.archived == true ? Colors.grey : null,
-                  ),
-                ),
-                Txt(
-                  txt(storeSingularName),
-                  style: TextStyle(fontSize: 10.5, color: Colors.grey.withValues(alpha: 0.7)),
-                  overflow: TextOverflow.fade,
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 155.5,
+                      child: AcrylicTitle(
+                        maxWidth: 116,
+                        radius: 13,
+                        fontSize: 13,
+                        item: widget.panel.title != null
+                            ? Model.fromJson({"title": widget.panel.title})
+                            : widget.panel.item,
+                        icon: widget.panel.item.archived == true
+                            ? FluentIcons.archive
+                            : isNew
+                                ? FluentIcons.add
+                                : FluentIcons.edit,
+                        predefinedColor: widget.panel.item.archived == true ? Colors.grey : null,
+                      ),
+                    ),
+                    Txt(
+                      txt(storeSingularName),
+                      style: TextStyle(fontSize: 10.5, color: Colors.grey.withValues(alpha: 0.7)),
+                      overflow: TextOverflow.fade,
+                    )
+                  ],
                 ),
                 Row(children: [
                   if (routes.panels().length > 1)
@@ -321,10 +326,10 @@ class _PanelScreenState extends State<PanelScreen> {
                       ),
                     ),
                   if (widget.width < 710) // minimization is useless in big screens
-                  IconButton(
-                    icon: Icon(routes.minimizePanels() ? FluentIcons.chevron_up : FluentIcons.chevron_down),
-                    onPressed: () => routes.minimizePanels(!routes.minimizePanels()),
-                  ),
+                    IconButton(
+                      icon: Icon(routes.minimizePanels() ? FluentIcons.chevron_up : FluentIcons.chevron_down),
+                      onPressed: () => routes.minimizePanels(!routes.minimizePanels()),
+                    ),
                   widget.panel.inProgress()
                       ? const SizedBox(height: 20, width: 20, child: ProgressRing())
                       : IconButton(
