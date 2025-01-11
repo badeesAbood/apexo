@@ -157,7 +157,7 @@ class ApexoApp extends StatelessWidget {
                 ),
                 AnimatedPositioned(
                   width: 350,
-                  height: routes.minimizePanels() ? 55 : constraints.maxHeight,
+                  height: routes.minimizePanels() ? 56 : constraints.maxHeight,
                   top: routes.minimizePanels() ? null : 0,
                   bottom: routes.minimizePanels() ? 0 : null,
                   left: locale.s.$direction == Direction.ltr ? null : (hideSidePanel ? -400 : 0),
