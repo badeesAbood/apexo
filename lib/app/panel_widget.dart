@@ -41,7 +41,7 @@ class _PanelScreenState extends State<PanelScreen> {
       if (jsonEncode(widget.panel.item.toJson()) != widget.panel.savedJson && widget.panel.enableSaveButton() != true) {
         widget.panel.enableSaveButton(true);
       } else if (jsonEncode(widget.panel.item.toJson()) == widget.panel.savedJson &&
-          widget.panel.enableSaveButton() == true) {
+          widget.panel.enableSaveButton() != false) {
         widget.panel.enableSaveButton(false);
       }
     });
@@ -136,11 +136,11 @@ class _PanelScreenState extends State<PanelScreen> {
   Widget _buildCancelButton() {
     return StreamBuilder<bool>(
         stream: widget.panel.enableSaveButton.stream,
-        builder: (context, dataChanged) {
+        builder: (context, _) {
           return FilledButton(
             onPressed: routes.goBack,
             style: ButtonStyle(
-              backgroundColor: dataChanged.data == true
+              backgroundColor: widget.panel.enableSaveButton()
                   ? WidgetStatePropertyAll(Colors.orange)
                   : const WidgetStatePropertyAll(Colors.grey),
             ),
@@ -148,7 +148,7 @@ class _PanelScreenState extends State<PanelScreen> {
               children: [
                 const Icon(FluentIcons.cancel),
                 const SizedBox(width: 5),
-                Txt(dataChanged.data == true ? txt("cancel") : txt("close"))
+                Txt(widget.panel.enableSaveButton() ? txt("cancel") : txt("close"))
               ],
             ),
           );
@@ -158,10 +158,10 @@ class _PanelScreenState extends State<PanelScreen> {
   Widget _buildSaveButton() {
     return StreamBuilder<bool>(
         stream: widget.panel.enableSaveButton.stream,
-        builder: (context, enable) {
+        builder: (context, _) {
           return FilledButton(
             onPressed: () {
-              if (enable.data == true) {
+              if (widget.panel.enableSaveButton()) {
                 widget.panel.store.set(widget.panel.item);
                 widget.panel.savedJson = jsonEncode(widget.panel.item.toJson());
                 widget.panel.identifier = widget.panel.item.id;
@@ -175,8 +175,8 @@ class _PanelScreenState extends State<PanelScreen> {
               }
             },
             style: ButtonStyle(
-              backgroundColor:
-                  WidgetStatePropertyAll(enable.data == true ? Colors.blue : Colors.grey.withValues(alpha: 0.25)),
+              backgroundColor: WidgetStatePropertyAll(
+                  widget.panel.enableSaveButton() ? Colors.blue : Colors.grey.withValues(alpha: 0.25)),
             ),
             child: Row(
               children: [const Icon(FluentIcons.save), const SizedBox(width: 5), Txt(txt("save"))],
