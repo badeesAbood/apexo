@@ -1,6 +1,7 @@
 import 'package:apexo/app/app.dart';
 import 'package:apexo/utils/init_stores.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 
 void main() {
@@ -10,6 +11,11 @@ void main() {
   });
 
   initializeStores();
+
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarIconBrightness: Brightness.dark,
+    systemNavigationBarIconBrightness: Brightness.dark,
+  ));
 
   runApp(const ApexoApp());
 }
