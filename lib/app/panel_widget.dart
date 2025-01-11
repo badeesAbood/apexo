@@ -320,6 +320,7 @@ class _PanelScreenState extends State<PanelScreen> {
                         onPressed: openPanelSwitch,
                       ),
                     ),
+                  if (widget.width < 710) // minimization is useless in big screens
                   IconButton(
                     icon: Icon(routes.minimizePanels() ? FluentIcons.chevron_up : FluentIcons.chevron_down),
                     onPressed: () => routes.minimizePanels(!routes.minimizePanels()),
