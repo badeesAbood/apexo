@@ -230,7 +230,7 @@ class _Routes {
   }
 
   goBack() {
-    if (panels().isNotEmpty) {
+    if (panels().isNotEmpty && !minimizePanels()) {
       return panels(panels()..removeLast());
     }
     if (history.isNotEmpty) {
