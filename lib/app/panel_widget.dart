@@ -326,7 +326,9 @@ class _PanelScreenState extends State<PanelScreen> {
                   ),
                   widget.panel.inProgress()
                       ? const SizedBox(height: 20, width: 20, child: ProgressRing())
-                      : IconButton(icon: const Icon(FluentIcons.cancel), onPressed: routes.goBack)
+                      : IconButton(
+                          icon: const Icon(FluentIcons.cancel),
+                          onPressed: () => routes.panels(routes.panels()..removeLast()))
                 ])
               ],
             );
