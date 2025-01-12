@@ -157,7 +157,7 @@ class SettingsScreen extends StatelessWidget {
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         const SizedBox(height: 10),
-                                        const Center(child: ProgressRing()),
+                                        if (cacheResetState().startsWith("Error")) const Center(child: ProgressRing()),
                                         const SizedBox(height: 10),
                                         Center(child: Txt(cacheResetState())),
                                         const SizedBox(height: 10),
