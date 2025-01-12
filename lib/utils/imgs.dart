@@ -58,7 +58,7 @@ Future<String> handleNewImage({required String rowID, required String targetPath
 final imgMemoryCache = <String, ImageProvider?>{};
 
 Future<ImageProvider?> getImage(String rowID, String name) async {
-  if (imgMemoryCache.containsKey(name)) {
+  if (imgMemoryCache.containsKey(name) && imgMemoryCache[name] != null) {
     return imgMemoryCache[name];
   } else if (name == "https://person.alisaleem.workers.dev/") {
     final link = "$name?no-cache=$rowID";
