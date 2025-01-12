@@ -337,6 +337,9 @@ class En {
 
     // other
     "sureArchiveSelected": "Are you sure you want to archive the selected items?",
+    "sureClosePanel": "Are you sure you want to close this panel? Any unsaved changes will be lost.",
+    "sure": "Sure",
+    "back": "Back",
     "firstLaunchDialogTitle": "Welcome to Apexo",
     "firstLaunchDialogContent":
         "You have successfully installed Apexo. However, for better experience and for real-world use, you'll have a couple of things to configure. Scan the QR code below to get started.",

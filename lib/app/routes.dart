@@ -51,7 +51,7 @@ class Panel<T extends Model> {
   String? title;
   final inProgress = ObservableState(false);
   final selectedTab = ObservableState<int>(0);
-  final ObservableState<bool> enableSaveButton = ObservableState(false);
+  final ObservableState<bool> hasUnsavedChanges = ObservableState(false);
   late String savedJson;
   late String identifier;
   final Completer<T> result = Completer<T>();

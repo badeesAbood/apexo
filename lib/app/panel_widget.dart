@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:apexo/app/routes.dart';
 import 'package:apexo/common_widgets/acrylic_title.dart';
+import 'package:apexo/common_widgets/dialogs/close_dialog_button.dart';
 import 'package:apexo/core/model.dart';
 import 'package:apexo/core/multi_stream_builder.dart';
 import 'package:apexo/services/localization/locale.dart';
@@ -27,6 +28,7 @@ class _PanelScreenState extends State<PanelScreen> {
   late bool isNew;
   final FocusNode focusNode = FocusNode();
   final panelSwitchController = FlyoutController();
+  final confirmCancelController = FlyoutController();
   late Timer saveButtonCheckTimer;
 
   @override
@@ -40,11 +42,12 @@ class _PanelScreenState extends State<PanelScreen> {
     super.initState();
     isNew = widget.panel.store.get(widget.panel.item.id) == null;
     saveButtonCheckTimer = Timer.periodic(const Duration(milliseconds: 750), (_) {
-      if (jsonEncode(widget.panel.item.toJson()) != widget.panel.savedJson && widget.panel.enableSaveButton() != true) {
-        widget.panel.enableSaveButton(true);
+      if (jsonEncode(widget.panel.item.toJson()) != widget.panel.savedJson &&
+          widget.panel.hasUnsavedChanges() != true) {
+        widget.panel.hasUnsavedChanges(true);
       } else if (jsonEncode(widget.panel.item.toJson()) == widget.panel.savedJson &&
-          widget.panel.enableSaveButton() != false) {
-        widget.panel.enableSaveButton(false);
+          widget.panel.hasUnsavedChanges() != false) {
+        widget.panel.hasUnsavedChanges(false);
       }
     });
   }
@@ -146,34 +149,37 @@ class _PanelScreenState extends State<PanelScreen> {
   }
 
   Widget _buildCancelButton() {
-    return StreamBuilder<bool>(
-        stream: widget.panel.enableSaveButton.stream,
-        builder: (context, _) {
-          return FilledButton(
-            onPressed: () => routes.closePanel(widget.panel.item.id),
-            style: ButtonStyle(
-              backgroundColor: widget.panel.enableSaveButton()
-                  ? WidgetStatePropertyAll(Colors.orange)
-                  : const WidgetStatePropertyAll(Colors.grey),
-            ),
-            child: Row(
-              children: [
-                const Icon(FluentIcons.cancel),
-                const SizedBox(width: 5),
-                Txt(widget.panel.enableSaveButton() ? txt("cancel") : txt("close"))
-              ],
-            ),
-          );
-        });
+    return FlyoutTarget(
+      controller: confirmCancelController,
+      child: StreamBuilder<bool>(
+          stream: widget.panel.hasUnsavedChanges.stream,
+          builder: (context, _) {
+            return FilledButton(
+              onPressed: closeOrConfirmCancel,
+              style: ButtonStyle(
+                backgroundColor: widget.panel.hasUnsavedChanges()
+                    ? WidgetStatePropertyAll(Colors.orange)
+                    : const WidgetStatePropertyAll(Colors.grey),
+              ),
+              child: Row(
+                children: [
+                  const Icon(FluentIcons.cancel),
+                  const SizedBox(width: 5),
+                  Txt(widget.panel.hasUnsavedChanges() ? txt("cancel") : txt("close"))
+                ],
+              ),
+            );
+          }),
+    );
   }
 
   Widget _buildSaveButton() {
     return StreamBuilder<bool>(
-        stream: widget.panel.enableSaveButton.stream,
+        stream: widget.panel.hasUnsavedChanges.stream,
         builder: (context, _) {
           return FilledButton(
             onPressed: () {
-              if (widget.panel.enableSaveButton()) {
+              if (widget.panel.hasUnsavedChanges()) {
                 widget.panel.store.set(widget.panel.item);
                 widget.panel.savedJson = jsonEncode(widget.panel.item.toJson());
                 widget.panel.identifier = widget.panel.item.id;
@@ -188,7 +194,7 @@ class _PanelScreenState extends State<PanelScreen> {
             },
             style: ButtonStyle(
               backgroundColor: WidgetStatePropertyAll(
-                  widget.panel.enableSaveButton() ? Colors.blue : Colors.grey.withValues(alpha: 0.25)),
+                  widget.panel.hasUnsavedChanges() ? Colors.blue : Colors.grey.withValues(alpha: 0.25)),
             ),
             child: Row(
               children: [const Icon(FluentIcons.save), const SizedBox(width: 5), Txt(txt("save"))],
@@ -300,10 +306,13 @@ class _PanelScreenState extends State<PanelScreen> {
     );
   }
 
-  IconButton _buildPanelCloseButton() {
-    return IconButton(
-      icon: const Icon(FluentIcons.cancel),
-      onPressed: () => routes.closePanel(widget.panel.item.id),
+  Widget _buildPanelCloseButton() {
+    return FlyoutTarget(
+      controller: confirmCancelController,
+      child: IconButton(
+        icon: const Icon(FluentIcons.cancel),
+        onPressed: closeOrConfirmCancel,
+      ),
     );
   }
 
@@ -357,6 +366,46 @@ class _PanelScreenState extends State<PanelScreen> {
         predefinedColor: widget.panel.item.archived == true ? Colors.grey : null,
       ),
     );
+  }
+
+  void closeOrConfirmCancel() {
+    if (widget.panel.hasUnsavedChanges() == false) {
+      routes.closePanel(widget.panel.item.id);
+    } else {
+      confirmCancelController.showFlyout(builder: (context) {
+        return FlyoutContent(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Txt(txt("sureClosePanel")),
+              const SizedBox(height: 12.0),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FilledButton(
+                    style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.warningPrimaryColor)),
+                    onPressed: () {
+                      Flyout.of(context).close();
+                      routes.closePanel(widget.panel.item.id);
+                    },
+                    child: Row(
+                      children: [
+                        const Icon(FluentIcons.check_mark, size: 16),
+                        const SizedBox(width: 5),
+                        Txt(txt("sure")),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  CloseButtonInDialog(buttonText: txt("back")),
+                ],
+              ),
+            ],
+          ),
+        );
+      });
+    }
   }
 
   void openPanelSwitch() {
