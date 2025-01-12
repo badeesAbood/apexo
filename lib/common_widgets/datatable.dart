@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:apexo/app/routes.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
@@ -371,7 +372,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
 
   List<Widget> _buildToggleSorters(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    if (width < 865 || (width > 1000 && width < 1150)) {
+    if (routes.panels().isNotEmpty || width < 865 || (width > 1000 && width < 1150)) {
       return [];
     }
     return [
