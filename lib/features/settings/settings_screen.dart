@@ -121,72 +121,75 @@ class SettingsScreen extends StatelessWidget {
                 localSettings.notifyAndPersist();
               },
             ),
-            SettingsItem(
-              title: txt("cacheReset"),
-              identifier: "cacheReset",
-              description: txt("cacheReset_desc"),
-              icon: FluentIcons.offline_storage,
-              inputType: InputType.none,
-              scope: Scope.device,
-              value: "",
-              apply: (_) {},
-              footer: FilledButton(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(FluentIcons.offline_storage),
-                      const SizedBox(width: 10),
-                      Txt(txt("cacheReset"))
-                    ],
-                  ),
-                  onPressed: () async {
-                    showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        dismissWithEsc: false,
-                        builder: (context) {
-                          return ContentDialog(
-                            title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Txt(txt("cacheReset"))]),
-                            content: StreamBuilder(
-                                stream: cacheResetState.stream,
-                                builder: (context, _) {
-                                  return Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      const SizedBox(height: 10),
-                                      const Center(child: ProgressRing()),
-                                      const SizedBox(height: 10),
-                                      Center(child: Txt(cacheResetState())),
-                                      const SizedBox(height: 10),
-                                      if (cacheResetState().startsWith("Error"))
-                                        FilledButton(child: Txt(txt("close")), onPressed: () => Navigator.pop(context)),
-                                    ],
-                                  );
-                                }),
-                            style: dialogStyling(false),
-                          );
-                        });
+            if (network.isOnline())
+              SettingsItem(
+                title: txt("cacheReset"),
+                identifier: "cacheReset",
+                description: txt("cacheReset_desc"),
+                icon: FluentIcons.offline_storage,
+                inputType: InputType.none,
+                scope: Scope.device,
+                value: "",
+                apply: (_) {},
+                footer: FilledButton(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(FluentIcons.offline_storage),
+                        const SizedBox(width: 10),
+                        Txt(txt("cacheReset"))
+                      ],
+                    ),
+                    onPressed: () async {
+                      showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          dismissWithEsc: false,
+                          builder: (context) {
+                            return ContentDialog(
+                              title:
+                                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [Txt(txt("cacheReset"))]),
+                              content: StreamBuilder(
+                                  stream: cacheResetState.stream,
+                                  builder: (context, _) {
+                                    return Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        const SizedBox(height: 10),
+                                        const Center(child: ProgressRing()),
+                                        const SizedBox(height: 10),
+                                        Center(child: Txt(cacheResetState())),
+                                        const SizedBox(height: 10),
+                                        if (cacheResetState().startsWith("Error"))
+                                          FilledButton(
+                                              child: Txt(txt("close")), onPressed: () => Navigator.pop(context)),
+                                      ],
+                                    );
+                                  }),
+                              style: dialogStyling(false),
+                            );
+                          });
 
-                    try {
-                      cacheResetState(txt("initialSynchronization"));
-                      await networkActions.resync();
-                      cacheResetState(txt("clearingLocalData"));
-                      await doctors.local!.clear();
-                      await patients.local!.clear();
-                      await appointments.local!.clear();
-                      await labworks.local!.clear();
-                      await expenses.local!.clear();
-                      await globalSettings.local!.clear();
-                      cacheResetState(txt("synchronizing"));
-                      await networkActions.resync();
-                    } catch (e, s) {
-                      cacheResetState("Error: $e\n$s");
-                    } finally {
-                      if (context.mounted) Navigator.of(context).pop();
-                    }
-                  }),
-            ),
+                      try {
+                        cacheResetState(txt("initialSynchronization"));
+                        await networkActions.resync();
+                        cacheResetState(txt("clearingLocalData"));
+                        await doctors.local!.clear();
+                        await patients.local!.clear();
+                        await appointments.local!.clear();
+                        await labworks.local!.clear();
+                        await expenses.local!.clear();
+                        await globalSettings.local!.clear();
+                        cacheResetState(txt("synchronizing"));
+                        await networkActions.resync();
+                      } catch (e, s) {
+                        cacheResetState("Error: $e\n$s");
+                      } finally {
+                        if (context.mounted) Navigator.of(context).pop();
+                      }
+                    }),
+              ),
             if (login.isAdmin && network.isOnline()) ...[
               const BackupsSettings(),
               AdminsSettings(),
