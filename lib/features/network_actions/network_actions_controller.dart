@@ -34,7 +34,7 @@ class _NetworkActions {
   Map<String, void Function()> syncCallbacks = {};
   Map<String, void Function()> reconnectCallbacks = {};
 
-  resync() async {
+  Future<void> resync() async {
     isSyncing(isSyncing() + 1);
     await login.activate(login.url, [login.token], true);
     isSyncing(isSyncing() - 1);
