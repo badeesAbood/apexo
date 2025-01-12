@@ -59,7 +59,7 @@ class _PanelScreenState extends State<PanelScreen> {
         focusNode: focusNode,
         onKeyEvent: (value) {
           if (value is KeyDownEvent && value.logicalKey == LogicalKeyboardKey.escape && routes.panels().isNotEmpty) {
-            routes.goBack();
+            routes.closePanel(widget.panel.item.id);
           }
         },
         child: Padding(
@@ -82,7 +82,7 @@ class _PanelScreenState extends State<PanelScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _buildPanelHeader(),
-                      if (routes.minimizePanels() == false) ...[
+                      if (routes.minimizePanels() == false || widget.layoutWidth >= 710) ...[
                         _buildTabsControllers(),
                         _buildTabBody(),
                         if (widget.panel.tabs[widget.panel.selectedTab()].footer != null)
@@ -150,7 +150,7 @@ class _PanelScreenState extends State<PanelScreen> {
         stream: widget.panel.enableSaveButton.stream,
         builder: (context, _) {
           return FilledButton(
-            onPressed: routes.goBack,
+            onPressed: () => routes.closePanel(widget.panel.item.id), // TODO: confirmation dialog if data has changed
             style: ButtonStyle(
               backgroundColor: widget.panel.enableSaveButton()
                   ? WidgetStatePropertyAll(Colors.orange)
@@ -200,8 +200,10 @@ class _PanelScreenState extends State<PanelScreen> {
   FilledButton _buildArchiveButton() {
     return FilledButton(
       onPressed: () {
-        widget.panel.store.archive(widget.panel.item.id);
-        routes.goBack();
+        setState(() {
+          widget.panel.item.archived = true;
+          widget.panel.store.archive(widget.panel.item.id);
+        });
       },
       style: const ButtonStyle(
         backgroundColor: WidgetStatePropertyAll(Colors.grey),
@@ -215,8 +217,10 @@ class _PanelScreenState extends State<PanelScreen> {
   FilledButton _buildRestoreButton() {
     return FilledButton(
       onPressed: () {
-        widget.panel.store.unarchive(widget.panel.item.id);
-        routes.goBack();
+        setState(() {
+          widget.panel.item.archived = null;
+          widget.panel.store.unarchive(widget.panel.item.id);
+        });
       },
       style: ButtonStyle(
         backgroundColor: WidgetStatePropertyAll(Colors.teal),
@@ -334,7 +338,7 @@ class _PanelScreenState extends State<PanelScreen> {
                       ? const SizedBox(height: 20, width: 20, child: ProgressRing())
                       : IconButton(
                           icon: const Icon(FluentIcons.cancel),
-                          onPressed: () => routes.panels(routes.panels()..removeLast()))
+                          onPressed: () => routes.closePanel(widget.panel.item.id)) // TODO: confiramtion
                 ])
               ],
             );

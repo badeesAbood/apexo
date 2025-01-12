@@ -229,10 +229,11 @@ class _Routes {
     return allRoutes[currentRouteIndex()];
   }
 
+  closePanel(String itemId) {
+    panels(panels()..removeWhere((p) => p.item.id == itemId));
+  }
+
   goBack() {
-    if (panels().isNotEmpty && !minimizePanels()) {
-      return panels(panels()..removeLast());
-    }
     if (history.isNotEmpty) {
       currentRouteIndex(history.removeLast());
       if (currentRoute.onSelect != null) {

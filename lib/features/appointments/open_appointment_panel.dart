@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:apexo/app/routes.dart';
 import 'package:apexo/common_widgets/dialogs/import_photos_dialog.dart';
+import 'package:apexo/features/patients/patient_model.dart';
 import 'package:apexo/utils/imgs.dart';
 import 'package:apexo/utils/logger.dart';
 import 'package:apexo/services/localization/locale.dart';
@@ -16,6 +17,7 @@ import 'package:apexo/common_widgets/tag_input.dart';
 import 'package:apexo/features/appointments/appointment_model.dart';
 import 'package:apexo/features/appointments/appointments_store.dart';
 import 'package:apexo/features/settings/settings_stores.dart';
+import 'package:apexo/utils/uuid.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
@@ -229,8 +231,9 @@ class _AppointmentDetailsState extends State<_AppointmentDetails> {
                   icon: FluentIcons.add_friend,
                   text: txt("newPatient"),
                   onPressed: () async {
-                    final newPatient = await openPatient();
-                    routes.goBack();
+                    final newPatientId = uuid();
+                    final newPatient = await openPatient(Patient.fromJson({"id": newPatientId}));
+                    routes.closePanel(newPatientId);
                     widget.appointment.patientID = newPatient.id;
                   })
           ]),

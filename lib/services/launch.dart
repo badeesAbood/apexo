@@ -5,6 +5,7 @@ class _Launch {
   final isFirstLaunch = ObservableState(false);
   final isDemo = Uri.base.host == "demo.apexo.app";
   final open = ObservableState(false);
+  double layoutWidth = 0;
 }
 
 final launch = _Launch();

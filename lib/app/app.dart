@@ -87,8 +87,15 @@ class ApexoApp extends StatelessWidget {
       key: WK.builder,
       builder: (context, _) => PopScope(
         canPop: false,
-        onPopInvokedWithResult: (_, __) => routes.goBack(),
+        onPopInvokedWithResult: (_, __) {
+          if (launch.layoutWidth < 710 && routes.panels().isNotEmpty && routes.minimizePanels() == false) {
+            routes.minimizePanels(true);
+            return;
+          }
+          routes.goBack();
+        },
         child: LayoutBuilder(builder: (context, constraints) {
+          launch.layoutWidth = constraints.maxWidth;
           final hideSidePanel = routes.panels().isEmpty || !launch.open();
           return Container(
             color: Colors.white.withValues(alpha: 0.97),
@@ -112,7 +119,7 @@ class ApexoApp extends StatelessWidget {
       left: locale.s.$direction == Direction.rtl ? null : 0,
       right: locale.s.$direction == Direction.rtl ? 0 : null,
       height: constraints.maxHeight,
-      width: (!hideSidePanel) && constraints.maxWidth > 710 ? constraints.maxWidth - 355 : constraints.maxWidth,
+      width: (!hideSidePanel) && constraints.maxWidth >= 710 ? constraints.maxWidth - 355 : constraints.maxWidth,
       child: Container(
         decoration: BoxDecoration(boxShadow: kElevationToShadow[6]),
         child: NavigationView(
@@ -172,18 +179,19 @@ class ApexoApp extends StatelessWidget {
   }
 
   AnimatedPositioned _buildPositionedPanel(BoxConstraints constraints, bool hideSidePanel) {
+    final minimized = routes.minimizePanels() && constraints.maxWidth < 710;
     return AnimatedPositioned(
-      width: (constraints.maxWidth < 490 && routes.minimizePanels()) ? constraints.maxWidth : 350,
-      height: routes.minimizePanels() ? 56 : constraints.maxHeight,
-      top: routes.minimizePanels() ? null : 0,
-      bottom: routes.minimizePanels() ? 0 : null,
+      width: (constraints.maxWidth < 490 && minimized) ? constraints.maxWidth : 350,
+      height: minimized ? 56 : constraints.maxHeight,
+      top: minimized ? null : 0,
+      bottom: minimized ? 0 : null,
       left: locale.s.$direction == Direction.ltr ? null : (hideSidePanel ? -400 : 0),
       right: locale.s.$direction == Direction.ltr ? (hideSidePanel ? -400 : 0) : null,
       duration: const Duration(milliseconds: 200),
       child: hideSidePanel
           ? const SizedBox()
           : SafeArea(
-              top: routes.minimizePanels() ? false : true,
+              top: minimized ? false : true,
               child: PanelScreen(
                 key: Key(routes.panels().last.identifier),
                 layoutHeight: constraints.maxHeight,
