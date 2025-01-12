@@ -31,6 +31,8 @@ class _PanelScreenState extends State<PanelScreen> {
   final confirmCancelController = FlyoutController();
   late Timer saveButtonCheckTimer;
 
+  bool ctrlPressed = false;
+
   @override
   void dispose() {
     saveButtonCheckTimer.cancel();
@@ -66,6 +68,24 @@ class _PanelScreenState extends State<PanelScreen> {
               routes.panels().isNotEmpty &&
               widget.panel.inProgress() == false) {
             closeOrConfirmCancel();
+            return;
+          }
+
+          if (value.logicalKey == LogicalKeyboardKey.controlLeft ||
+              value.logicalKey == LogicalKeyboardKey.controlLeft) {
+            if (value is KeyDownEvent) {
+              ctrlPressed = true;
+            } else {
+              ctrlPressed = false;
+            }
+          }
+
+          if (value is KeyDownEvent && value.logicalKey == LogicalKeyboardKey.tab && ctrlPressed) {
+            if (widget.panel.selectedTab() == widget.panel.tabs.length - 1) {
+              widget.panel.selectedTab(0);
+            } else {
+              widget.panel.selectedTab(widget.panel.selectedTab() + 1);
+            }
           }
         },
         child: Padding(
