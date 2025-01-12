@@ -62,7 +62,7 @@ class _PanelScreenState extends State<PanelScreen> {
         focusNode: focusNode,
         onKeyEvent: (value) {
           if (value is KeyDownEvent && value.logicalKey == LogicalKeyboardKey.escape && routes.panels().isNotEmpty) {
-            routes.closePanel(widget.panel.item.id);
+            closeOrConfirmCancel();
           }
         },
         child: Padding(
