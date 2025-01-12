@@ -61,7 +61,10 @@ class _PanelScreenState extends State<PanelScreen> {
         autofocus: true,
         focusNode: focusNode,
         onKeyEvent: (value) {
-          if (value is KeyDownEvent && value.logicalKey == LogicalKeyboardKey.escape && routes.panels().isNotEmpty) {
+          if (value is KeyDownEvent &&
+              value.logicalKey == LogicalKeyboardKey.escape &&
+              routes.panels().isNotEmpty &&
+              widget.panel.inProgress() == false) {
             closeOrConfirmCancel();
           }
         },
