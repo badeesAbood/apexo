@@ -30,7 +30,6 @@ class _PanelScreenState extends State<PanelScreen> {
   final panelSwitchController = FlyoutController();
   final confirmCancelController = FlyoutController();
   late Timer saveButtonCheckTimer;
-
   bool ctrlPressed = false;
 
   @override
@@ -153,7 +152,7 @@ class _PanelScreenState extends State<PanelScreen> {
                 decoration: BoxDecoration(
                   border: Border(top: BorderSide(color: Colors.grey.withValues(alpha: 0.1))),
                 ),
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                 child: widget.panel.inProgress()
                     ? const Center(child: ProgressBar())
                     : Row(
@@ -180,6 +179,7 @@ class _PanelScreenState extends State<PanelScreen> {
             return FilledButton(
               onPressed: closeOrConfirmCancel,
               style: ButtonStyle(
+                textStyle: const WidgetStatePropertyAll(TextStyle(fontSize: 13)),
                 backgroundColor: widget.panel.hasUnsavedChanges()
                     ? WidgetStatePropertyAll(Colors.orange)
                     : const WidgetStatePropertyAll(Colors.grey),
@@ -216,6 +216,7 @@ class _PanelScreenState extends State<PanelScreen> {
               }
             },
             style: ButtonStyle(
+              textStyle: const WidgetStatePropertyAll(TextStyle(fontSize: 13)),
               backgroundColor: WidgetStatePropertyAll(
                   widget.panel.hasUnsavedChanges() ? Colors.blue : Colors.grey.withValues(alpha: 0.25)),
             ),
@@ -236,9 +237,14 @@ class _PanelScreenState extends State<PanelScreen> {
       },
       style: const ButtonStyle(
         backgroundColor: WidgetStatePropertyAll(Colors.grey),
+        textStyle: WidgetStatePropertyAll(TextStyle(fontSize: 13)),
       ),
       child: Row(
-        children: [const Icon(FluentIcons.archive), const SizedBox(width: 5), Txt(txt("archive"))],
+        children: [
+          const Icon(FluentIcons.archive),
+          const SizedBox(width: 5),
+          Txt("${txt("archive")} ${txt(widget.panel.storeSingularName)}"),
+        ],
       ),
     );
   }
@@ -252,10 +258,15 @@ class _PanelScreenState extends State<PanelScreen> {
         });
       },
       style: ButtonStyle(
+        textStyle: const WidgetStatePropertyAll(TextStyle(fontSize: 13)),
         backgroundColor: WidgetStatePropertyAll(Colors.teal),
       ),
       child: Row(
-        children: [const Icon(FluentIcons.archive_undo), const SizedBox(width: 5), Txt(txt("Restore"))],
+        children: [
+          const Icon(FluentIcons.archive_undo),
+          const SizedBox(width: 5),
+          Txt("${txt("Restore")} ${txt(widget.panel.storeSingularName)}")
+        ],
       ),
     );
   }
@@ -290,7 +301,7 @@ class _PanelScreenState extends State<PanelScreen> {
                     : const SizedBox(width: 25),
             tabs: widget.panel.tabs
                 .map((e) => Tab(
-                      text: Txt(e.title),
+                      text: Txt(txt(e.title)),
                       icon: Icon(e.icon),
                       body: const SizedBox(),
                       disabled: e.onlyIfSaved && isNew,
@@ -309,12 +320,10 @@ class _PanelScreenState extends State<PanelScreen> {
       child: StreamBuilder(
           stream: widget.panel.inProgress.stream,
           builder: (context, snapshot) {
-            final storeSingularName =
-                widget.panel.store.local!.name.substring(0, widget.panel.store.local!.name.length - 1);
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(children: [_buildPanelHeaderItemName(), _buildPanelHeaderStoreName(storeSingularName)]),
+                Row(children: [_buildPanelHeaderItemName(), _buildPanelHeaderStoreName()]),
                 Row(children: [
                   if (routes.panels().length > 1) _buildPanelSwitcher(),
                   // minimization is useless is prevented in big screens
@@ -365,9 +374,9 @@ class _PanelScreenState extends State<PanelScreen> {
     );
   }
 
-  Txt _buildPanelHeaderStoreName(String storeSingularName) {
+  Txt _buildPanelHeaderStoreName() {
     return Txt(
-      txt(storeSingularName),
+      txt(widget.panel.storeSingularName),
       style: TextStyle(fontSize: 10.5, color: Colors.grey.withValues(alpha: 0.7)),
       overflow: TextOverflow.fade,
     );
@@ -438,14 +447,13 @@ class _PanelScreenState extends State<PanelScreen> {
       dismissOnPointerMoveAway: true,
       builder: (context) => MenuFlyout(items: [
         ...([...routes.panels()]..sort((a, b) => b.creationDate - a.creationDate)).map((panel) {
-          final singularStoreName = panel.store.local!.name.substring(0, panel.store.local!.name.length - 1);
           return MenuFlyoutItem(
             selected: panel == widget.panel,
             leading: Icon(panel.icon),
             trailing: panel.inProgress()
                 ? const SizedBox(height: 20, width: 20, child: ProgressRing())
                 : Icon(panel.store.get(panel.item.id) == null ? FluentIcons.add : FluentIcons.edit),
-            text: Txt("${txt(singularStoreName)}: ${panel.title ?? panel.item.title}",
+            text: Txt("${txt(panel.storeSingularName)}: ${panel.title ?? panel.item.title}",
                 style: TextStyle(fontWeight: panel == widget.panel ? FontWeight.w500 : null)),
             onPressed: () => routes.bringPanelToFront(routes.panels().indexOf(panel)),
             closeAfterClick: true,

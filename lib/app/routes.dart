@@ -66,6 +66,10 @@ class Panel<T extends Model> {
     identifier = store.get(item.id) == null ? "new+${store.local?.name}" : item.id;
     savedJson = jsonEncode(item.toJson());
   }
+
+  String get storeSingularName {
+    return store.local!.name.substring(0, store.local!.name.length - 1);
+  }
 }
 
 class Route {
