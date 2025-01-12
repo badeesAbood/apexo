@@ -314,27 +314,32 @@ class _PanelScreenState extends State<PanelScreen> {
   }
 
   Widget _buildPanelHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 2.8, horizontal: 5),
-      color: Colors.grey.withValues(alpha: 0.1),
-      child: StreamBuilder(
-          stream: widget.panel.inProgress.stream,
-          builder: (context, snapshot) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(children: [_buildPanelHeaderItemName(), _buildPanelHeaderStoreName()]),
-                Row(children: [
-                  if (routes.panels().length > 1) _buildPanelSwitcher(),
-                  // minimization is useless is prevented in big screens
-                  if (widget.layoutWidth < 710) _buildPanelMinimizeButton(),
-                  widget.panel.inProgress()
-                      ? const SizedBox(height: 20, width: 20, child: ProgressRing())
-                      : _buildPanelCloseButton()
-                ])
-              ],
-            );
-          }),
+    return GestureDetector(
+      onTap: () {
+        if (routes.minimizePanels()) routes.minimizePanels(false);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 2.8, horizontal: 5),
+        color: Colors.grey.withValues(alpha: 0.1),
+        child: StreamBuilder(
+            stream: widget.panel.inProgress.stream,
+            builder: (context, snapshot) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(children: [_buildPanelHeaderItemName(), _buildPanelHeaderStoreName()]),
+                  Row(children: [
+                    if (routes.panels().length > 1) _buildPanelSwitcher(),
+                    // minimization is useless is prevented in big screens
+                    if (widget.layoutWidth < 710) _buildPanelMinimizeButton(),
+                    widget.panel.inProgress()
+                        ? const SizedBox(height: 20, width: 20, child: ProgressRing())
+                        : _buildPanelCloseButton()
+                  ])
+                ],
+              );
+            }),
+      ),
     );
   }
 
