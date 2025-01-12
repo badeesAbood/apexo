@@ -150,7 +150,7 @@ class _PanelScreenState extends State<PanelScreen> {
         stream: widget.panel.enableSaveButton.stream,
         builder: (context, _) {
           return FilledButton(
-            onPressed: () => routes.closePanel(widget.panel.item.id), // TODO: confirmation dialog if data has changed
+            onPressed: () => routes.closePanel(widget.panel.item.id),
             style: ButtonStyle(
               backgroundColor: widget.panel.enableSaveButton()
                   ? WidgetStatePropertyAll(Colors.orange)
@@ -285,64 +285,77 @@ class _PanelScreenState extends State<PanelScreen> {
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 155.5,
-                      child: AcrylicTitle(
-                        maxWidth: 116,
-                        radius: 13,
-                        fontSize: 13,
-                        item: widget.panel.title != null
-                            ? Model.fromJson({"title": widget.panel.title})
-                            : widget.panel.item,
-                        icon: widget.panel.item.archived == true
-                            ? FluentIcons.archive
-                            : isNew
-                                ? FluentIcons.add
-                                : FluentIcons.edit,
-                        predefinedColor: widget.panel.item.archived == true ? Colors.grey : null,
-                      ),
-                    ),
-                    Txt(
-                      txt(storeSingularName),
-                      style: TextStyle(fontSize: 10.5, color: Colors.grey.withValues(alpha: 0.7)),
-                      overflow: TextOverflow.fade,
-                    )
-                  ],
-                ),
+                Row(children: [_buildPanelHeaderItemName(), _buildPanelHeaderStoreName(storeSingularName)]),
                 Row(children: [
-                  if (routes.panels().length > 1)
-                    FlyoutTarget(
-                      controller: panelSwitchController,
-                      child: IconButton(
-                        icon: Row(
-                          children: [
-                            const Icon(FluentIcons.reopen_pages),
-                            const SizedBox(width: 2),
-                            Text(
-                              routes.panels().length.toString(),
-                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                        onPressed: openPanelSwitch,
-                      ),
-                    ),
-                  if (widget.layoutWidth < 710) // minimization is useless in big screens
-                    IconButton(
-                      icon: Icon(routes.minimizePanels() ? FluentIcons.chevron_up : FluentIcons.chevron_down),
-                      onPressed: () => routes.minimizePanels(!routes.minimizePanels()),
-                    ),
+                  if (routes.panels().length > 1) _buildPanelSwitcher(),
+                  // minimization is useless is prevented in big screens
+                  if (widget.layoutWidth < 710) _buildPanelMinimizeButton(),
                   widget.panel.inProgress()
                       ? const SizedBox(height: 20, width: 20, child: ProgressRing())
-                      : IconButton(
-                          icon: const Icon(FluentIcons.cancel),
-                          onPressed: () => routes.closePanel(widget.panel.item.id)) // TODO: confiramtion
+                      : _buildPanelCloseButton()
                 ])
               ],
             );
           }),
+    );
+  }
+
+  IconButton _buildPanelCloseButton() {
+    return IconButton(
+      icon: const Icon(FluentIcons.cancel),
+      onPressed: () => routes.closePanel(widget.panel.item.id),
+    );
+  }
+
+  IconButton _buildPanelMinimizeButton() {
+    return IconButton(
+      icon: Icon(routes.minimizePanels() ? FluentIcons.chevron_up : FluentIcons.chevron_down),
+      onPressed: () => routes.minimizePanels(!routes.minimizePanels()),
+    );
+  }
+
+  FlyoutTarget _buildPanelSwitcher() {
+    return FlyoutTarget(
+      controller: panelSwitchController,
+      child: IconButton(
+        icon: Row(
+          children: [
+            const Icon(FluentIcons.reopen_pages),
+            const SizedBox(width: 2),
+            Text(
+              routes.panels().length.toString(),
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            )
+          ],
+        ),
+        onPressed: openPanelSwitch,
+      ),
+    );
+  }
+
+  Txt _buildPanelHeaderStoreName(String storeSingularName) {
+    return Txt(
+      txt(storeSingularName),
+      style: TextStyle(fontSize: 10.5, color: Colors.grey.withValues(alpha: 0.7)),
+      overflow: TextOverflow.fade,
+    );
+  }
+
+  SizedBox _buildPanelHeaderItemName() {
+    return SizedBox(
+      width: 155.5,
+      child: AcrylicTitle(
+        maxWidth: 116,
+        radius: 13,
+        fontSize: 13,
+        item: widget.panel.title != null ? Model.fromJson({"title": widget.panel.title}) : widget.panel.item,
+        icon: widget.panel.item.archived == true
+            ? FluentIcons.archive
+            : isNew
+                ? FluentIcons.add
+                : FluentIcons.edit,
+        predefinedColor: widget.panel.item.archived == true ? Colors.grey : null,
+      ),
     );
   }
 
