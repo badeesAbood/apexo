@@ -185,9 +185,9 @@ class SettingsScreen extends StatelessWidget {
                         await networkActions.resync();
                       } catch (e, s) {
                         cacheResetState("Error: $e\n$s");
-                      } finally {
-                        if (context.mounted) Navigator.of(context).pop();
+                        return;
                       }
+                      if (context.mounted) Navigator.of(context).pop();
                     }),
               ),
             if (login.isAdmin && network.isOnline()) ...[
