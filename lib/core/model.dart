@@ -9,6 +9,10 @@ class Model {
     return null;
   }
 
+  String? get imageRowId {
+    return null;
+  }
+
   Model.fromJson(Map<String, dynamic> json)
       : id = uuid(),
         title = "" {

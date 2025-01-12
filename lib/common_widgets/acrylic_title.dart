@@ -41,7 +41,7 @@ class AcrylicTitle extends StatelessWidget {
               future: item.avatar != null
                   ? (launch.isDemo
                       ? demoAvatarRequestQue.add(() => getImage(item.id, item.avatar!))
-                      : getImage(item.id, item.avatar!))
+                      : getImage(item.imageRowId ?? item.id, item.avatar!))
                   : null,
               builder: (context, snapshot) {
                 if (item.title.isEmpty) {

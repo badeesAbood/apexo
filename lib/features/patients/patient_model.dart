@@ -69,14 +69,19 @@ class Patient extends Model {
     return DateTime.now().difference(doneAppointments.last.date).inDays;
   }
 
-  List<String> get imgs {
-    return allAppointments.expand((a) => a.imgs).toList();
-  }
-
   @override
   get avatar {
     if (launch.isDemo) return "https://person.alisaleem.workers.dev/";
-    return imgs.isNotEmpty ? imgs.first : null;
+    final appointmentsWithImages = allAppointments.where((a) => a.imgs.isNotEmpty);
+    if (appointmentsWithImages.isEmpty) return null;
+    return appointmentsWithImages.first.imgs.first;
+  }
+
+  @override
+  get imageRowId {
+    final appointmentsWithImages = allAppointments.where((a) => a.imgs.isNotEmpty);
+    if (appointmentsWithImages.isEmpty) return null;
+    return appointmentsWithImages.first.id;
   }
 
   get webPageLink {
