@@ -268,11 +268,17 @@ class En {
     "startingDayOfWeek_desc": "The day of the week that the week starts on.",
     "dateFormat": "Date format",
     "dateFormat_desc": "This format will be used to display dates where applicable.",
+    "cacheReset": "Cache reset",
+    "cacheReset_desc":
+        "Using the button below, you can delete locally saved data (except for images), this would solve some issues with synchronization if you're facing any.",
     "month/day/year": "Month/Day/Year",
     "day/month/year": "Day/Month/Year",
     "appliesTo": "Applies to",
     "all": "All",
     "you": "you",
+    "initialSynchronization": "Initial synchronization",
+    "synchronizing": "Synchronizing",
+    "clearingLocalData": "Clearing local data",
 
     // advanced settings: Backups
     "backups": "Backups",

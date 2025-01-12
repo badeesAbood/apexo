@@ -1,5 +1,12 @@
+import 'package:apexo/common_widgets/dialogs/dialog_styling.dart';
 import 'package:apexo/core/multi_stream_builder.dart';
+import 'package:apexo/core/observable.dart';
+import 'package:apexo/features/appointments/appointments_store.dart';
+import 'package:apexo/features/doctors/doctors_store.dart';
+import 'package:apexo/features/expenses/expenses_store.dart';
+import 'package:apexo/features/labwork/labworks_store.dart';
 import 'package:apexo/features/network_actions/network_actions_controller.dart';
+import 'package:apexo/features/patients/patients_store.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:apexo/features/settings/services_settings/admins_settings.dart';
 import 'package:apexo/features/settings/services_settings/backups_settings.dart';
@@ -15,7 +22,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'settings_model.dart';
 import 'settings_stores.dart';
 
-enum InputType { text, multiline, dropDown }
+enum InputType { text, multiline, dropDown, none }
 
 enum Scope { device, app }
 
@@ -114,6 +121,72 @@ class SettingsScreen extends StatelessWidget {
                 localSettings.notifyAndPersist();
               },
             ),
+            SettingsItem(
+              title: txt("cacheReset"),
+              identifier: "cacheReset",
+              description: txt("cacheReset_desc"),
+              icon: FluentIcons.offline_storage,
+              inputType: InputType.none,
+              scope: Scope.device,
+              value: "",
+              apply: (_) {},
+              footer: FilledButton(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(FluentIcons.offline_storage),
+                      const SizedBox(width: 10),
+                      Txt(txt("cacheReset"))
+                    ],
+                  ),
+                  onPressed: () async {
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        dismissWithEsc: false,
+                        builder: (context) {
+                          return ContentDialog(
+                            title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Txt(txt("cacheReset"))]),
+                            content: StreamBuilder(
+                                stream: cacheResetState.stream,
+                                builder: (context, _) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(height: 10),
+                                      const Center(child: ProgressRing()),
+                                      const SizedBox(height: 10),
+                                      Center(child: Txt(cacheResetState())),
+                                      const SizedBox(height: 10),
+                                      if (cacheResetState().startsWith("Error"))
+                                        FilledButton(child: Txt(txt("close")), onPressed: () => Navigator.pop(context)),
+                                    ],
+                                  );
+                                }),
+                            style: dialogStyling(false),
+                          );
+                        });
+
+                    try {
+                      cacheResetState(txt("initialSynchronization"));
+                      await networkActions.resync();
+                      cacheResetState(txt("clearingLocalData"));
+                      await doctors.local!.clear();
+                      await patients.local!.clear();
+                      await appointments.local!.clear();
+                      await labworks.local!.clear();
+                      await expenses.local!.clear();
+                      await globalSettings.local!.clear();
+                      cacheResetState(txt("synchronizing"));
+                      await networkActions.resync();
+                    } catch (e, s) {
+                      cacheResetState("Error: $e\n$s");
+                    } finally {
+                      if (context.mounted) Navigator.of(context).pop();
+                    }
+                  }),
+            ),
             if (login.isAdmin && network.isOnline()) ...[
               const BackupsSettings(),
               AdminsSettings(),
@@ -137,6 +210,7 @@ class SettingsItem extends StatefulWidget {
   final String identifier;
   final Scope scope;
   final List<ComboBoxItem<String>> options;
+  final Widget? footer;
   String value;
   Function(String newVal) apply;
 
@@ -151,6 +225,7 @@ class SettingsItem extends StatefulWidget {
     required this.value,
     required this.apply,
     this.options = const [],
+    this.footer,
   });
 
   @override
@@ -192,7 +267,7 @@ class SettingsItemState extends State<SettingsItem> {
                         },
                         maxLines: widget.inputType == InputType.multiline ? 1 : null,
                       )
-                    else
+                    else if (widget.inputType == InputType.dropDown)
                       ComboBox<String>(
                         key: Key("${widget.identifier}_combo"),
                         items: widget.options,
@@ -202,7 +277,8 @@ class SettingsItemState extends State<SettingsItem> {
                     const SizedBox(height: 5),
                     Txt(widget.description, style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
                     const SizedBox(height: 10),
-                    if (_controller.text != widget.value) buildSaveCancelButtons()
+                    if (_controller.text != widget.value) buildSaveCancelButtons(),
+                    if (widget.footer != null) widget.footer!,
                   ],
                 );
               }),
@@ -268,3 +344,5 @@ class SettingsItemState extends State<SettingsItem> {
     );
   }
 }
+
+final cacheResetState = ObservableState("");

@@ -267,11 +267,17 @@ class Ar implements En {
     "startingDayOfWeek_desc": "اليوم الذي يبدأ فيه الأسبوع.",
     "dateFormat": "تنسيق التاريخ",
     "dateFormat_desc": "سيتم استخدام هذا التنسيق لعرض التواريخ حيثما كان ذلك ممكنًا.",
+    "cacheReset": "الغاء التخزين المحلي",
+    "cacheReset_desc":
+        "يمكنك من خلال الزر ادناه الغاء التخزين المحلي للتطبيق - عدا الصور - لحل بعض المشاكل التي قد تواجهك اثناء المزامنة مع الأجهزة الأخرى.",
     "month/day/year": "شهر/يوم/سنة",
     "day/month/year": "يوم/شهر/سنة",
     "appliesTo": "ينطبق على",
     "all": "الكل",
     "you": "أنت",
+    "initialSynchronization": "مزامة أولية",
+    "synchronizing": "مزامنة مع الخادم",
+    "clearingLocalData": "إزالة البيانات المحلية",
 
     // advanced settings: Backups
     "backups": "النسخ الاحتياطي",
