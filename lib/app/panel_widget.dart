@@ -5,6 +5,9 @@ import 'package:apexo/common_widgets/acrylic_title.dart';
 import 'package:apexo/common_widgets/dialogs/close_dialog_button.dart';
 import 'package:apexo/core/model.dart';
 import 'package:apexo/core/multi_stream_builder.dart';
+import 'package:apexo/core/observable.dart';
+import 'package:apexo/features/appointments/appointment_model.dart';
+import 'package:apexo/features/appointments/appointments_store.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
@@ -35,6 +38,9 @@ class _PanelScreenState extends State<PanelScreen> {
   @override
   void dispose() {
     saveButtonCheckTimer.cancel();
+    if (widget.panel.item is Appointment) {
+      widget.panel.store.observableMap.unObserve(observeAppointmentForImgUpdate);
+    }
     super.dispose();
   }
 
@@ -51,6 +57,22 @@ class _PanelScreenState extends State<PanelScreen> {
         widget.panel.hasUnsavedChanges(false);
       }
     });
+
+    if (widget.panel.item is Appointment) {
+      widget.panel.store.observableMap.observe(observeAppointmentForImgUpdate);
+    }
+  }
+
+  observeAppointmentForImgUpdate(List<DictEvent> events) {
+    // update the imgs if it has been changed on the server
+    final itemID = (widget.panel.item).id;
+    for (var event in events) {
+      if (event.type == DictEventType.modify &&
+          (widget.panel.item as Appointment).imgs.length != appointments.get(itemID)!.imgs.length) {
+        (widget.panel.item as Appointment).imgs = appointments.get(itemID)!.imgs;
+        widget.panel.selectedTab(widget.panel.selectedTab()); // notify
+      }
+    }
   }
 
   @override
