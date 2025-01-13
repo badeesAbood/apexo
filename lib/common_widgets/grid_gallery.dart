@@ -1,3 +1,5 @@
+import 'package:apexo/common_widgets/dialogs/loading_blocking.dart';
+import 'package:apexo/services/localization/locale.dart';
 import 'package:apexo/utils/imgs.dart';
 import 'package:apexo/common_widgets/slideshow/slideshow.dart';
 import 'package:fluent_ui/fluent_ui.dart';
@@ -35,22 +37,38 @@ class GridGallery extends StatelessWidget {
           crossAxisAlignment: WrapCrossAlignment.start,
           alignment: WrapAlignment.start,
           runAlignment: WrapAlignment.start,
-          spacing: spacing, // Horizontal space between items
-          runSpacing: spacing, // Vertical space between rows
-          children: List.generate(imgs.length, (index) {
-            if (clipCount > 0 && index >= clipCount) return const SizedBox.shrink();
-            return SizedBox(
-              width: size ?? calculatedSized, // Adjust for desired column count
-              height: size ?? calculatedSized,
-              child: _buildSingleImage(context, index),
-            );
-          }),
+          spacing: spacing,
+          runSpacing: spacing,
+          children: [
+            ...List<Widget>.from(List.generate(imgs.length, (index) {
+              if (clipCount > 0 && index >= clipCount) return null;
+              return SizedBox(
+                width: size ?? calculatedSized, // Adjust for desired column count
+                height: size ?? calculatedSized,
+                child: _buildSingleImage(context, index),
+              );
+            }).where((e) => e != null)),
+            if (imgs.length > 1)
+              SizedBox(
+                width: size ?? calculatedSized, // Adjust for desired column count
+                height: size ?? calculatedSized,
+                child: FilledButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(Colors.grey.withValues(alpha: 0.8)),
+                    foregroundColor: const WidgetStatePropertyAll(Colors.white),
+                    elevation: const WidgetStatePropertyAll(5),
+                  ),
+                  onPressed: () => openSlideShow(context, imgs.first),
+                  child: Icon(FluentIcons.play_resume, size: calculatedSized / 2),
+                ),
+              )
+          ],
         ),
       ),
     );
   }
 
-  _buildSingleImage(BuildContext context, int index) {
+  Widget _buildSingleImage(BuildContext context, int index) {
     final img = imgs[index];
     return Stack(
       fit: StackFit.expand,
@@ -60,7 +78,7 @@ class GridGallery extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
               return GestureDetector(
-                onTap: () => showAllImages(context, img),
+                onTap: () => openSingleImage(context, img),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8.0), // Optional rounded corners
                   child: Image(
@@ -92,7 +110,7 @@ class GridGallery extends StatelessWidget {
         if (index == clipCount - 1 && imgs.length > clipCount)
           SizedBox.expand(
             child: GestureDetector(
-              onTap: () => showAllImages(context, imgs[0]),
+              onTap: () => openSingleImage(context, imgs[index]),
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.3),
@@ -111,15 +129,41 @@ class GridGallery extends StatelessWidget {
     );
   }
 
-  showAllImages(BuildContext context, String firstImg) async {
-    final List<ImageProvider<Object>> list =
-        (await Future.wait([firstImg, ...imgs.where((x) => x != firstImg)].map((e) => getImage(rowId, e)).toList()))
-            .map((el) => el ?? const AssetImage("assets/images/missing.png"))
-            .toList();
-
-    MultiImageProvider multiImageProvider = MultiImageProvider(list);
-
+  void openSingleImage(BuildContext context, String img) async {
+    showLoadingBlockingDialog(context, txt("gettingImages"));
+    final ImageProvider provider;
+    try {
+      provider = await getImage(rowId, img, false) ?? const AssetImage("assets/images/missing.png");
+    } finally {
+      if (context.mounted) Navigator.of(context).pop();
+    }
     if (context.mounted) {
+      showImageViewer(
+        context,
+        provider,
+        backgroundColor: Colors.black.withValues(alpha: 0.9),
+        doubleTapZoomable: true,
+        immersive: false,
+        swipeDismissible: true,
+        closeButtonColor: Colors.white,
+      );
+    }
+  }
+
+  void openSlideShow(BuildContext context, String firstImg) async {
+    showLoadingBlockingDialog(context, txt("gettingImages"));
+    MultiImageProvider multiImageProvider;
+    try {
+      final List<ImageProvider<Object>> list = (await Future.wait(
+              [firstImg, ...imgs.where((x) => x != firstImg)].map((img) => getImage(rowId, img, false)).toList()))
+          .map((el) => el ?? const AssetImage("assets/images/missing.png"))
+          .toList();
+      multiImageProvider = MultiImageProvider(list);
+    } finally {
+      if (context.mounted) Navigator.of(context).pop();
+    }
+
+    if (context.mounted && multiImageProvider.imageCount > 0) {
       showImageViewerPager(
         context,
         multiImageProvider,

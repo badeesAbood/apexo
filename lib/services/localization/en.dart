@@ -24,6 +24,7 @@ class En {
     "noResultsFound": "No results found",
     "home": "Home",
     "calendar": "Calendar",
+    "gettingImages": "Getting images",
 
     // call
     "callLaboratory": "Call Laboratory",

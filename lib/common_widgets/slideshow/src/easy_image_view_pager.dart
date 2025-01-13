@@ -124,72 +124,74 @@ class _EasyImageViewPagerState extends State<EasyImageViewPager> {
               );
             },
           ),
-          Positioned(
-            top: 0,
-            left: 5,
-            child: LayoutBuilder(builder: (context, constraints) {
-              return Acrylic(
-                  child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                    "${((widget.pageController.page! % widget.easyImageProvider.imageCount) + 1).round()}/${widget.easyImageProvider.imageCount}",
-                    style: const TextStyle(color: Colors.white, fontSize: 20)),
-              ));
-            }),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            child: Row(mainAxisSize: MainAxisSize.max, textDirection: TextDirection.ltr, children: [
-              Acrylic(
-                elevation: 20,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                child: IconButton(
-                  icon: const Icon(FluentIcons.chevron_left, color: Colors.white, size: 30),
-                  onPressed: () {
-                    widget.pageController.animateToPage(
-                      widget.pageController.page!.toInt() - 1,
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeInOut,
-                    );
-                  },
+          if (widget.easyImageProvider.imageCount > 1)
+            Positioned(
+              top: 0,
+              left: 5,
+              child: LayoutBuilder(builder: (context, constraints) {
+                return Acrylic(
+                    child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                      "${((widget.pageController.page! % widget.easyImageProvider.imageCount) + 1).round()}/${widget.easyImageProvider.imageCount}",
+                      style: const TextStyle(color: Colors.white, fontSize: 20)),
+                ));
+              }),
+            ),
+          if (widget.easyImageProvider.imageCount > 1)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              child: Row(mainAxisSize: MainAxisSize.max, textDirection: TextDirection.ltr, children: [
+                Acrylic(
+                  elevation: 20,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                  child: IconButton(
+                    icon: const Icon(FluentIcons.chevron_left, color: Colors.white, size: 30),
+                    onPressed: () {
+                      widget.pageController.animateToPage(
+                        widget.pageController.page!.toInt() - 1,
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
+                      );
+                    },
+                  ),
                 ),
-              ),
-              BorderColorTransition(
-                animate: slideshowEnabled,
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Acrylic(
-                    elevation: 20,
-                    blurAmount: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                    child: IconButton(
-                      icon: const Icon(FluentIcons.play_resume, color: Colors.grey, size: 30),
-                      onPressed: () {
-                        setState(() {
-                          slideshowEnabled = !slideshowEnabled;
-                        });
-                      },
+                BorderColorTransition(
+                  animate: slideshowEnabled,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Acrylic(
+                      elevation: 20,
+                      blurAmount: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                      child: IconButton(
+                        icon: const Icon(FluentIcons.play_resume, color: Colors.grey, size: 30),
+                        onPressed: () {
+                          setState(() {
+                            slideshowEnabled = !slideshowEnabled;
+                          });
+                        },
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Acrylic(
-                elevation: 20,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                child: IconButton(
-                  icon: const Icon(FluentIcons.chevron_right, color: Colors.white, size: 30),
-                  onPressed: () {
-                    widget.pageController.animateToPage(
-                      widget.pageController.page!.toInt() + 1,
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeInOut,
-                    );
-                  },
+                Acrylic(
+                  elevation: 20,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                  child: IconButton(
+                    icon: const Icon(FluentIcons.chevron_right, color: Colors.white, size: 30),
+                    onPressed: () {
+                      widget.pageController.animateToPage(
+                        widget.pageController.page!.toInt() + 1,
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ]),
-          ),
+              ]),
+            ),
         ],
       ),
     );

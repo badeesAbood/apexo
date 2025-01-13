@@ -23,6 +23,7 @@ class Ar implements En {
     "noResultsFound": "لم يتم العثور على نتائج",
     "home": "الرئيسية",
     "calendar": "الرزنامة",
+    "gettingImages": "يتم تحميل الصور",
 
     // call
     "callLaboratory": "اتصل بالمختبر",

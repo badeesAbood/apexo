@@ -32,6 +32,7 @@ dependencies:
   http_parser: ^4.0.2
   teeth_selector: ^0.2.2
   package_info_plus: ^8.1.2
+  image: ^4.2.0
   
 dev_dependencies:
   integration_test:

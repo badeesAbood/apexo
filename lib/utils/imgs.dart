@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:path/path.dart' as path;
 import 'package:http/http.dart' as http;
+import 'package:image/image.dart' as img;
 
 Future<void> createDirectory(String path) async {
   final Directory dir = Directory(path);
@@ -27,6 +28,14 @@ Future<bool> checkIfFileExists(String name) async {
 Future<File> getOrCreateFile(String name) async {
   await createDirectory(await filesDir());
   return File(path.join(await filesDir(), name));
+}
+
+String _nameToThumbName(String name) {
+  return "${path.withoutExtension(name)}.thumb${path.extension(name)}";
+}
+
+String _urlToThumbUrl(String url) {
+  return "$url?thumb=100x100";
 }
 
 // copies a given image to local folder and upload it to the server
@@ -50,6 +59,12 @@ Future<String> handleNewImage({required String rowID, required String targetPath
     imgFile = await savePickedImage(File(targetPath), imgName);
   }
 
+  final cmd = img.Command()
+    ..decodeImageFile(imgFile.path)
+    ..copyResize(width: 100)
+    ..writeToFile(_nameToThumbName(imgFile.path));
+  await cmd.executeThread();
+
   await appointments.uploadImg(rowID, imgFile.path);
 
   return imgName;
@@ -57,8 +72,8 @@ Future<String> handleNewImage({required String rowID, required String targetPath
 
 final imgMemoryCache = <String, ImageProvider?>{};
 
-Future<ImageProvider?> getImage(String rowID, String name) async {
-  if (imgMemoryCache.containsKey(name) && imgMemoryCache[name] != null) {
+Future<ImageProvider?> getImage(String rowID, String name, [bool thumb = true]) async {
+  if (thumb && imgMemoryCache.containsKey(name) && imgMemoryCache[name] != null) {
     return imgMemoryCache[name];
   } else if (name == "https://person.alisaleem.workers.dev/") {
     final link = "$name?no-cache=$rowID";
@@ -68,37 +83,34 @@ Future<ImageProvider?> getImage(String rowID, String name) async {
     final img = Image.network(link).image;
     return imgMemoryCache[link] = img;
   } else {
-    final img = await _getImage(rowID, name);
-    imgMemoryCache[name] = img;
-    if (imgMemoryCache.length > 100) {
+    final img = await _getImage(rowID, name, thumb);
+    if (thumb) imgMemoryCache[name] = img;
+    if (imgMemoryCache.length > 20) {
       imgMemoryCache.remove(imgMemoryCache.keys.first);
     }
     return img;
   }
 }
 
-Future<ImageProvider?> _getImage(String rowID, String name) async {
+Future<ImageProvider?> _getImage(String rowID, String name, bool thumb) async {
   // Web platform doesn't support local files
   if (kIsWeb) {
     final imgUrl = await appointments.remote!.getImageLink(rowID, name);
-    return imgUrl == null ? null : NetworkImage(imgUrl);
+    return imgUrl == null ? null : NetworkImage(thumb ? _urlToThumbUrl(imgUrl) : imgUrl);
   }
 
   // if the file exists locally, return it
-  else if (await checkIfFileExists(name)) {
-    return Image.file(await getOrCreateFile(name)).image;
+  final localName = thumb ? _nameToThumbName(name) : name;
+  if (await checkIfFileExists(localName)) {
+    return Image.file(await getOrCreateFile(localName)).image;
   }
 
   // if the file doesn't exist locally, download it from the server
-  else {
-    final imgUrl = await appointments.remote!.getImageLink(rowID, name);
-    if (imgUrl == null) {
-      return null;
-    } else {
-      final download = await saveImageFromUrl(imgUrl, name);
-      return Image.file(download).image;
-    }
-  }
+  final imgUrl = await appointments.remote!.getImageLink(rowID, name);
+  if (imgUrl == null) return null;
+  final download =
+      await saveImageFromUrl(thumb ? _urlToThumbUrl(imgUrl) : imgUrl, thumb ? _nameToThumbName(name) : name);
+  return Image.file(download).image;
 }
 
 Future<File> savePickedImage(File image, String newName) async {
