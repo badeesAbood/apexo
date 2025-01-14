@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:apexo/common_widgets/swipe_detector.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:apexo/features/appointments/appointment_model.dart';
 import 'package:apexo/features/settings/settings_stores.dart';
@@ -86,18 +87,13 @@ class WeekAgendaCalendarState<Item extends Appointment> extends State<WeekAgenda
         _buildCalendar(),
         const SizedBox(height: 1),
         Expanded(
-          child: GestureDetector(
-            onHorizontalDragEnd: (details) {
-              if (details.velocity.pixelsPerSecond.dx > 0) {
-                setState(() {
-                  selectedDate = selectedDate.subtract(const Duration(days: 1));
-                });
-              } else {
-                setState(() {
-                  selectedDate = selectedDate.add(const Duration(days: 1));
-                });
-              }
-            },
+          child: SwipeDetector(
+            onSwipeLeft: () => setState(() {
+              selectedDate = selectedDate.subtract(const Duration(days: 1));
+            }),
+            onSwipeRight: () => setState(() {
+              selectedDate = selectedDate.add(const Duration(days: 1));
+            }),
             child: Column(children: [
               _buildCurrentDayTitleBar(itemsForSelectedDay),
               itemsForSelectedDay.isEmpty ? _buildEmptyDayMessage() : _buildAppointmentsList(itemsForSelectedDay),
