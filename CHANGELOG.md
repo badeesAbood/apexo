@@ -1,3 +1,20 @@
+### ____0.3.0____
+
+-   Fixed: Command bar height inconsistencies between screens
+-   Fixed: Shouldn't change the time when just editing the date.
+-   Fixed: Android system icons set to dark.
+-   Fixed: Show less aggressive user mode indicator on dashboard.
+-   Fixed: Submitting on fields on login screen should initiate the login process.
+-   Fixed: Option in settings screen to delete/reset all local data and pull from server.
+-   Fixed issue: avatars are not loading on datatable unless they are loaded from appointment gallery.
+-   Fixed: For better memory management, evict images once the widget is disposed.
+-   Fixed: Fpr better memory management, run image downloading http requests in a task que.
+-   Fixed: Improved performance and memory usage by utilizing less shader intensive UI elements.
+-   New: Added search emoji as search icon in filtering field
+-   New: __Bottom navigation bar__ on small screens
+-   New: __Side panels__: non-blocking editing/viewing windows, and a user can have multiple of them open at once.
+-   New: Swiping left/right on calendar should navigate through days.
+-   New: Load/create/download thumbnails in the app UI, unless a full photo is explicitly opened.
 
 ### ____0.2.6____
 
