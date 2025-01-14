@@ -1,3 +1,8 @@
+
+### ____0.3.1____
+
+-   Fixed issue with panel content not being scrollable
+
 ### ____0.3.0____
 
 -   Fixed: Command bar height inconsistencies between screens
