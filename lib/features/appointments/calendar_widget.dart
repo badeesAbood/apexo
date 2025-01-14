@@ -265,22 +265,23 @@ class WeekAgendaCalendarState<Item extends Appointment> extends State<WeekAgenda
 
   Widget _buildCurrentDayTitleBar(List<Item> itemsForSelectedDay) {
     final df = localSettings.dateFormat.startsWith("d") == true ? "dd MMMM" : "MMMM dd";
-    return Acrylic(
-      child: Container(
-        decoration: BoxDecoration(
-            border: BorderDirectional(bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.1))),
-            gradient: LinearGradient(colors: [
-              colorsWithoutYellow[selectedDate.weekday - 1].darkest.withValues(alpha: 0.08),
-              colorsWithoutYellow[selectedDate.weekday - 1].withValues(alpha: 0),
-            ])),
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        height: 45,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Txt(intl.DateFormat("$df / yyyy", locale.s.$code).format(selectedDate)),
-          ],
-        ),
+    return Container(
+      decoration: BoxDecoration(
+          border: BorderDirectional(bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.1))),
+          gradient: LinearGradient(colors: [
+            colorsWithoutYellow[selectedDate.weekday - 1].darkest.withValues(alpha: 0.08),
+            colorsWithoutYellow[selectedDate.weekday - 1].withValues(alpha: 0),
+          ])),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      height: 45,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Txt(
+            intl.DateFormat("$df / yyyy", locale.s.$code).format(selectedDate),
+            style: const TextStyle(fontWeight: FontWeight.w500),
+          ),
+        ],
       ),
     );
   }
@@ -384,7 +385,12 @@ class AppointmentCalendarTile<Item extends Appointment> extends StatelessWidget 
 
   @override
   Widget build(BuildContext context) {
-    return Acrylic(
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.2), width: 0.5),
+        ),
+      ),
       child: ListTile(
         title: ItemTitle(item: item),
         subtitle: item.subtitleLine1.isNotEmpty ? Txt(item.subtitleLine1, overflow: TextOverflow.ellipsis) : null,
