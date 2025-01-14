@@ -8,15 +8,17 @@ import 'package:apexo/features/appointments/appointment_model.dart';
 import 'package:apexo/features/appointments/appointments_store.dart';
 
 class Patient extends Model {
+  List<Appointment>? _allAppointmentsCached;
   List<Appointment> get allAppointments {
-    return (appointments.byPatient[id]?["all"] ?? [])
+    return _allAppointmentsCached ??= (appointments.byPatient[id]?["all"] ?? [])
         .where((appointment) => appointment.archived != true || showArchived())
         .toList()
       ..sort((a, b) => a.date.compareTo(b.date));
   }
 
+  List<Appointment>? _doneAppointmentsCached;
   List<Appointment> get doneAppointments {
-    return (appointments.byPatient[id]?["done"] ?? [])
+    return _doneAppointmentsCached ??= (appointments.byPatient[id]?["done"] ?? [])
         .where((appointment) => appointment.archived != true || showArchived())
         .toList()
       ..sort((a, b) => a.date.compareTo(b.date));
@@ -137,6 +139,14 @@ class Patient extends Model {
 
   @override
   Patient.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
+    nullifyCachedAppointments(_) {
+      _doneAppointmentsCached = null;
+      _allAppointmentsCached = null;
+    }
+
+    showArchived.observe(nullifyCachedAppointments);
+    appointments.observableMap.observe(nullifyCachedAppointments);
+
     /* 1 */ birth = json['birth'] ?? birth;
     /* 2 */ gender = json['gender'] ?? gender;
     /* 3 */ phone = json['phone'] ?? phone;
