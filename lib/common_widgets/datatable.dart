@@ -227,63 +227,66 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
   }
 
   _buildSingleItem(Item item, bool isChecked) {
-    return Padding(
+    return Container(
       padding: widget.compact ? EdgeInsets.zero : const EdgeInsets.symmetric(vertical: 1.5),
-      child: Acrylic(
-        elevation: 1,
-        child: ListTile(
-          contentPadding: const EdgeInsets.all(0),
-          title: Container(
-            margin: const EdgeInsets.fromLTRB(5, 5, 5, 0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3),
-            ),
-            child: Row(
-              children: [
-                Divider(direction: Axis.vertical, size: widget.compact ? 1 : 45),
-                _buildInnerRow(item),
-                Divider(direction: Axis.vertical, size: widget.compact ? 1 : 45),
-              ],
-            ),
+      decoration: BoxDecoration(
+        color: isChecked ? Colors.grey.withValues(alpha: 0.08) : null,
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.2), width: 0.5),
+        ),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(0),
+        title: Container(
+          margin: const EdgeInsets.fromLTRB(5, 5, 5, 0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(3),
           ),
-          leading: _buildCheckBox(isChecked, item),
-          onPressed: () => widget.onSelect(item),
-          trailing: FlyoutTarget(
-              controller: contextMenuControllers[item.id]!,
-              child: IconButton(
-                icon: Container(
-                  padding: const EdgeInsets.all(5),
-                  child: const Icon(FluentIcons.more),
-                ),
-                onPressed: () {
-                  contextMenuControllers[item.id]!.showFlyout(
-                    barrierDismissible: true,
-                    dismissOnPointerMoveAway: false,
-                    dismissWithEsc: true,
-                    builder: (context) {
-                      return StatefulBuilder(builder: (context, setState) {
-                        return MenuFlyout(items: [
+          child: Row(
+            children: [
+              Divider(direction: Axis.vertical, size: widget.compact ? 1 : 45),
+              _buildInnerRow(item),
+              Divider(direction: Axis.vertical, size: widget.compact ? 1 : 45),
+            ],
+          ),
+        ),
+        leading: _buildCheckBox(isChecked, item),
+        onPressed: () => widget.onSelect(item),
+        trailing: FlyoutTarget(
+            controller: contextMenuControllers[item.id]!,
+            child: IconButton(
+              icon: Container(
+                padding: const EdgeInsets.all(5),
+                child: const Icon(FluentIcons.more),
+              ),
+              onPressed: () {
+                contextMenuControllers[item.id]!.showFlyout(
+                  barrierDismissible: true,
+                  dismissOnPointerMoveAway: false,
+                  dismissWithEsc: true,
+                  builder: (context) {
+                    return StatefulBuilder(builder: (context, setState) {
+                      return MenuFlyout(items: [
+                        MenuFlyoutItem(
+                          text: Txt(item.title),
+                          leading: const Icon(FluentIcons.edit),
+                          onPressed: () => widget.onSelect(item),
+                          closeAfterClick: true,
+                        ),
+                        if (widget.itemActions.isNotEmpty) const MenuFlyoutSeparator(),
+                        for (var action in widget.itemActions)
                           MenuFlyoutItem(
-                            text: Txt(item.title),
-                            leading: const Icon(FluentIcons.edit),
-                            onPressed: () => widget.onSelect(item),
+                            leading: Icon(action.icon),
+                            text: Txt(action.title),
+                            onPressed: () => action.callback(item.id),
                             closeAfterClick: true,
                           ),
-                          if (widget.itemActions.isNotEmpty) const MenuFlyoutSeparator(),
-                          for (var action in widget.itemActions)
-                            MenuFlyoutItem(
-                              leading: Icon(action.icon),
-                              text: Txt(action.title),
-                              onPressed: () => action.callback(item.id),
-                              closeAfterClick: true,
-                            ),
-                        ]);
-                      });
-                    },
-                  );
-                },
-              )),
-        ),
+                      ]);
+                    });
+                  },
+                );
+              },
+            )),
       ),
     );
   }
