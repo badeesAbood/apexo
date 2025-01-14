@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:apexo/utils/constants.dart';
 import 'package:apexo/utils/hash.dart';
+import 'package:apexo/utils/que.dart';
 import 'package:apexo/utils/safe_dir.dart';
 import 'package:apexo/utils/strip_id_from_file.dart';
 import 'package:apexo/features/appointments/appointments_store.dart';
@@ -71,6 +72,7 @@ Future<String> handleNewImage({required String rowID, required String targetPath
 }
 
 final imgMemoryCache = <String, ImageProvider?>{};
+final _imageHttpReqQue = TaskQueue(delayBetweenTasks: const Duration(milliseconds: 100));
 
 Future<ImageProvider?> getImage(String rowID, String name, [bool thumb = true]) async {
   if (thumb && imgMemoryCache.containsKey(name) && imgMemoryCache[name] != null) {
@@ -106,10 +108,10 @@ Future<ImageProvider?> _getImage(String rowID, String name, bool thumb) async {
   }
 
   // if the file doesn't exist locally, download it from the server
-  final imgUrl = await appointments.remote!.getImageLink(rowID, name);
+  final imgUrl = await _imageHttpReqQue.add(() => appointments.remote!.getImageLink(rowID, name));
   if (imgUrl == null) return null;
-  final download =
-      await saveImageFromUrl(thumb ? _urlToThumbUrl(imgUrl) : imgUrl, thumb ? _nameToThumbName(name) : name);
+  final download = await _imageHttpReqQue
+      .add(() => saveImageFromUrl(thumb ? _urlToThumbUrl(imgUrl) : imgUrl, thumb ? _nameToThumbName(name) : name));
   return Image.file(download).image;
 }
 
