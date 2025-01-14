@@ -205,8 +205,7 @@ class CalendarIntegrationTest extends IntegrationTestBase {
           expect(
               find.descendant(of: tiles.at(2), matching: find.widgetWithText(IconButton, '07:10 PM')), findsOneWidget);
 
-          expect(
-              find.descendant(of: tiles.at(0), matching: find.widgetWithText(AcrylicTitle, "Alawi")), findsOneWidget);
+          expect(find.descendant(of: tiles.at(0), matching: find.widgetWithText(ItemTitle, "Alawi")), findsOneWidget);
           await tester.tap(find.descendant(of: tiles.at(0), matching: find.byType(ListTile)));
           await tester.pumpAndSettle();
           await tester.tap(find.byKey(const Key('Alawi_clear')));
@@ -215,8 +214,7 @@ class CalendarIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           await TestUtils.actionOnModal(tester, pages.openAppointment.id, "Save");
           await tester.pumpAndSettle();
-          expect(
-              find.descendant(of: tiles.at(0), matching: find.widgetWithText(AcrylicTitle, "Dandoon")), findsOneWidget);
+          expect(find.descendant(of: tiles.at(0), matching: find.widgetWithText(ItemTitle, "Dandoon")), findsOneWidget);
           expect(find.textContaining("Ali A."), findsNWidgets(2));
           expect(find.textContaining("Alia A."), findsOneWidget);
           await tester.tap(find.descendant(of: tiles.at(0), matching: find.byType(Checkbox)));

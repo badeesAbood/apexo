@@ -1,5 +1,5 @@
 import 'package:apexo/pages/index.dart';
-import 'package:apexo/common_widgets/acrylic_title.dart';
+import 'package:apexo/common_widgets/item_title.dart';
 import 'package:apexo/common_widgets/appointment_card.dart';
 import 'package:apexo/common_widgets/archive_toggle.dart';
 import 'package:apexo/features/doctors/doctors_store.dart';
@@ -29,21 +29,21 @@ class DoctorsPageIntegrationTest extends IntegrationTestBase {
           await tester.enterText(find.byKey(WK.fieldDoctorEmail), "alielselawi@gmail.com");
           await tester.tap(find.text('Save'));
           await tester.pumpAndSettle();
-          expect(find.widgetWithText(AcrylicTitle, 'Ali A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Ali A. Saleem'), findsOneWidget);
           await tester.tap(find.widgetWithText(GestureDetector, 'Add'));
           await tester.pumpAndSettle();
           await tester.enterText(find.byKey(WK.fieldDoctorName), "Dina Ismail");
           await tester.enterText(find.byKey(WK.fieldDoctorEmail), "dinaibak92@gmail.com");
           await tester.tap(find.text('Save'));
           await tester.pumpAndSettle();
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismail'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismail'), findsOneWidget);
           await tester.tap(find.widgetWithText(GestureDetector, 'Add'));
           await tester.pumpAndSettle();
           await tester.enterText(find.byKey(WK.fieldDoctorName), "Alia A. Saleem");
           await tester.enterText(find.byKey(WK.fieldDoctorEmail), "aliasaleem@gmail.com");
           await tester.tap(find.text('Save'));
           await tester.pumpAndSettle();
-          expect(find.widgetWithText(AcrylicTitle, 'Alia A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Alia A. Saleem'), findsOneWidget);
         },
         "03: Archive selected": () async {
           final id1 = doctors.getByEmail("alielselawi@gmail.com")!.id;
@@ -52,63 +52,63 @@ class DoctorsPageIntegrationTest extends IntegrationTestBase {
           await tester.tap(find.byKey(Key('dt_cb_$id2')));
           await tester.tap(find.widgetWithText(GestureDetector, 'Archive Selected'));
           await tester.pumpAndSettle();
-          expect(find.widgetWithText(AcrylicTitle, 'Ali A. Saleem'), findsNothing);
-          expect(find.widgetWithText(AcrylicTitle, 'Alia A. Saleem'), findsNothing);
+          expect(find.widgetWithText(ItemTitle, 'Ali A. Saleem'), findsNothing);
+          expect(find.widgetWithText(ItemTitle, 'Alia A. Saleem'), findsNothing);
           await Future.delayed(const Duration(seconds: 1));
         },
         "04: Archive toggle": () async {
           await tester.tap(find.byType(ArchiveToggle));
           await tester.pumpAndSettle();
-          expect(find.widgetWithText(AcrylicTitle, 'Ali A. Saleem'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Alia A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Ali A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Alia A. Saleem'), findsOneWidget);
           await Future.delayed(const Duration(seconds: 1));
           await tester.tap(find.byType(ArchiveToggle));
           await tester.pumpAndSettle();
-          expect(find.widgetWithText(AcrylicTitle, 'Ali A. Saleem'), findsNothing);
-          expect(find.widgetWithText(AcrylicTitle, 'Alia A. Saleem'), findsNothing);
+          expect(find.widgetWithText(ItemTitle, 'Ali A. Saleem'), findsNothing);
+          expect(find.widgetWithText(ItemTitle, 'Alia A. Saleem'), findsNothing);
           await Future.delayed(const Duration(seconds: 1));
           await tester.tap(find.byType(ArchiveToggle));
           await tester.pumpAndSettle();
-          expect(find.widgetWithText(AcrylicTitle, 'Ali A. Saleem'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Alia A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Ali A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Alia A. Saleem'), findsOneWidget);
         },
         "05: Restore button": () async {
-          await tester.tap(find.widgetWithText(AcrylicTitle, 'Alia A. Saleem'));
+          await tester.tap(find.widgetWithText(ItemTitle, 'Alia A. Saleem'));
           await tester.pumpAndSettle();
           await tester.tap(find.widgetWithText(FilledButton, "Restore"));
           await tester.pumpAndSettle();
-          await tester.tap(find.widgetWithText(AcrylicTitle, 'Ali A. Saleem'));
+          await tester.tap(find.widgetWithText(ItemTitle, 'Ali A. Saleem'));
           await tester.pumpAndSettle();
           await tester.tap(find.widgetWithText(FilledButton, "Restore"));
           await tester.pumpAndSettle();
         },
         "06: Archive button": () async {
-          await tester.tap(find.widgetWithText(AcrylicTitle, 'Dina Ismail'));
+          await tester.tap(find.widgetWithText(ItemTitle, 'Dina Ismail'));
           await tester.pumpAndSettle();
           await tester.tap(find.widgetWithText(FilledButton, "Archive"));
           await tester.pumpAndSettle();
-          expect(find.widgetWithText(AcrylicTitle, 'Ali A. Saleem'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Alia A. Saleem'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismail'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Ali A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Alia A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismail'), findsOneWidget);
           await Future.delayed(const Duration(seconds: 1));
           await tester.tap(find.byType(ArchiveToggle));
           await tester.pumpAndSettle();
-          expect(find.widgetWithText(AcrylicTitle, 'Ali A. Saleem'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Alia A. Saleem'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismail'), findsNothing);
+          expect(find.widgetWithText(ItemTitle, 'Ali A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Alia A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismail'), findsNothing);
           await Future.delayed(const Duration(seconds: 1));
           await tester.tap(find.byType(ArchiveToggle));
           await tester.pumpAndSettle();
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismail'), findsOneWidget);
-          await tester.tap(find.widgetWithText(AcrylicTitle, 'Dina Ismail'));
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismail'), findsOneWidget);
+          await tester.tap(find.widgetWithText(ItemTitle, 'Dina Ismail'));
           await tester.pumpAndSettle();
           await tester.tap(find.widgetWithText(FilledButton, "Restore"));
           await tester.pumpAndSettle();
           await Future.delayed(const Duration(seconds: 1));
           await tester.tap(find.byType(ArchiveToggle));
-          expect(find.widgetWithText(AcrylicTitle, 'Ali A. Saleem'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Alia A. Saleem'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismail'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Ali A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Alia A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismail'), findsOneWidget);
         },
         '07: "Showing" shows correct number': () async {
           expect(find.text('Showing 3/3'), findsOneWidget);
@@ -117,75 +117,75 @@ class DoctorsPageIntegrationTest extends IntegrationTestBase {
           await tester.enterText(find.byKey(WK.dataTableSearch), "Saleem");
           await tester.pumpAndSettle();
           expect(find.text('Showing 2/2'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Ali A. Saleem'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Alia A. Saleem'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismail'), findsNothing);
+          expect(find.widgetWithText(ItemTitle, 'Ali A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Alia A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismail'), findsNothing);
           await tester.enterText(find.byKey(WK.dataTableSearch), "Dina");
           await tester.pumpAndSettle();
           expect(find.text('Showing 1/1'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Ali A. Saleem'), findsNothing);
-          expect(find.widgetWithText(AcrylicTitle, 'Alia A. Saleem'), findsNothing);
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismail'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Ali A. Saleem'), findsNothing);
+          expect(find.widgetWithText(ItemTitle, 'Alia A. Saleem'), findsNothing);
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismail'), findsOneWidget);
           await tester.enterText(find.byKey(WK.dataTableSearch), "");
           await tester.pumpAndSettle();
           expect(find.text('Showing 3/3'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Ali A. Saleem'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Alia A. Saleem'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismail'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Ali A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Alia A. Saleem'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismail'), findsOneWidget);
         },
         "09: Sorting direction": () async {
           {
-            final textFinder = find.byType(AcrylicTitle);
-            final texts = tester.widgetList<AcrylicTitle>(textFinder).toList();
+            final textFinder = find.byType(ItemTitle);
+            final texts = tester.widgetList<ItemTitle>(textFinder).toList();
             final names = texts.map((e) => e.item.title).toList();
             expect(names, ["Ali A. Saleem", "Alia A. Saleem", "Dina Ismail"]);
           }
           await tester.tap(find.byKey(WK.toggleSortDirection));
           await tester.pumpAndSettle();
           {
-            final textFinder = find.byType(AcrylicTitle);
-            final texts = tester.widgetList<AcrylicTitle>(textFinder).toList();
+            final textFinder = find.byType(ItemTitle);
+            final texts = tester.widgetList<ItemTitle>(textFinder).toList();
             final names = texts.map((e) => e.item.title).toList();
             expect(names, ["Dina Ismail", "Alia A. Saleem", "Ali A. Saleem"]);
           }
         },
         "10: Editing but closing": () async {
-          await tester.tap(find.widgetWithText(AcrylicTitle, 'Dina Ismail'));
+          await tester.tap(find.widgetWithText(ItemTitle, 'Dina Ismail'));
           await tester.pumpAndSettle();
           await tester.enterText(find.byKey(WK.fieldDoctorName), "Dina Ismael");
           await tester.tap(find.byKey(WK.closeModal));
           await tester.pumpAndSettle();
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismail'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismael'), findsNothing);
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismail'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismael'), findsNothing);
         },
         "11: Editing but canceling": () async {
-          await tester.tap(find.widgetWithText(AcrylicTitle, 'Dina Ismail'));
+          await tester.tap(find.widgetWithText(ItemTitle, 'Dina Ismail'));
           await tester.pumpAndSettle();
           await tester.enterText(find.byKey(WK.fieldDoctorName), "Dina Ismael");
           await tester.tap(find.widgetWithText(FilledButton, "Cancel"));
           await tester.pumpAndSettle();
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismail'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismael'), findsNothing);
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismail'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismael'), findsNothing);
         },
         "12: Editing and saving": () async {
-          await tester.tap(find.widgetWithText(AcrylicTitle, 'Dina Ismail'));
+          await tester.tap(find.widgetWithText(ItemTitle, 'Dina Ismail'));
           await tester.pumpAndSettle();
           await tester.enterText(find.byKey(WK.fieldDoctorName), "Dina Ismael");
           await tester.tap(find.widgetWithText(FilledButton, "Save"));
           await tester.pumpAndSettle();
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismail'), findsNothing);
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismael'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismail'), findsNothing);
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismael'), findsOneWidget);
 
-          await tester.tap(find.widgetWithText(AcrylicTitle, 'Dina Ismael'));
+          await tester.tap(find.widgetWithText(ItemTitle, 'Dina Ismael'));
           await tester.pumpAndSettle();
           await tester.enterText(find.byKey(WK.fieldDoctorName), "Dina Ismail");
           await tester.tap(find.widgetWithText(FilledButton, "Save"));
           await tester.pumpAndSettle();
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismail'), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, 'Dina Ismael'), findsNothing);
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismail'), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, 'Dina Ismael'), findsNothing);
         },
         "13: Editing duty days": () async {
-          await tester.tap(find.widgetWithText(AcrylicTitle, 'Dina Ismail'));
+          await tester.tap(find.widgetWithText(ItemTitle, 'Dina Ismail'));
           await tester.pumpAndSettle();
           await tester
               .tap(find.descendant(of: find.widgetWithText(IconButton, "Saturday"), matching: find.byType(IconButton)));
@@ -201,7 +201,7 @@ class DoctorsPageIntegrationTest extends IntegrationTestBase {
               .tap(find.descendant(of: find.widgetWithText(IconButton, "Monday"), matching: find.byType(IconButton)));
           await tester.tap(find.widgetWithText(FilledButton, "Save"));
           await tester.pumpAndSettle();
-          await tester.tap(find.widgetWithText(AcrylicTitle, 'Dina Ismail'));
+          await tester.tap(find.widgetWithText(ItemTitle, 'Dina Ismail'));
           await tester.pumpAndSettle();
           expect(find.widgetWithText(IconButton, "Saturday"), findsNothing);
           expect(find.widgetWithText(IconButton, "Sunday"), findsNothing);
@@ -216,7 +216,7 @@ class DoctorsPageIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
           await tester.tap(find.widgetWithText(FilledButton, "Save"));
           await tester.pumpAndSettle();
-          await tester.tap(find.widgetWithText(AcrylicTitle, 'Dina Ismail'));
+          await tester.tap(find.widgetWithText(ItemTitle, 'Dina Ismail'));
           await tester.pumpAndSettle();
           expect(find.widgetWithText(IconButton, "Saturday"), findsNothing);
           expect(find.widgetWithText(IconButton, "Sunday"), findsNothing);

@@ -21,7 +21,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
         "01: should add bare minimum appointments": () async {
           await tester.enterText(find.byKey(WK.dataTableSearch), "Alawi");
           await tester.pumpAndSettle();
-          await tester.tap(find.widgetWithText(AcrylicTitle, "Alawi"));
+          await tester.tap(find.widgetWithText(ItemTitle, "Alawi"));
           await tester.pumpAndSettle();
           await tester.tap(find.byKey(const Key('Appointments_icon')));
           await tester.pumpAndSettle();
@@ -38,7 +38,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           expect(tester.widget<Checkbox>(find.byKey(WK.acCheckBox)).checked, true);
           await tester.tap(find.text("Save"));
           await tester.pumpAndSettle();
-          await tester.tap(find.widgetWithText(AcrylicTitle, "Alawi"));
+          await tester.tap(find.widgetWithText(ItemTitle, "Alawi"));
           await tester.pumpAndSettle();
           await tester.tap(find.byKey(const Key('Appointments_icon')));
           await tester.pumpAndSettle();
@@ -174,7 +174,7 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await tester.pumpAndSettle();
 
           expect(find.text("Doctors"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Ali A. Saleem"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Ali A. Saleem"), findsOneWidget);
 
           await tester.tap(find.byIcon(FluentIcons.edit));
           await tester.pumpAndSettle();
@@ -185,8 +185,8 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
           await TestUtils.actionOnModal(tester, routes.openAppointment.id, "Save");
           await tester.pumpAndSettle();
           expect(find.text("Doctors"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Ali A. Saleem"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Alia A. Saleem"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Ali A. Saleem"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Alia A. Saleem"), findsOneWidget);
 
           await tester.tap(find.byIcon(FluentIcons.edit));
           await tester.pumpAndSettle();
@@ -202,9 +202,9 @@ class AppointmentsIntegrationTest extends IntegrationTestBase {
 
           await tester.pumpAndSettle();
           expect(find.text("Doctors"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Dina Ismail"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Ali A. Saleem"), findsNothing);
-          expect(find.widgetWithText(AcrylicTitle, "Alia A. Saleem"), findsNothing);
+          expect(find.widgetWithText(ItemTitle, "Dina Ismail"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Ali A. Saleem"), findsNothing);
+          expect(find.widgetWithText(ItemTitle, "Alia A. Saleem"), findsNothing);
         },
         "08: Pre-op notes": () async {
           expect(find.text("Pre-op notes"), findsNothing);

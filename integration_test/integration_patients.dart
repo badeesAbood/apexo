@@ -1,4 +1,4 @@
-import 'package:apexo/common_widgets/acrylic_title.dart';
+import 'package:apexo/common_widgets/item_title.dart';
 import 'package:apexo/common_widgets/datatable.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
@@ -64,7 +64,7 @@ class PatientsIntegrationTest extends IntegrationTestBase {
   ];
 
   List<String> getOrderedPatientNames() {
-    return find.byType(AcrylicTitle).evaluate().map((e) => e.widget as AcrylicTitle).map((e) => e.item.title).toList();
+    return find.byType(ItemTitle).evaluate().map((e) => e.widget as ItemTitle).map((e) => e.item.title).toList();
   }
 
   @override
@@ -96,7 +96,7 @@ class PatientsIntegrationTest extends IntegrationTestBase {
             await tester.pumpAndSettle();
             await tester.tap(find.text('Save'));
             await tester.pumpAndSettle();
-            expect(find.widgetWithText(AcrylicTitle, patient[0]), findsOneWidget);
+            expect(find.widgetWithText(ItemTitle, patient[0]), findsOneWidget);
           }
         },
         "02: should add patients (2)": () async {
@@ -121,7 +121,7 @@ class PatientsIntegrationTest extends IntegrationTestBase {
             await tester.pumpAndSettle();
             await tester.tap(find.text('Save'));
             await tester.pumpAndSettle();
-            expect(find.widgetWithText(AcrylicTitle, patient[0]), findsOneWidget);
+            expect(find.widgetWithText(ItemTitle, patient[0]), findsOneWidget);
           }
         },
         "03: Filtering by pills": () async {
@@ -136,10 +136,10 @@ class PatientsIntegrationTest extends IntegrationTestBase {
           await tester.tap(find.widgetWithText(DataTablePill, "parent").first);
           await tester.pumpAndSettle();
 
-          expect(find.widgetWithText(AcrylicTitle, "Alawi"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Dandoon"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Yousif"), findsNothing);
-          expect(find.widgetWithText(AcrylicTitle, "Shams"), findsNothing);
+          expect(find.widgetWithText(ItemTitle, "Alawi"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Dandoon"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Yousif"), findsNothing);
+          expect(find.widgetWithText(ItemTitle, "Shams"), findsNothing);
           expect(find.descendant(of: find.byType(CupertinoTextField), matching: find.text("parent")), findsOneWidget);
           expect(
             find.descendant(
@@ -152,10 +152,10 @@ class PatientsIntegrationTest extends IntegrationTestBase {
           await tester.tap(find.widgetWithText(DataTablePill, "parent").first);
           await tester.pumpAndSettle();
 
-          expect(find.widgetWithText(AcrylicTitle, "Alawi"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Dandoon"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Yousif"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Shams"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Alawi"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Dandoon"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Yousif"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Shams"), findsOneWidget);
           expect(find.descendant(of: find.byType(CupertinoTextField), matching: find.text("parent")), findsNothing);
           expect(
             find.descendant(
@@ -168,10 +168,10 @@ class PatientsIntegrationTest extends IntegrationTestBase {
           await tester.tap(find.widgetWithText(DataTablePill, "son"));
           await tester.pumpAndSettle();
 
-          expect(find.widgetWithText(AcrylicTitle, "Alawi"), findsNothing);
-          expect(find.widgetWithText(AcrylicTitle, "Dandoon"), findsNothing);
-          expect(find.widgetWithText(AcrylicTitle, "Yousif"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Shams"), findsNothing);
+          expect(find.widgetWithText(ItemTitle, "Alawi"), findsNothing);
+          expect(find.widgetWithText(ItemTitle, "Dandoon"), findsNothing);
+          expect(find.widgetWithText(ItemTitle, "Yousif"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Shams"), findsNothing);
           expect(find.descendant(of: find.byType(CupertinoTextField), matching: find.text("son")), findsOneWidget);
           expect(
             find.descendant(
@@ -184,10 +184,10 @@ class PatientsIntegrationTest extends IntegrationTestBase {
           await tester.tap(find.widgetWithText(DataTablePill, "son"));
           await tester.pumpAndSettle();
 
-          expect(find.widgetWithText(AcrylicTitle, "Alawi"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Dandoon"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Yousif"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Shams"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Alawi"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Dandoon"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Yousif"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Shams"), findsOneWidget);
           expect(find.descendant(of: find.byType(CupertinoTextField), matching: find.text("son")), findsNothing);
           expect(
             find.descendant(
@@ -200,10 +200,10 @@ class PatientsIntegrationTest extends IntegrationTestBase {
           await tester.tap(find.widgetWithText(DataTablePill, "daughter"));
           await tester.pumpAndSettle();
 
-          expect(find.widgetWithText(AcrylicTitle, "Alawi"), findsNothing);
-          expect(find.widgetWithText(AcrylicTitle, "Dandoon"), findsNothing);
-          expect(find.widgetWithText(AcrylicTitle, "Yousif"), findsNothing);
-          expect(find.widgetWithText(AcrylicTitle, "Shams"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Alawi"), findsNothing);
+          expect(find.widgetWithText(ItemTitle, "Dandoon"), findsNothing);
+          expect(find.widgetWithText(ItemTitle, "Yousif"), findsNothing);
+          expect(find.widgetWithText(ItemTitle, "Shams"), findsOneWidget);
           expect(find.descendant(of: find.byType(CupertinoTextField), matching: find.text("daughter")), findsOneWidget);
           expect(
             find.descendant(
@@ -216,10 +216,10 @@ class PatientsIntegrationTest extends IntegrationTestBase {
           await tester.tap(find.widgetWithText(DataTablePill, "daughter"));
           await tester.pumpAndSettle();
 
-          expect(find.widgetWithText(AcrylicTitle, "Alawi"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Dandoon"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Yousif"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Shams"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Alawi"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Dandoon"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Yousif"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Shams"), findsOneWidget);
           expect(find.descendant(of: find.byType(CupertinoTextField), matching: find.text("daughter")), findsNothing);
           expect(
             find.descendant(
@@ -282,13 +282,13 @@ class PatientsIntegrationTest extends IntegrationTestBase {
           await tester.drag(find.byKey(WK.dataTableListView), const Offset(0, 500));
           await tester.pumpAndSettle();
           expect(find.text("Showing 20/40"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Alawi"), findsNothing);
-          expect(find.widgetWithText(AcrylicTitle, "Dandoon"), findsNothing);
+          expect(find.widgetWithText(ItemTitle, "Alawi"), findsNothing);
+          expect(find.widgetWithText(ItemTitle, "Dandoon"), findsNothing);
           expect(getOrderedPatientNames().first, "Shams");
           await tester.tap(find.byKey(WK.toggleSortDirection));
           await tester.pumpAndSettle();
-          expect(find.widgetWithText(AcrylicTitle, "Alawi"), findsOneWidget);
-          expect(find.widgetWithText(AcrylicTitle, "Dandoon"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Alawi"), findsOneWidget);
+          expect(find.widgetWithText(ItemTitle, "Dandoon"), findsOneWidget);
           expect(getOrderedPatientNames().first, "Alawi");
           await tester.drag(find.byKey(WK.dataTableListView), const Offset(0, -1500));
           await tester.pumpAndSettle();

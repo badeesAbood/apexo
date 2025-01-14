@@ -9,7 +9,7 @@ import 'package:flutter/material.dart' show showTimePicker, TimeOfDay, Card;
 import 'package:intl/intl.dart' as intl;
 import '../../utils/colors_without_yellow.dart';
 import '../../utils/round.dart';
-import '../../common_widgets/acrylic_title.dart';
+import '../../common_widgets/item_title.dart';
 import 'appointments_store.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -386,7 +386,7 @@ class AppointmentCalendarTile<Item extends Appointment> extends StatelessWidget 
   Widget build(BuildContext context) {
     return Acrylic(
       child: ListTile(
-        title: AcrylicTitle(item: item),
+        title: ItemTitle(item: item),
         subtitle: item.subtitleLine1.isNotEmpty ? Txt(item.subtitleLine1, overflow: TextOverflow.ellipsis) : null,
         leading: Row(children: [
           Column(

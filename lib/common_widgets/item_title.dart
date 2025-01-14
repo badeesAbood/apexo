@@ -7,14 +7,14 @@ import '../core/model.dart';
 import '../utils/get_deterministic_item.dart';
 import '../utils/colors_without_yellow.dart';
 
-class AcrylicTitle extends StatefulWidget {
+class ItemTitle extends StatefulWidget {
   final Model item;
   final double radius;
   final double maxWidth;
   final IconData? icon;
   final Color? predefinedColor;
   final double? fontSize;
-  const AcrylicTitle({
+  const ItemTitle({
     super.key,
     required this.item,
     this.radius = 15,
@@ -25,10 +25,10 @@ class AcrylicTitle extends StatefulWidget {
   });
 
   @override
-  State<AcrylicTitle> createState() => _AcrylicTitleState();
+  State<ItemTitle> createState() => _ItemTitleState();
 }
 
-class _AcrylicTitleState extends State<AcrylicTitle> {
+class _ItemTitleState extends State<ItemTitle> {
   ImageProvider? _avatarToEvict;
 
   @override
@@ -80,11 +80,13 @@ class _AcrylicTitleState extends State<AcrylicTitle> {
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(1.5, 5, 10, 5),
-          child: Acrylic(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
+          child: Container(
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(
+                  color: color.withValues(alpha: 0.25), width: 0.5, strokeAlign: BorderSide.strokeAlignOutside),
             ),
-            luminosityAlpha: 0.3,
             child: Container(
               constraints:
                   BoxConstraints(minWidth: widget.maxWidth < 100 ? widget.maxWidth : 100, maxWidth: widget.maxWidth),

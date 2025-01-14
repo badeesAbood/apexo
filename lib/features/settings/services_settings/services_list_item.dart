@@ -1,5 +1,5 @@
 import 'package:apexo/core/model.dart';
-import 'package:apexo/common_widgets/acrylic_title.dart';
+import 'package:apexo/common_widgets/item_title.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
 class ServicesListItem extends StatelessWidget {
@@ -24,7 +24,7 @@ class ServicesListItem extends StatelessWidget {
         child: Container(
           color: Colors.white,
           child: ListTile(
-            title: AcrylicTitle(
+            title: ItemTitle(
               item: Model.fromJson({"title": title}),
               radius: 1,
               maxWidth: 180,

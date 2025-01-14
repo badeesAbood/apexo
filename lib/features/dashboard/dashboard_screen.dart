@@ -3,7 +3,7 @@ import 'package:apexo/common_widgets/appointment_card.dart';
 import 'package:apexo/features/dashboard/dashboard_controller.dart';
 import 'package:apexo/services/launch.dart';
 import 'package:apexo/services/localization/locale.dart';
-import 'package:apexo/common_widgets/acrylic_title.dart';
+import 'package:apexo/common_widgets/item_title.dart';
 import 'package:apexo/features/stats/widgets/charts/bar.dart';
 import 'package:apexo/features/stats/widgets/charts/line.dart';
 import 'package:apexo/features/stats/charts_controller.dart';
@@ -99,7 +99,7 @@ class DashboardScreen extends StatelessWidget {
               height: 50,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                children: dashboardCtrl.todayAppointments.map((e) => AcrylicTitle(item: e)).toList(),
+                children: dashboardCtrl.todayAppointments.map((e) => ItemTitle(item: e)).toList(),
               ),
             )
           ]

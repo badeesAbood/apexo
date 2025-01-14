@@ -6,7 +6,7 @@ import 'package:apexo/utils/get_deterministic_item.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:apexo/features/appointments/open_appointment_panel.dart';
 import 'package:apexo/features/patients/open_patient_panel.dart';
-import 'package:apexo/common_widgets/acrylic_title.dart';
+import 'package:apexo/common_widgets/item_title.dart';
 import 'package:apexo/common_widgets/grid_gallery.dart';
 import 'package:apexo/features/doctors/open_doctor_panel.dart';
 import 'package:apexo/features/appointments/appointment_model.dart';
@@ -78,7 +78,7 @@ class AppointmentCard extends StatelessWidget {
                                 onTap: () {
                                   openPatient(appointment.patient);
                                 },
-                                child: AcrylicTitle(item: appointment.patient!)),
+                                child: ItemTitle(item: appointment.patient!)),
                             FluentIcons.medical,
                           ),
                         ],
@@ -92,7 +92,7 @@ class AppointmentCard extends StatelessWidget {
                                       onTap: () {
                                         openDoctor(e);
                                       },
-                                      child: AcrylicTitle(item: e, maxWidth: 115)))
+                                      child: ItemTitle(item: e, maxWidth: 115)))
                                   .toList(),
                             ),
                             FluentIcons.medical,

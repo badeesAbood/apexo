@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:apexo/app/routes.dart';
-import 'package:apexo/common_widgets/acrylic_title.dart';
+import 'package:apexo/common_widgets/item_title.dart';
 import 'package:apexo/common_widgets/dialogs/close_dialog_button.dart';
 import 'package:apexo/core/model.dart';
 import 'package:apexo/core/multi_stream_builder.dart';
@@ -412,7 +412,7 @@ class _PanelScreenState extends State<PanelScreen> {
   SizedBox _buildPanelHeaderItemName() {
     return SizedBox(
       width: 155.5,
-      child: AcrylicTitle(
+      child: ItemTitle(
         maxWidth: 116,
         radius: 13,
         fontSize: 13,
