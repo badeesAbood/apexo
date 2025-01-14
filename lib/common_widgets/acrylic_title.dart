@@ -7,7 +7,7 @@ import '../core/model.dart';
 import '../utils/get_deterministic_item.dart';
 import '../utils/colors_without_yellow.dart';
 
-class AcrylicTitle extends StatelessWidget {
+class AcrylicTitle extends StatefulWidget {
   final Model item;
   final double radius;
   final double maxWidth;
@@ -25,11 +25,24 @@ class AcrylicTitle extends StatelessWidget {
   });
 
   @override
+  State<AcrylicTitle> createState() => _AcrylicTitleState();
+}
+
+class _AcrylicTitleState extends State<AcrylicTitle> {
+  ImageProvider? _avatarToEvict;
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (_avatarToEvict != null) _avatarToEvict!.evict();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final Color color = predefinedColor ??
-        (item.archived == true
+    final Color color = widget.predefinedColor ??
+        (widget.item.archived == true
             ? Colors.grey.withValues(alpha: 0.2)
-            : getDeterministicItem(colorsWithoutYellow, (item.title)));
+            : getDeterministicItem(colorsWithoutYellow, (widget.item.title)));
     return SizedBox(
       width: 200,
       child: Row(children: [
@@ -38,26 +51,29 @@ class AcrylicTitle extends StatelessWidget {
           decoration:
               BoxDecoration(color: color, borderRadius: BorderRadius.circular(100), boxShadow: kElevationToShadow[1]),
           child: FutureBuilder(
-              future: item.avatar != null
+              future: widget.item.avatar != null
                   ? (launch.isDemo
-                      ? demoAvatarRequestQue.add(() => getImage(item.id, item.avatar!))
-                      : getImage(item.imageRowId ?? item.id, item.avatar!))
+                      ? demoAvatarRequestQue.add(() => getImage(widget.item.id, widget.item.avatar!))
+                      : getImage(widget.item.imageRowId ?? widget.item.id, widget.item.avatar!))
                   : null,
               builder: (context, snapshot) {
-                if (item.title.isEmpty) {
-                  item.title = " ";
+                if (snapshot.data != null) {
+                  _avatarToEvict = snapshot.data;
+                }
+                if (widget.item.title.isEmpty) {
+                  widget.item.title = " ";
                 }
                 return CircleAvatar(
-                  key: Key(item.id),
-                  radius: radius,
+                  key: Key(widget.item.id),
+                  radius: widget.radius,
                   backgroundColor: color,
                   backgroundImage: (snapshot.data != null) ? snapshot.data : null,
-                  child: item.archived == true
-                      ? Icon(FluentIcons.archive, size: radius)
+                  child: widget.item.archived == true
+                      ? Icon(FluentIcons.archive, size: widget.radius)
                       : snapshot.data == null
-                          ? icon == null
-                              ? Txt(item.title.substring(0, 1))
-                              : Icon(icon, size: radius)
+                          ? widget.icon == null
+                              ? Txt(widget.item.title.substring(0, 1))
+                              : Icon(widget.icon, size: widget.radius)
                           : null,
                 );
               }),
@@ -70,12 +86,13 @@ class AcrylicTitle extends StatelessWidget {
             ),
             luminosityAlpha: 0.3,
             child: Container(
-              constraints: BoxConstraints(minWidth: maxWidth < 100 ? maxWidth : 100, maxWidth: maxWidth),
+              constraints:
+                  BoxConstraints(minWidth: widget.maxWidth < 100 ? widget.maxWidth : 100, maxWidth: widget.maxWidth),
               padding: const EdgeInsets.fromLTRB(12, 5, 12, 5),
               child: Txt(
-                item.title,
+                widget.item.title,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: fontSize ?? 14),
+                style: TextStyle(fontSize: widget.fontSize ?? 14),
               ),
             ),
           ),
