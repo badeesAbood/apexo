@@ -6,7 +6,7 @@
 -   Fixed: Show less aggressive user mode indicator on dashboard.
 -   Fixed: Submitting on fields on login screen should initiate the login process.
 -   Fixed: Option in settings screen to delete/reset all local data and pull from server.
--   Fixed issue: avatars are not loading on datatable unless they are loaded from appointment gallery.
+-   Fixed: avatars are not loading on datatable unless they are loaded from appointment gallery.
 -   Fixed: For better memory management, evict images once the widget is disposed.
 -   Fixed: Fpr better memory management, run image downloading http requests in a task que.
 -   Fixed: Improved performance and memory usage by utilizing less shader intensive UI elements.
