@@ -527,22 +527,22 @@ class DataTablePill extends StatelessWidget {
               const SizedBox(width: 5),
               const Divider(direction: Axis.vertical, size: 10),
               const SizedBox(width: 5),
-              Txt(
-                (content),
-              ),
+              Txt((content), style: const TextStyle(fontSize: 15)),
             ],
           ),
         ),
         if (selected)
-          const Acrylic(
-            tint: Colors.grey,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(topRight: Radius.circular(5), bottomRight: Radius.circular(5)),
+          Container(
+            //height: 35,
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: .15),
+              borderRadius: const BorderRadius.only(topRight: Radius.circular(5), bottomRight: Radius.circular(5)),
             ),
-            luminosityAlpha: 0.1,
-            child: SizedBox(
-              height: 35,
-              child: Icon(FluentIcons.check_mark, size: 10),
+            child: Icon(
+              FluentIcons.check_mark,
+              size: 13,
+              color: color,
             ),
           ),
       ],
