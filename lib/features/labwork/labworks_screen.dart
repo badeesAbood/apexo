@@ -26,6 +26,7 @@ class LabworksScreen extends StatelessWidget {
                   return DataTable<Labwork>(
                     compact: true,
                     items: labworks.present.values.toList(),
+                    store: labworks,
                     actions: [
                       DataTableAction(
                         callback: (_) => openLabwork(),
@@ -44,13 +45,6 @@ class LabworksScreen extends StatelessWidget {
                           final lab = labworks.get(id);
                           if (lab == null) return;
                           launchUrl(Uri.parse('tel:${lab.phoneNumber}'));
-                        },
-                      ),
-                      ItemAction(
-                        icon: FluentIcons.archive,
-                        title: txt("archive"),
-                        callback: (id) {
-                          labworks.archive(id);
                         },
                       ),
                     ],

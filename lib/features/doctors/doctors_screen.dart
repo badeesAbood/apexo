@@ -26,6 +26,7 @@ class DoctorsScreen extends StatelessWidget {
           builder: (context, snapshot) {
             return DataTable<Doctor>(
               items: doctors.present.values.toList(),
+              store: doctors,
               actions: [
                 DataTableAction(
                   callback: (_) => openDoctor(),
@@ -53,13 +54,6 @@ class DoctorsScreen extends StatelessWidget {
                     final doctor = doctors.get(id);
                     if (doctor == null) return;
                     launchUrl(Uri.parse('mailto:${doctor.email}'));
-                  },
-                ),
-                ItemAction(
-                  icon: FluentIcons.archive,
-                  title: txt("archive"),
-                  callback: (id) {
-                    doctors.archive(id);
                   },
                 ),
               ],

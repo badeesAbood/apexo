@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:apexo/app/routes.dart';
+import 'package:apexo/core/store.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
@@ -32,6 +33,7 @@ class DataTableAction {
 
 class DataTable<Item extends Model> extends StatefulWidget {
   final List<Item> items;
+  final Store store;
   final List<DataTableAction> actions;
   final void Function(Item) onSelect;
   final List<Widget> furtherActions;
@@ -43,6 +45,7 @@ class DataTable<Item extends Model> extends StatefulWidget {
   const DataTable({
     super.key,
     required this.items,
+    required this.store,
     required this.actions,
     required this.onSelect,
     this.furtherActions = const [],
@@ -281,6 +284,13 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
                             onPressed: () => action.callback(item.id),
                             closeAfterClick: true,
                           ),
+                        MenuFlyoutItem(
+                          leading: Icon(item.archived == true ? FluentIcons.archive_undo : FluentIcons.archive),
+                          text: Txt(txt(item.archived == true ? "restore" : "archive")),
+                          onPressed: () =>
+                              item.archived == true ? widget.store.unarchive(item.id) : widget.store.archive(item.id),
+                          closeAfterClick: true,
+                        )
                       ]);
                     });
                   },

@@ -28,6 +28,7 @@ class PatientsScreen extends StatelessWidget {
           builder: (context, snapshot) {
             return DataTable<Patient>(
               items: patients.present.values.toList(),
+              store: patients,
               actions: [
                 DataTableAction(
                   callback: (_) async {
@@ -70,13 +71,6 @@ class PatientsScreen extends StatelessWidget {
                     final patient = patients.get(id);
                     if (patient == null) return;
                     launchUrl(Uri.parse('tel:${patient.phone}'));
-                  },
-                ),
-                ItemAction(
-                  icon: FluentIcons.archive,
-                  title: txt("archive"),
-                  callback: (id) {
-                    patients.archive(id);
                   },
                 ),
               ],

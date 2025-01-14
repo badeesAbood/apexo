@@ -26,6 +26,7 @@ class ExpensesScreen extends StatelessWidget {
                   return DataTable<Expense>(
                     compact: true,
                     items: expenses.present.values.toList(),
+                    store: expenses,
                     actions: [
                       DataTableAction(
                         callback: (_) {
@@ -46,13 +47,6 @@ class ExpensesScreen extends StatelessWidget {
                           final receipt = expenses.get(id);
                           if (receipt == null) return;
                           launchUrl(Uri.parse('tel:${receipt.phoneNumber}'));
-                        },
-                      ),
-                      ItemAction(
-                        icon: FluentIcons.archive,
-                        title: txt("archive"),
-                        callback: (id) {
-                          expenses.archive(id);
                         },
                       ),
                     ],
