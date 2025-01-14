@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:apexo/app/routes.dart';
 import 'package:apexo/common_widgets/item_title.dart';
 import 'package:apexo/common_widgets/dialogs/close_dialog_button.dart';
+import 'package:apexo/common_widgets/swipe_detector.dart';
 import 'package:apexo/core/model.dart';
 import 'package:apexo/core/multi_stream_builder.dart';
 import 'package:apexo/core/observable.dart';
@@ -145,17 +146,29 @@ class _PanelScreenState extends State<PanelScreen> {
     );
   }
 
-  Expanded _buildTabBody() {
-    return Expanded(
-      child: SingleChildScrollView(
-        child: Container(
-          color: const Color.fromARGB(255, 250, 250, 250),
-          padding: EdgeInsets.all(widget.panel.tabs[widget.panel.selectedTab()].padding.toDouble()),
-          constraints: BoxConstraints(
-              minHeight: widget.panel.tabs[widget.panel.selectedTab()].footer == null
-                  ? widget.layoutHeight - 161
-                  : widget.layoutHeight - 206),
-          child: widget.panel.tabs[widget.panel.selectedTab()].body,
+  Widget _buildTabBody() {
+    return SwipeDetector(
+      onSwipeLeft: () {
+        if (widget.panel.selectedTab() > 0) {
+          widget.panel.selectedTab(widget.panel.selectedTab() - 1);
+        }
+      },
+      onSwipeRight: () {
+        if (widget.panel.selectedTab() < widget.panel.tabs.length - 1) {
+          widget.panel.selectedTab(widget.panel.selectedTab() + 1);
+        }
+      },
+      child: Expanded(
+        child: SingleChildScrollView(
+          child: Container(
+            color: const Color.fromARGB(255, 250, 250, 250),
+            padding: EdgeInsets.all(widget.panel.tabs[widget.panel.selectedTab()].padding.toDouble()),
+            constraints: BoxConstraints(
+                minHeight: widget.panel.tabs[widget.panel.selectedTab()].footer == null
+                    ? widget.layoutHeight - 161
+                    : widget.layoutHeight - 206),
+            child: widget.panel.tabs[widget.panel.selectedTab()].body,
+          ),
         ),
       ),
     );
@@ -401,7 +414,7 @@ class _PanelScreenState extends State<PanelScreen> {
     );
   }
 
-  Txt _buildPanelHeaderStoreName() {
+  Widget _buildPanelHeaderStoreName() {
     return Txt(
       txt(widget.panel.storeSingularName),
       style: TextStyle(fontSize: 10.5, color: Colors.grey.withValues(alpha: 0.7)),
@@ -409,7 +422,7 @@ class _PanelScreenState extends State<PanelScreen> {
     );
   }
 
-  SizedBox _buildPanelHeaderItemName() {
+  Widget _buildPanelHeaderItemName() {
     return SizedBox(
       width: 155.5,
       child: ItemTitle(
