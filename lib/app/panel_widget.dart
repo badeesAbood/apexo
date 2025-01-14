@@ -147,19 +147,19 @@ class _PanelScreenState extends State<PanelScreen> {
   }
 
   Widget _buildTabBody() {
-    return SwipeDetector(
-      onSwipeLeft: () {
-        if (widget.panel.selectedTab() > 0) {
-          widget.panel.selectedTab(widget.panel.selectedTab() - 1);
-        }
-      },
-      onSwipeRight: () {
-        if (widget.panel.selectedTab() < widget.panel.tabs.length - 1) {
-          widget.panel.selectedTab(widget.panel.selectedTab() + 1);
-        }
-      },
-      child: Expanded(
-        child: SingleChildScrollView(
+    return Expanded(
+      child: SingleChildScrollView(
+        child: SwipeDetector(
+          onSwipeLeft: () {
+            if (widget.panel.selectedTab() > 0) {
+              widget.panel.selectedTab(widget.panel.selectedTab() - 1);
+            }
+          },
+          onSwipeRight: () {
+            if (widget.panel.selectedTab() < widget.panel.tabs.length - 1) {
+              widget.panel.selectedTab(widget.panel.selectedTab() + 1);
+            }
+          },
           child: Container(
             color: const Color.fromARGB(255, 250, 250, 250),
             padding: EdgeInsets.all(widget.panel.tabs[widget.panel.selectedTab()].padding.toDouble()),
