@@ -7,7 +7,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import '../utils/colors_without_yellow.dart';
 import '../core/model.dart';
-import 'acrylic_title.dart';
+import 'item_title.dart';
 
 class _SortableItem<Item> {
   String value;
@@ -302,7 +302,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AcrylicTitle(key: Key(item.id), radius: widget.compact ? 1 : 20, item: item),
+              ItemTitle(key: Key(item.id), radius: widget.compact ? 1 : 20, item: item),
               ...nonEmptyLabels.map((labelTitle) => _buildLabelPill(
                   labelTitle, item, colorsWithoutYellow[getCycledNumber(nonEmptyLabels.indexOf(labelTitle))]))
             ],
@@ -508,32 +508,29 @@ class DataTablePill extends StatelessWidget {
     return Row(
       textDirection: TextDirection.ltr,
       children: [
-        Acrylic(
-          luminosityAlpha: 0.1,
-          elevation: 0,
-          tint: color,
-          shape: RoundedRectangleBorder(
-            borderRadius: (selected == false)
-                ? BorderRadius.circular(5)
-                : const BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5)),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
-            child: Wrap(
-              children: [
-                Txt(
-                  (txt(title)),
-                  style:
-                      TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, fontSize: 11.5, color: color),
-                ),
-                const SizedBox(width: 5),
-                const Divider(direction: Axis.vertical, size: 10),
-                const SizedBox(width: 5),
-                Txt(
-                  (content),
-                ),
-              ],
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [color.withValues(alpha: 0.15), color.withValues(alpha: 0.07), color.withValues(alpha: 0.15)],
             ),
+            border: Border.all(color: color.withValues(alpha: 0.3), width: 0.3),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+          child: Wrap(
+            children: [
+              Txt(
+                (txt(title)),
+                style:
+                    TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, fontSize: 11.5, color: color),
+              ),
+              const SizedBox(width: 5),
+              const Divider(direction: Axis.vertical, size: 10),
+              const SizedBox(width: 5),
+              Txt(
+                (content),
+              ),
+            ],
           ),
         ),
         if (selected)
