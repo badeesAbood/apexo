@@ -16,9 +16,9 @@ class Model {
   Model.fromJson(Map<String, dynamic> json)
       : id = uuid(),
         title = "" {
-    id = json["id"] ?? id;
-    archived = json["archived"];
-    title = json["title"] ?? title;
+    if (json["id"] != null) id = json["id"];
+    if (json["archived"] != null) archived = json["archived"];
+    if (json["title"] != null) title = json["title"];
   }
 
   Map<String, String> get labels {
