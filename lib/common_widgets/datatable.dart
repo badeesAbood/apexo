@@ -80,10 +80,11 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
   }
 
   List<Item> get filteredItems {
-    final words = _searchValue.toLowerCase().split(" ");
+    final words = _searchValue.toLowerCase().replaceAll(RegExp("أ|إ"), "ا").split(" ");
     final List<Item> candidates = [];
     for (var item in widget.items) {
-      final searchIn = (item.title + jsonEncode(item.labels.values.toList())).toLowerCase();
+      final searchIn =
+          (item.title + jsonEncode(item.labels.values.toList())).toLowerCase().replaceAll(RegExp("أ|إ"), "ا");
       final bool allTermsFound =
           words.map((word) => searchIn.contains(word)).where((x) => x == true).length == words.length;
       if (allTermsFound) candidates.add(item);
