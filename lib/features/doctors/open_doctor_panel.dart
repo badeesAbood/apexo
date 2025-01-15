@@ -114,12 +114,10 @@ class _UpcomingAppointments extends StatelessWidget {
         streams: [appointments.observableMap.stream, showArchived.stream],
         builder: (context, snapshot) {
           return doctor.upcomingAppointments.isEmpty
-              ? const Center(
+              ? Center(
                   child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: InfoBar(
-                      title: Txt("No upcoming appointments found. Use the button below to register new one"),
-                    ),
+                    padding: const EdgeInsets.all(8.0),
+                    child: InfoBar(title: Txt(txt("noUpcomingAppointmentsForThisDoctor"))),
                   ),
                 )
               : Column(

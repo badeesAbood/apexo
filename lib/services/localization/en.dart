@@ -83,6 +83,7 @@ class En {
     "dutyDays": "Duty days",
     "addAppointment": "Add Appointment",
     "lockToUsers": "Only the following users can view/edit this doctor's data and appointments",
+    "noUpcomingAppointmentsForThisDoctor": "No upcoming appointments found. Use the button below to register new one",
 
     // days and months
     "monday": "Monday",

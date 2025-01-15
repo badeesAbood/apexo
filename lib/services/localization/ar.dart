@@ -81,6 +81,7 @@ class Ar implements En {
     "dutyDays": "أيام العمل",
     "addAppointment": "إضافة موعد",
     "lockToUsers": "يمكن فقط للمستخدمين التاليين الوصول لمعلومات ومواعيد الطبيب وتعديلها",
+    "noUpcomingAppointmentsForThisDoctor": "لا يوجد مواعيد قادمة مسجلة لهذا الطبيب، استخدم الزر ادناه لتسجيل موعد جديد",
 
     // days and months
     "monday": "الاثنين",
