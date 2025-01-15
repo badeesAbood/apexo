@@ -4,17 +4,16 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart' show showTimePicker, showDatePicker, TimeOfDay;
 import 'package:intl/intl.dart';
 
-// ignore: must_be_immutable
 class DateTimePicker extends StatefulWidget {
-  DateTime value;
+  final DateTime initValue;
   final bool pickTime;
   final String format;
   final String buttonText;
   final IconData buttonIcon;
   final Function(DateTime value) onChange;
-  DateTimePicker({
+  const DateTimePicker({
     super.key,
-    required this.value,
+    required this.initValue,
     required this.onChange,
     this.pickTime = false,
     this.format = "dd/MM/yyyy",
@@ -27,6 +26,14 @@ class DateTimePicker extends StatefulWidget {
 }
 
 class DateTimePickerState extends State<DateTimePicker> {
+  late DateTime value;
+
+  @override
+  void initState() {
+    super.initState();
+    value = widget.initValue;
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -40,7 +47,7 @@ class DateTimePickerState extends State<DateTimePicker> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Txt(DateFormat(widget.format, locale.s.$code).format(widget.value)),
+            Txt(DateFormat(widget.format, locale.s.$code).format(value)),
             AcrylicButton(icon: widget.buttonIcon, text: widget.buttonText, onPressed: pick)
           ],
         ),
@@ -49,19 +56,19 @@ class DateTimePickerState extends State<DateTimePicker> {
   }
 
   pick() async {
-    DateTime selected = widget.value;
+    DateTime selected = value;
 
     if (widget.pickTime) {
       TimeOfDay time = await showTimePicker(
             context: context,
-            initialTime: TimeOfDay(hour: widget.value.hour, minute: widget.value.minute),
+            initialTime: TimeOfDay(hour: value.hour, minute: value.minute),
           ) ??
           TimeOfDay(hour: selected.hour, minute: selected.minute);
       selected = DateTime(selected.year, selected.month, selected.day, time.hour, time.minute);
     } else {
       selected = await showDatePicker(
             context: context,
-            initialDate: widget.value,
+            initialDate: value,
             firstDate: DateTime.now().subtract(const Duration(days: 9999)),
             lastDate: DateTime.now().add(const Duration(days: 9999)),
           ) ??
@@ -70,7 +77,7 @@ class DateTimePickerState extends State<DateTimePicker> {
 
     setState(() {
       widget.onChange(selected);
-      widget.value = selected;
+      value = selected;
     });
   }
 }

@@ -6,8 +6,6 @@ import 'package:apexo/utils/safe_hive_init.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'model.dart';
 
-/// TODO: should we use observableDict (store) instead of ObservablePersistingObject?
-
 /// This file introduces 5 types of observable objects
 /// all of which will notify their observers and automatically updates ObservableWidgets
 /// when their properties change

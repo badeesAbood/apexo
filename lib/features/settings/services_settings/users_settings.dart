@@ -9,7 +9,6 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-// ignore: must_be_immutable
 class UsersSettings extends StatelessWidget {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();

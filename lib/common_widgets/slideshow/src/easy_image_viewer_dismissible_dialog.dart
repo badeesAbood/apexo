@@ -74,11 +74,9 @@ class _EasyImageViewerDismissibleDialogState extends State<EasyImageViewerDismis
   @override
   Widget build(BuildContext context) {
     // Remove this once we release v2.0.0 and can bump the minimum Flutter version to 3.13.0
-    // ignore: deprecated_member_use
-    final popScopeAwareDialog = WillPopScope(
-        onWillPop: () async {
+    final popScopeAwareDialog = PopScope(
+        onPopInvokedWithResult: (_, __) {
           _handleDismissal();
-          return true;
         },
         key: _popScopeKey,
         child: Stack(clipBehavior: Clip.none, alignment: Alignment.center, children: <Widget>[

@@ -14,7 +14,6 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 import "../../common_widgets/datatable.dart";
 
-// ignore: must_be_immutable
 class PatientsScreen extends StatelessWidget {
   const PatientsScreen({super.key});
 

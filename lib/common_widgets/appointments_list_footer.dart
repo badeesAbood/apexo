@@ -8,6 +8,7 @@ class AppointmentsListFooter extends StatelessWidget {
   final String? forDoctorID;
   final String? forPatientID;
   const AppointmentsListFooter({
+    super.key,
     this.forDoctorID,
     this.forPatientID,
   });

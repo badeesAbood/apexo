@@ -18,23 +18,22 @@ import 'package:intl/intl.dart' as intl;
 
 enum AppointmentSections { patient, doctors, photos, preNotes, postNotes, prescriptions, pay }
 
-// ignore: must_be_immutable
 class AppointmentCard extends StatelessWidget {
   final Appointment appointment;
   final List<AppointmentSections> hide;
   final String? difference;
   final int number;
-  late Color color;
-  AppointmentCard({super.key, required this.appointment, this.difference, required this.number, this.hide = const []}) {
-    color = appointment.archived == true
+  const AppointmentCard(
+      {super.key, required this.appointment, this.difference, required this.number, this.hide = const []});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = appointment.archived == true
         ? Colors.grey
         : (appointment.isMissed)
             ? Colors.red
             : getDeterministicItem(colorsWithoutYellow, appointment.id).light;
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(7, 15, 15, 0),
       child: Column(
@@ -45,7 +44,7 @@ class AppointmentCard extends StatelessWidget {
               Column(
                 key: WK.acSideIcons,
                 children: [
-                  _doneCheckBox(),
+                  _doneCheckBox(color),
                   if (appointment.archived == true) ...[
                     _verticalSpacing(10),
                     const Icon(FluentIcons.archive),
@@ -65,11 +64,11 @@ class AppointmentCard extends StatelessWidget {
                   blurAmount: 0,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                   child: Container(
-                    decoration: _coloredHandleDecoration(),
+                    decoration: _coloredHandleDecoration(color),
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                        _buildHeader(context),
+                        _buildHeader(context, color),
                         if (appointment.patient != null && !hide.contains(AppointmentSections.patient)) ...[
                           ..._betweenSections,
                           _buildSection(
@@ -80,6 +79,7 @@ class AppointmentCard extends StatelessWidget {
                                 },
                                 child: ItemTitle(item: appointment.patient!)),
                             FluentIcons.medical,
+                            color,
                           ),
                         ],
                         if (appointment.operators.isNotEmpty && !hide.contains(AppointmentSections.doctors)) ...[
@@ -96,6 +96,7 @@ class AppointmentCard extends StatelessWidget {
                                   .toList(),
                             ),
                             FluentIcons.medical,
+                            color,
                           ),
                         ],
                         if (appointment.imgs.isNotEmpty && !hide.contains(AppointmentSections.photos)) ...[
@@ -112,27 +113,32 @@ class AppointmentCard extends StatelessWidget {
                               progress: false,
                             ),
                             FluentIcons.camera,
+                            color,
                           ),
                         ],
                         if (appointment.preOpNotes.isNotEmpty && !hide.contains(AppointmentSections.preNotes)) ...[
                           ..._betweenSections,
                           _buildSection(
-                              txt("pre-opNotes"),
-                              Txt(
-                                appointment.preOpNotes,
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-                              ),
-                              FluentIcons.quick_note),
+                            txt("pre-opNotes"),
+                            Txt(
+                              appointment.preOpNotes,
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                            ),
+                            FluentIcons.quick_note,
+                            color,
+                          ),
                         ],
                         if (appointment.postOpNotes.isNotEmpty && !hide.contains(AppointmentSections.postNotes)) ...[
                           ..._betweenSections,
                           _buildSection(
-                              txt("post-opNotes"),
-                              Txt(
-                                appointment.postOpNotes,
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-                              ),
-                              FluentIcons.quick_note),
+                            txt("post-opNotes"),
+                            Txt(
+                              appointment.postOpNotes,
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                            ),
+                            FluentIcons.quick_note,
+                            color,
+                          ),
                         ],
                         if (appointment.prescriptions.isNotEmpty &&
                             !hide.contains(AppointmentSections.prescriptions)) ...[
@@ -144,6 +150,7 @@ class AppointmentCard extends StatelessWidget {
                               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
                             ),
                             FluentIcons.pill,
+                            color,
                           ),
                         ],
                         if ((appointment.price != 0 || appointment.paid != 0) &&
@@ -153,6 +160,7 @@ class AppointmentCard extends StatelessWidget {
                             "${txt("pay")}\n${globalSettings.get("currency_______").value}",
                             _paymentPills(),
                             FluentIcons.money,
+                            color,
                           ),
                         ],
                       ],
@@ -169,7 +177,7 @@ class AppointmentCard extends StatelessWidget {
     );
   }
 
-  Padding _doneCheckBox() {
+  Padding _doneCheckBox(Color color) {
     return Padding(
       padding: const EdgeInsets.only(top: 2),
       child: Checkbox(
@@ -260,7 +268,7 @@ class AppointmentCard extends StatelessWidget {
     );
   }
 
-  Row _buildSection(String title, Widget child, IconData icon) {
+  Row _buildSection(String title, Widget child, IconData icon, Color color) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -302,7 +310,7 @@ class AppointmentCard extends StatelessWidget {
 
   SizedBox _verticalSpacing([double n = 10.0]) => SizedBox(height: n);
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, Color color) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -346,7 +354,7 @@ class AppointmentCard extends StatelessWidget {
     );
   }
 
-  BoxDecoration _coloredHandleDecoration() {
+  BoxDecoration _coloredHandleDecoration(Color color) {
     return BoxDecoration(
       border: Border(
         left: BorderSide(

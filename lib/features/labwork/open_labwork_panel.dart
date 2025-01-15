@@ -58,7 +58,7 @@ class _LabworkEditingState extends State<_LabworkEditing> {
           label: "${txt("date")}:",
           child: DateTimePicker(
             key: WK.fieldLabworkDate,
-            value: widget.labwork.date,
+            initValue: widget.labwork.date,
             onChange: (d) => widget.labwork.date = d,
             buttonText: txt("changeDate"),
           ),

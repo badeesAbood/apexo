@@ -252,7 +252,7 @@ class _AppointmentDetailsState extends State<_AppointmentDetails> {
               label: "${txt("date")}:",
               child: DateTimePicker(
                 key: WK.fieldAppointmentDate,
-                value: widget.appointment.date,
+                initValue: widget.appointment.date,
                 onChange: (d) {
                   widget.appointment.date = DateTime(
                     d.year,
@@ -281,7 +281,7 @@ class _AppointmentDetailsState extends State<_AppointmentDetails> {
           label: "${txt("time")}:",
           child: DateTimePicker(
             key: WK.fieldAppointmentTime,
-            value: widget.appointment.date,
+            initValue: widget.appointment.date,
             onChange: (d) => widget.appointment.date = d,
             buttonText: txt("changeTime"),
             pickTime: true,

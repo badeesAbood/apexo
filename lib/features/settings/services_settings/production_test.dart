@@ -8,7 +8,6 @@ import 'package:flutter/cupertino.dart';
 final _s3Result = ObservableState("");
 final _emailResult = ObservableState("");
 
-// ignore: must_be_immutable
 class ProductionTests extends StatelessWidget {
   final testEmailController = TextEditingController(text: login.email);
   ProductionTests({super.key});

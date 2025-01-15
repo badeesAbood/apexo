@@ -45,7 +45,7 @@ class SettingsScreen extends StatelessWidget {
                 icon: FluentIcons.all_currency,
                 inputType: InputType.text,
                 scope: Scope.app,
-                value: globalSettings.get("currency_______").value,
+                initValue: globalSettings.get("currency_______").value,
                 apply: (newVal) => globalSettings.set(Setting.fromJson({"id": "currency_______", "value": newVal})),
               ),
             if (login.isAdmin)
@@ -56,7 +56,7 @@ class SettingsScreen extends StatelessWidget {
                 icon: FluentIcons.footer,
                 inputType: InputType.text,
                 scope: Scope.app,
-                value: globalSettings.get("prescriptionFot").value,
+                initValue: globalSettings.get("prescriptionFot").value,
                 apply: (newVal) => globalSettings.set(Setting.fromJson({"id": "prescriptionFot", "value": newVal})),
               ),
             if (login.isAdmin)
@@ -67,7 +67,7 @@ class SettingsScreen extends StatelessWidget {
                 icon: FluentIcons.phone,
                 inputType: InputType.multiline,
                 scope: Scope.app,
-                value: globalSettings.get("phone__________").value,
+                initValue: globalSettings.get("phone__________").value,
                 apply: (newVal) => globalSettings.set(Setting.fromJson({"id": "phone__________", "value": newVal})),
               ),
             SettingsItem(
@@ -78,7 +78,7 @@ class SettingsScreen extends StatelessWidget {
               inputType: InputType.dropDown,
               scope: Scope.device,
               options: locale.list.map((e) => ComboBoxItem(value: e.$code, child: Txt(e.$name))).toList(),
-              value: localSettings.locale,
+              initValue: localSettings.locale,
               apply: (newVal) {
                 localSettings.locale = newVal;
                 localSettings.notifyAndPersist();
@@ -95,7 +95,7 @@ class SettingsScreen extends StatelessWidget {
                 scope: Scope.app,
                 options:
                     StartingDayOfWeek.values.map((e) => ComboBoxItem(value: e.name, child: Txt(txt(e.name)))).toList(),
-                value: globalSettings.get("start_day_of_wk").value,
+                initValue: globalSettings.get("start_day_of_wk").value,
                 apply: (newVal) => globalSettings.set(Setting.fromJson({"id": "start_day_of_wk", "value": newVal})),
               ),
             SettingsItem(
@@ -115,7 +115,7 @@ class SettingsScreen extends StatelessWidget {
                   child: Txt(txt("day/month/year")),
                 ),
               ],
-              value: localSettings.dateFormat,
+              initValue: localSettings.dateFormat,
               apply: (newVal) {
                 localSettings.dateFormat = newVal;
                 localSettings.notifyAndPersist();
@@ -129,7 +129,7 @@ class SettingsScreen extends StatelessWidget {
                 icon: FluentIcons.offline_storage,
                 inputType: InputType.none,
                 scope: Scope.device,
-                value: "",
+                initValue: "",
                 apply: (_) {},
                 footer: FilledButton(
                     child: Row(
@@ -204,7 +204,6 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-// ignore: must_be_immutable
 class SettingsItem extends StatefulWidget {
   final String title;
   final String description;
@@ -214,10 +213,10 @@ class SettingsItem extends StatefulWidget {
   final Scope scope;
   final List<ComboBoxItem<String>> options;
   final Widget? footer;
-  String value;
-  Function(String newVal) apply;
+  final String initValue;
+  final Function(String newVal) apply;
 
-  SettingsItem({
+  const SettingsItem({
     super.key,
     required this.identifier,
     required this.title,
@@ -225,7 +224,7 @@ class SettingsItem extends StatefulWidget {
     required this.icon,
     required this.inputType,
     required this.scope,
-    required this.value,
+    required this.initValue,
     required this.apply,
     this.options = const [],
     this.footer,
@@ -237,11 +236,13 @@ class SettingsItem extends StatefulWidget {
 
 class SettingsItemState extends State<SettingsItem> {
   final TextEditingController _controller = TextEditingController();
+  String value = "";
 
   @override
   void initState() {
     super.initState();
-    _controller.text = widget.value;
+    _controller.text = widget.initValue;
+    value = widget.initValue;
   }
 
   @override
@@ -280,7 +281,7 @@ class SettingsItemState extends State<SettingsItem> {
                     const SizedBox(height: 5),
                     Txt(widget.description, style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
                     const SizedBox(height: 10),
-                    if (_controller.text != widget.value) buildSaveCancelButtons(),
+                    if (_controller.text != value) buildSaveCancelButtons(),
                     if (widget.footer != null) widget.footer!,
                   ],
                 );
@@ -319,8 +320,8 @@ class SettingsItemState extends State<SettingsItem> {
         FilledButton(
           onPressed: () {
             setState(() {
-              widget.value = _controller.text;
               widget.apply(_controller.text);
+              value = _controller.text;
             });
           },
           child: Row(children: [
@@ -334,7 +335,7 @@ class SettingsItemState extends State<SettingsItem> {
           style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey)),
           onPressed: () {
             setState(() {
-              _controller.text = widget.value;
+              _controller.text = widget.initValue;
             });
           },
           child: Row(children: [

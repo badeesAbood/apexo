@@ -28,14 +28,6 @@ class SyncResult {
 /// A class that represents a store of documents
 /// This implements observableDict
 /// but adds ability to persist data as well as synchronize it with a remote server
-// ignore: slash_for_doc_comments
-/**
-      ----------------                              ----------------
-      |              |                              |              |
-      |    Remote    | <----> ObservableDict <----> |    Local     |
-      |  saveRemote  |                              |  saveLocal   |
-      ----------------                              ----------------
- */
 
 class Store<G extends Model> {
   late Future<void> loaded;

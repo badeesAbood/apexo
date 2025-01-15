@@ -56,7 +56,7 @@ class _ReceiptEditingState extends State<_ReceiptEditing> {
           label: "${txt("date")}:",
           child: DateTimePicker(
             key: WK.fieldReceiptDate,
-            value: widget.expense.date,
+            initValue: widget.expense.date,
             onChange: (d) => widget.expense.date = d,
             buttonText: txt("changeDate"),
           ),

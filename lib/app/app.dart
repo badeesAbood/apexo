@@ -127,8 +127,7 @@ class ApexoApp extends StatelessWidget {
             automaticallyImplyLeading: false,
             title: launch.open() ? Txt(routes.currentRoute.title) : Txt(txt("login")),
             leading: routes.history.isEmpty ? null : const BackButton(key: WK.backButton),
-            // ignore: prefer_const_constructors
-            actions: NetworkActions(key: WK.globalActions),
+            actions: const NetworkActions(key: WK.globalActions),
           ),
           onDisplayModeChanged: (mode) {
             if (mode == PaneDisplayMode.minimal) {

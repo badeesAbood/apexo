@@ -12,8 +12,7 @@ import 'appointment_model.dart';
 import 'appointments_store.dart';
 
 class CalendarScreen extends StatelessWidget {
-  // ignore: prefer_const_constructors_in_immutables
-  CalendarScreen({super.key});
+  const CalendarScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

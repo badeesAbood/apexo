@@ -76,14 +76,10 @@ abstract class EasyImageProvider {
   /// The [error] parameter is the error object that occurred while loading the image.
   /// The [stackTrace] parameter is the stack trace associated with the error.
   Widget errorWidgetBuilder(BuildContext context, int index, Object error, StackTrace? stackTrace) {
-    // Remove once the minimum Flutter version is 3.10+
-    // ignore: prefer_const_constructors
-    return Center(
-      // Remove once the minimum Flutter version is 3.10+
-      // ignore: prefer_const_constructors
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const <Widget>[
+        children: <Widget>[
           Icon(
             Icons.broken_image,
             color: Colors.red,

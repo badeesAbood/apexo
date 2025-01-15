@@ -12,14 +12,12 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 
-// ignore: must_be_immutable
 class ImportDialog extends StatelessWidget {
-  Panel<Appointment> panel;
-
-  ImportDialog({super.key, required this.panel});
-
+  final Panel<Appointment> panel;
   final importPhotosFromLinkController = TextEditingController();
   final importResult = ObservableState("");
+
+  ImportDialog({super.key, required this.panel});
 
   @override
   Widget build(BuildContext context) {

@@ -2,14 +2,19 @@ import 'package:apexo/services/localization/locale.dart';
 import 'package:apexo/services/permissions.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
-// ignore: must_be_immutable
 class PermissionsSettings extends StatelessWidget {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final List<String> permissionsTitles = const [
+    "doctors",
+    "patients",
+    "appointments",
+    "labworks",
+    "expenses",
+    "statistics"
+  ];
 
   PermissionsSettings({super.key});
-
-  List<String> permissionsTitles = const ["doctors", "patients", "appointments", "labworks", "expenses", "statistics"];
 
   @override
   Widget build(BuildContext context) {

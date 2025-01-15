@@ -10,10 +10,9 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-// ignore: must_be_immutable
 class AdminsSettings extends StatelessWidget {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   AdminsSettings({super.key});
 
