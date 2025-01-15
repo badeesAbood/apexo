@@ -282,7 +282,15 @@ class _AppointmentDetailsState extends State<_AppointmentDetails> {
           child: DateTimePicker(
             key: WK.fieldAppointmentTime,
             initValue: widget.appointment.date,
-            onChange: (d) => widget.appointment.date = d,
+            onChange: (d) => {
+              widget.appointment.date = DateTime(
+                widget.appointment.date.year,
+                widget.appointment.date.month,
+                widget.appointment.date.day,
+                d.hour,
+                d.minute,
+              )
+            },
             buttonText: txt("changeTime"),
             pickTime: true,
             buttonIcon: FluentIcons.clock,
