@@ -249,12 +249,17 @@ class WeekAgendaCalendarState<Item extends Appointment> extends State<WeekAgenda
   }
 
   Widget _buildEmptyDayMessage() {
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: InfoBar(
-        isIconVisible: true,
-        severity: InfoBarSeverity.warning,
-        title: Txt(txt("noAppointmentsForThisDay")),
+    return Expanded(
+      child: Container(
+        color: Colors.transparent,
+        child: Center(
+          child: InfoBar(
+            isLong: false,
+            isIconVisible: true,
+            severity: InfoBarSeverity.warning,
+            title: Txt(txt("noAppointmentsForThisDay")),
+          ),
+        ),
       ),
     );
   }
