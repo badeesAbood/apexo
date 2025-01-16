@@ -221,6 +221,7 @@ class Login extends StatelessWidget {
         controller: loginCtrl.passwordField,
         enabled: loginCtrl.loadingIndicator().isEmpty,
         obscureText: loginCtrl.obscureText(),
+        placeholder: txt("password"),
         suffix: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: IconButton(

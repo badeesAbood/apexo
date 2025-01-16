@@ -100,6 +100,7 @@ class _ExportPatientsDialogState extends State<ExportPatientsDialog> {
                   child: CupertinoTextField(
                     maxLines: null,
                     controller: TextEditingController(text: exportData.replaceAll("\n", "\n\n")),
+                    placeholder: "no data",
                   ),
                 )
               ],

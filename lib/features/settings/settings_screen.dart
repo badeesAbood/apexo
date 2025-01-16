@@ -270,6 +270,7 @@ class SettingsItemState extends State<SettingsItem> {
                           _controller.selection = currentPosition;
                         },
                         maxLines: widget.inputType == InputType.multiline ? 1 : null,
+                        placeholder: txt(widget.title),
                       )
                     else if (widget.inputType == InputType.dropDown)
                       ComboBox<String>(
