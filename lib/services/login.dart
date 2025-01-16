@@ -1,3 +1,4 @@
+import 'package:apexo/app/routes.dart';
 import 'package:apexo/features/login/login_controller.dart';
 import 'package:apexo/services/launch.dart';
 import 'package:apexo/utils/constants.dart';
@@ -52,6 +53,7 @@ class _LoginService extends ObservablePersistingObject {
     token = "";
     pb!.authStore.clear();
     notifyAndPersist();
+    routes.panels([]);
     return loginCtrl.finishedLoginProcess();
   }
 
