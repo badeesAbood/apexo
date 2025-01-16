@@ -224,12 +224,7 @@ class Login extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: IconButton(
             onPressed: () => loginCtrl.obscureText(!loginCtrl.obscureText()),
-            icon: const Icon(FluentIcons.red_eye, size: 18),
-            style: !loginCtrl.obscureText()
-                ? ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(Colors.grey.withValues(alpha: 0.1)),
-                  )
-                : null,
+            icon: Icon(loginCtrl.obscureText() ? FluentIcons.red_eye : FluentIcons.hide, size: 18),
           ),
         ),
         onSubmitted: (_) => fieldSubmit(),
