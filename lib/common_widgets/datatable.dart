@@ -285,13 +285,14 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
                             onPressed: () => action.callback(item.id),
                             closeAfterClick: true,
                           ),
-                        MenuFlyoutItem(
-                          leading: Icon(item.archived == true ? FluentIcons.archive_undo : FluentIcons.archive),
-                          text: Txt(txt(item.archived == true ? "restore" : "archive")),
-                          onPressed: () =>
-                              item.archived == true ? widget.store.unarchive(item.id) : widget.store.archive(item.id),
-                          closeAfterClick: true,
-                        )
+                        if (routes.panels().where((p) => p.item.id == item.id).isEmpty)
+                          MenuFlyoutItem(
+                            leading: Icon(item.archived == true ? FluentIcons.archive_undo : FluentIcons.archive),
+                            text: Txt(txt(item.archived == true ? "restore" : "archive")),
+                            onPressed: () =>
+                                item.archived == true ? widget.store.unarchive(item.id) : widget.store.archive(item.id),
+                            closeAfterClick: true,
+                          )
                       ]);
                     });
                   },
