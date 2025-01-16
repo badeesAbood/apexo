@@ -14,20 +14,6 @@ class _Localization {
 final locale = _Localization();
 
 String txt(String input) {
-  if (input.isNotEmpty) {
-    // always lowercase first letter
-    input = input[0].toLowerCase() + input.substring(1);
-  }
-
-  // uncomment the following to test
-  // if (locale.s.$name == "Test") {
-  //   if (locale.list[0].dictionary[input] == null) {
-  //     return "U_$input";
-  //   } else {
-  //     return "F";
-  //   }
-  // }
-
   final term = locale.s.dictionary[input];
   if (term != null) {
     return term;
