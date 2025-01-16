@@ -11,7 +11,7 @@ class _VersionService {
     return latest() != "" && latest() != current();
   }
 
-  _init() async {
+  Future<void> update() async {
     try {
       current((await PackageInfo.fromPlatform()).version);
     } catch (_) {
@@ -26,7 +26,7 @@ class _VersionService {
   }
 
   _VersionService() {
-    _init();
+    update();
   }
 }
 
