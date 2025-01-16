@@ -1,3 +1,17 @@
+### ____0.4.1____
+
+-   Fixed: Swiping in calendar when there's no appointment is not responsive.
+-   Fixed: Translated: "there's no upcoming appointments for this doctor".
+-   Fixed: Changing time would silently reset changed date.
+-   Fixed: Swipe detector being too sensitive.
+-   Fixed: Icon as password obscure indicator in login screen.
+-   Fixed: Better alignment for top actions.
+-   Fixed: "Update to newer version" prompt not working correctly.
+-   Fixed: Panel tab titles having their first letter lowercased.
+-   Fixed: Side panels stay open when logging-out/logging-in.
+-   Fixed: Hide archive button for a data table item, if the item is open in a side panel.
+-   Fixed: Some text fields didn't have placeholders.
+-   New feature: dark mode.
 
 ### ____0.3.1____
 
