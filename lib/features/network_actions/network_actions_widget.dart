@@ -22,7 +22,7 @@ class NetworkActions extends StatelessWidget {
               children: [
                 ...networkActions.actions.where((action) => action.hidden != true).map(
                       (action) => Container(
-                        margin: const EdgeInsets.only(left: 3),
+                        margin: const EdgeInsets.only(left: 3, top: 7),
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
