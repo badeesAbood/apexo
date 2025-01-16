@@ -18,7 +18,7 @@ class SwipeDetector extends StatelessWidget {
       onHorizontalDragEnd: (details) {
         if (details.velocity.pixelsPerSecond.dx > 0) {
           onSwipeLeft();
-        } else {
+        } else if (details.velocity.pixelsPerSecond.dx < 0) {
           onSwipeRight();
         }
       },
