@@ -10,6 +10,7 @@ import 'package:apexo/core/multi_stream_builder.dart';
 import 'package:apexo/core/observable.dart';
 import 'package:apexo/features/appointments/appointment_model.dart';
 import 'package:apexo/features/appointments/appointments_store.dart';
+import 'package:apexo/features/settings/settings_stores.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
@@ -121,13 +122,13 @@ class _PanelScreenState extends State<PanelScreen> {
             elevation: 120,
             child: MStreamBuilder(
                 streams: [
-                  locale.selectedLocale.stream,
+                  localSettings.stream,
                   widget.panel.selectedTab.stream,
                   routes.minimizePanels.stream,
                 ],
                 builder: (context, snapshot) {
                   return Column(
-                    key: Key(locale.selectedLocale().toString()),
+                    key: Key(localSettings.selectedLocale.toString()),
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _buildPanelHeader(),

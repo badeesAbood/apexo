@@ -6,12 +6,11 @@ import 'package:apexo/services/archived.dart';
 import 'package:apexo/services/launch.dart';
 import 'package:apexo/services/network.dart';
 import 'package:apexo/utils/hash.dart';
-import 'package:apexo/services/localization/locale.dart' as i18;
 import 'package:apexo/services/admins.dart';
 import 'package:apexo/services/backups.dart';
 import 'package:apexo/services/permissions.dart';
 import 'package:apexo/services/users.dart';
-
+import 'package:fluent_ui/fluent_ui.dart';
 import '../../core/save_local.dart';
 import '../../core/save_remote.dart';
 import '../network_actions/network_actions_controller.dart';
@@ -106,31 +105,23 @@ class GlobalSettings extends Store<Setting> {
 class LocalSettings extends ObservablePersistingObject {
   LocalSettings() : super(_storeNameLocal);
 
-  String locale = "en";
   String dateFormat = "dd/MM/yyyy";
-
-  final theme = ObservableState(0);
-
-  init() {
-    observe((_) {
-      final selectedLocaleIndex = i18.locale.list.indexWhere((l) => l.$code == locale);
-      i18.locale.selectedLocale(selectedLocaleIndex == -1 ? 0 : selectedLocaleIndex);
-    });
-  }
+  ThemeMode selectedTheme = ThemeMode.light;
+  int selectedLocale = 0;
 
   @override
   fromJson(Map<String, dynamic> json) {
-    locale = json["locale"] ?? locale;
+    selectedLocale = json["selectedLocale"] ?? selectedLocale;
     dateFormat = json["dateFormat"] ?? dateFormat;
-    theme(json["theme"] ?? 0);
+    selectedTheme = json["selectedTheme"] == 1 ? ThemeMode.dark : ThemeMode.light;
   }
 
   @override
   Map<String, dynamic> toJson() {
     return {
-      "locale": locale,
+      "selectedLocale": selectedLocale,
       "dateFormat": dateFormat,
-      "theme": theme(),
+      "selectedTheme": selectedTheme == ThemeMode.dark ? 1 : 0,
     };
   }
 }

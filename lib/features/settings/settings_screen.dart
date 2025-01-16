@@ -77,10 +77,12 @@ class SettingsScreen extends StatelessWidget {
               icon: FluentIcons.locale_language,
               inputType: InputType.dropDown,
               scope: Scope.device,
-              options: locale.list.map((e) => ComboBoxItem(value: e.$code, child: Txt(e.$name))).toList(),
-              initValue: localSettings.locale,
+              options: locale.list
+                  .map((e) => ComboBoxItem(value: locale.list.indexOf(e).toString(), child: Txt(e.$name)))
+                  .toList(),
+              initValue: localSettings.selectedLocale.toString(),
               apply: (newVal) {
-                localSettings.locale = newVal;
+                localSettings.selectedLocale = int.parse(newVal);
                 localSettings.notifyAndPersist();
                 networkActions.resync();
               },

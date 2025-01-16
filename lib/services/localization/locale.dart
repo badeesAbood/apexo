@@ -1,14 +1,11 @@
-import "package:apexo/core/observable.dart";
+import "package:apexo/features/settings/settings_stores.dart";
 import "package:apexo/services/localization/ar.dart";
 import "package:apexo/services/localization/en.dart";
 import "package:fluent_ui/fluent_ui.dart";
-// import "test.dart";
 
 class _Localization {
   List<En> list = [En(), Ar()];
-  final selectedLocale = ObservableState(0);
-  En get s => list[selectedLocale()];
-  void setSelected(int index) => selectedLocale(index);
+  En get s => list[localSettings.selectedLocale];
 }
 
 final locale = _Localization();
@@ -43,7 +40,7 @@ class Txt extends Text {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: locale.selectedLocale.stream,
+        stream: localSettings.stream,
         builder: (context, snapshot) {
           return Text(
             data ?? "",

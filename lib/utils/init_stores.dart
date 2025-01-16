@@ -10,7 +10,6 @@ initializeStores() {
   patients.init();
   appointments.init();
   globalSettings.init();
-  localSettings.init();
   labworks.init();
   expenses.init();
 }

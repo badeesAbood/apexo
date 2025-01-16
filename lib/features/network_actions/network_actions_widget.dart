@@ -17,7 +17,7 @@ class NetworkActions extends StatelessWidget {
             networkActions.isSyncing.stream,
             loginCtrl.proceededOffline.stream,
             network.isOnline.stream,
-            localSettings.theme.stream,
+            localSettings.stream,
           ],
           builder: (context, _) {
             return Wrap(

@@ -34,22 +34,17 @@ class Login extends StatelessWidget {
                 children: [
                   const AppLogo(),
                   StreamBuilder<Object>(
-                      stream: locale.selectedLocale.stream,
+                      stream: localSettings.stream,
                       builder: (context, snapshot) {
-                        return ComboBox(
+                        return ComboBox<String>(
                           key: WK.loginLangComboBox,
-                          value: localSettings.locale,
+                          value: localSettings.selectedLocale.toString(),
                           items: locale.list
-                              .map((e) => ComboBoxItem(value: e.$code, key: Key(e.$code), child: Txt(e.$name)))
+                              .map((e) => ComboBoxItem(
+                                  value: locale.list.indexOf(e).toString(), key: Key(e.$code), child: Txt(e.$name)))
                               .toList(),
-                          onChanged: (code) {
-                            final localeIndex = locale.list.indexWhere(
-                              (element) => element.$code == code,
-                            );
-                            if (localeIndex != -1) {
-                              locale.selectedLocale(localeIndex);
-                            }
-                            localSettings.locale = code ?? "en";
+                          onChanged: (indexString) {
+                            localSettings.selectedLocale = int.parse(indexString ?? "0");
                             localSettings.notifyAndPersist();
                           },
                         );
@@ -64,7 +59,7 @@ class Login extends StatelessWidget {
                     loginCtrl.selectedTab.stream,
                     loginCtrl.loginError.stream,
                     loginCtrl.resetInstructionsSent.stream,
-                    locale.selectedLocale.stream,
+                    localSettings.stream,
                     loginCtrl.obscureText.stream,
                   ],
                   builder: (context, _) {

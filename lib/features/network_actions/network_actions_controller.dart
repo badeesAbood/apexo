@@ -49,9 +49,11 @@ class _NetworkActions {
     return [
       NetworkAction(
         tooltip: "Theme",
-        iconData: (localSettings.theme() == 0) ? FluentIcons.sunny : FluentIcons.clear_night,
-        onPressed: () async {
-          localSettings.theme(localSettings.theme() == 0 ? 1 : 0);
+        iconData: (localSettings.selectedTheme == ThemeMode.light) ? FluentIcons.sunny : FluentIcons.clear_night,
+        onPressed: () {
+          localSettings.selectedTheme =
+              localSettings.selectedTheme == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+          localSettings.notifyAndPersist();
         },
         animate: false,
         activeColor: Colors.transparent,

@@ -33,19 +33,19 @@ class ApexoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MStreamBuilder(
-        streams: [localSettings.theme.stream, locale.selectedLocale.stream],
+    return StreamBuilder(
+        stream: localSettings.stream,
         builder: (context, snapshot) {
           return FluentApp(
             key: WK.fluentApp,
             locale: Locale(locale.s.$code),
-            theme: localSettings.theme() == 1 ? FluentThemeData.dark() : FluentThemeData.light(),
+            theme: localSettings.selectedTheme == ThemeMode.dark ? FluentThemeData.dark() : FluentThemeData.light(),
             home: CupertinoTheme(
-              data: localSettings.theme() == 1
+              data: localSettings.selectedTheme == ThemeMode.dark
                   ? const CupertinoThemeData(brightness: Brightness.dark)
                   : const CupertinoThemeData(),
               child: FluentTheme(
-                data: localSettings.theme() == 1 ? FluentThemeData.dark() : FluentThemeData(),
+                data: localSettings.selectedTheme == ThemeMode.dark ? FluentThemeData.dark() : FluentThemeData(),
                 child: MStreamBuilder(
                   streams: [
                     version.latest.stream,
