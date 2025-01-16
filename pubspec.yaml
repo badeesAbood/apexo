@@ -47,6 +47,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/app_icon.png
     - assets/images/logo.png
     - assets/images/missing.png
     - assets/fonts/readex.ttf

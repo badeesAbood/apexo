@@ -167,7 +167,7 @@ class SettingsScreen extends StatelessWidget {
                                       ],
                                     );
                                   }),
-                              style: dialogStyling(false),
+                              style: dialogStyling(context, false),
                             );
                           });
 

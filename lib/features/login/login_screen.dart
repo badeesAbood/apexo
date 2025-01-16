@@ -1,3 +1,4 @@
+import 'package:apexo/common_widgets/button_styles.dart';
 import 'package:apexo/core/multi_stream_builder.dart';
 import 'package:apexo/features/login/login_controller.dart';
 import 'package:apexo/services/localization/locale.dart';
@@ -78,7 +79,7 @@ class Login extends StatelessWidget {
                             key: WK.loginTab,
                             text: Txt(txt("login")),
                             icon: const Icon(FluentIcons.authenticator_app),
-                            body: buildTabContainer([
+                            body: buildTabContainer(context, [
                               serverField(),
                               emailField(),
                               passwordField(),
@@ -96,7 +97,7 @@ class Login extends StatelessWidget {
                                 FilledButton(
                                   key: WK.btnProceedOffline,
                                   onPressed: () => loginCtrl.loginButton(false),
-                                  style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey)),
+                                  style: greyButtonStyle,
                                   child: Row(children: [
                                     const Icon(FluentIcons.virtual_network),
                                     const SizedBox(width: 10),
@@ -109,7 +110,7 @@ class Login extends StatelessWidget {
                             key: WK.forgotPasswordTab,
                             text: Txt(txt("resetPassword")),
                             icon: const Icon(FluentIcons.password_field),
-                            body: buildTabContainer([
+                            body: buildTabContainer(context, [
                               const SizedBox(height: 1),
                               InfoBar(
                                 title: loginCtrl.resetInstructionsSent()
@@ -141,12 +142,12 @@ class Login extends StatelessWidget {
         });
   }
 
-  Container buildTabContainer(List<Widget> fields, List<Widget> actions) {
+  Container buildTabContainer(BuildContext context, List<Widget> fields, List<Widget> actions) {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(3),
-        color: const Color.fromARGB(255, 250, 250, 250),
+        color: FluentTheme.of(context).menuColor,
       ),
       child: StreamBuilder(
           stream: loginCtrl.loadingIndicator.stream,

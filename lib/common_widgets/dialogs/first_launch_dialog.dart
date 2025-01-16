@@ -25,7 +25,7 @@ class FirstLaunchDialog extends StatelessWidget {
           const QRLink(link: "https://docs.apexo.app/#section-3"),
         ],
       ),
-      style: dialogStyling(false),
+      style: dialogStyling(context, false),
       actions: const [CloseButtonInDialog(buttonText: "close")],
     );
   }

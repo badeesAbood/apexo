@@ -1,9 +1,9 @@
 import 'package:fluent_ui/fluent_ui.dart';
 
-ContentDialogThemeData dialogStyling(bool danger) {
+ContentDialogThemeData dialogStyling(BuildContext context, bool danger) {
   return ContentDialogThemeData(
     actionsDecoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.8),
+        color: FluentTheme.of(context).menuColor,
         borderRadius: const BorderRadius.all(Radius.circular(4)),
         boxShadow: [
           BoxShadow(
@@ -14,8 +14,9 @@ ContentDialogThemeData dialogStyling(bool danger) {
           )
         ]),
     decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(4)),
-        gradient: LinearGradient(colors: [Colors.white, danger ? Colors.errorSecondaryColor : Colors.white])),
+      borderRadius: const BorderRadius.all(Radius.circular(4)),
+      color: FluentTheme.of(context).micaBackgroundColor,
+    ),
     titleStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
   );
 }

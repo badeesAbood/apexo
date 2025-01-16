@@ -6,6 +6,7 @@ import 'package:apexo/common_widgets/dialogs/first_launch_dialog.dart';
 import 'package:apexo/common_widgets/dialogs/new_version_dialog.dart';
 import 'package:apexo/core/multi_stream_builder.dart';
 import 'package:apexo/features/network_actions/network_actions_widget.dart';
+import 'package:apexo/features/settings/settings_stores.dart';
 import 'package:apexo/services/launch.dart';
 import 'package:apexo/services/localization/en.dart';
 import 'package:apexo/services/localization/locale.dart';
@@ -15,69 +16,85 @@ import 'package:apexo/common_widgets/logo.dart';
 import 'package:apexo/services/version.dart';
 import 'package:apexo/widget_keys.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/cupertino.dart';
+
+late BuildContext bContext;
 
 class ApexoApp extends StatelessWidget {
   const ApexoApp({super.key});
 
   @override
+  StatelessElement createElement() {
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      showDialogsIfNeeded();
+    });
+    return super.createElement();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: locale.selectedLocale.stream,
-        builder: (context, _) {
-          showDialogsIfNeeded(context);
+    return MStreamBuilder(
+        streams: [localSettings.theme.stream, locale.selectedLocale.stream],
+        builder: (context, snapshot) {
           return FluentApp(
             key: WK.fluentApp,
             locale: Locale(locale.s.$code),
-            themeMode: ThemeMode.dark,
-            theme: FluentThemeData.light(), // TODO: this is how to implement dark mode
-            home: MStreamBuilder(
-              streams: [
-                version.latest.stream,
-                version.current.stream,
-                launch.dialogShown.stream,
-                launch.isFirstLaunch.stream,
-                launch.open.stream,
-                routes.showBottomNav.stream,
-                routes.panels.stream,
-                routes.minimizePanels.stream
-              ],
-              builder: (BuildContext context, _) {
-                return Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    buildAppLayout(),
-                    if (routes.showBottomNav() && routes.panels().isEmpty && launch.open()) const BottomNavBar()
+            theme: localSettings.theme() == 1 ? FluentThemeData.dark() : FluentThemeData.light(),
+            home: CupertinoTheme(
+              data: localSettings.theme() == 1
+                  ? const CupertinoThemeData(brightness: Brightness.dark)
+                  : const CupertinoThemeData(),
+              child: FluentTheme(
+                data: localSettings.theme() == 1 ? FluentThemeData.dark() : FluentThemeData(),
+                child: MStreamBuilder(
+                  streams: [
+                    version.latest.stream,
+                    version.current.stream,
+                    launch.dialogShown.stream,
+                    launch.isFirstLaunch.stream,
+                    launch.open.stream,
+                    routes.showBottomNav.stream,
+                    routes.panels.stream,
+                    routes.minimizePanels.stream
                   ],
-                );
-              },
+                  builder: (BuildContext context, _) {
+                    bContext = context;
+                    return Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        buildAppLayout(),
+                        if (routes.showBottomNav() && routes.panels().isEmpty && launch.open()) const BottomNavBar()
+                      ],
+                    );
+                  },
+                ),
+              ),
             ),
           );
         });
   }
 
-  void showDialogsIfNeeded(BuildContext context) {
-    if (version.newVersionAvailable) {
-      Future.delayed(const Duration(milliseconds: 100), () {
-        if ((!launch.dialogShown()) && context.mounted) {
+  void showDialogsIfNeeded() {
+    version.update().then((_) {
+      if (version.newVersionAvailable) {
+        if ((!launch.dialogShown()) && bContext.mounted) {
           launch.dialogShown(true);
           showDialog(
-            context: context,
+            context: bContext,
             builder: (BuildContext context) => const NewVersionDialog(),
           );
         }
-      });
-    }
+      }
+    });
 
     if (launch.isFirstLaunch()) {
-      Future.delayed(const Duration(milliseconds: 100), () {
-        if ((!launch.dialogShown()) && context.mounted) {
-          launch.dialogShown(true);
-          showDialog(
-            context: context,
-            builder: (BuildContext context) => const FirstLaunchDialog(),
-          );
-        }
-      });
+      if ((!launch.dialogShown())) {
+        launch.dialogShown(true);
+        showDialog(
+          context: bContext,
+          builder: (BuildContext context) => const FirstLaunchDialog(),
+        );
+      }
     }
   }
 

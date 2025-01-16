@@ -1,4 +1,5 @@
 import 'package:apexo/features/login/login_controller.dart';
+import 'package:apexo/features/settings/settings_stores.dart';
 import 'package:apexo/services/launch.dart';
 import 'package:apexo/services/network.dart';
 import 'package:fluent_ui/fluent_ui.dart';
@@ -46,6 +47,15 @@ class _NetworkActions {
 
   List<NetworkAction> get actions {
     return [
+      NetworkAction(
+        tooltip: "Theme",
+        iconData: (localSettings.theme() == 0) ? FluentIcons.sunny : FluentIcons.clear_night,
+        onPressed: () async {
+          localSettings.theme(localSettings.theme() == 0 ? 1 : 0);
+        },
+        animate: false,
+        activeColor: Colors.transparent,
+      ),
       NetworkAction(
         tooltip: "Synchronize",
         iconData: FluentIcons.sync,

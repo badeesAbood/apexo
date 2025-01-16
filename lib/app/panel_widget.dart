@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:apexo/app/routes.dart';
+import 'package:apexo/common_widgets/button_styles.dart';
 import 'package:apexo/common_widgets/item_title.dart';
 import 'package:apexo/common_widgets/dialogs/close_dialog_button.dart';
 import 'package:apexo/common_widgets/swipe_detector.dart';
@@ -161,7 +162,7 @@ class _PanelScreenState extends State<PanelScreen> {
             }
           },
           child: Container(
-            color: const Color.fromARGB(255, 250, 250, 250),
+            color: FluentTheme.of(context).scaffoldBackgroundColor,
             padding: EdgeInsets.all(widget.panel.tabs[widget.panel.selectedTab()].padding.toDouble()),
             constraints: BoxConstraints(
                 minHeight: widget.panel.tabs[widget.panel.selectedTab()].footer == null
@@ -213,7 +214,7 @@ class _PanelScreenState extends State<PanelScreen> {
           builder: (context, _) {
             return FilledButton(
               onPressed: closeOrConfirmCancel,
-              style: ButtonStyle(
+              style: greyButtonStyle.copyWith(
                 textStyle: const WidgetStatePropertyAll(TextStyle(fontSize: 13)),
                 backgroundColor: widget.panel.hasUnsavedChanges()
                     ? WidgetStatePropertyAll(Colors.orange)
@@ -250,7 +251,7 @@ class _PanelScreenState extends State<PanelScreen> {
                 });
               }
             },
-            style: ButtonStyle(
+            style: greyButtonStyle.copyWith(
               textStyle: const WidgetStatePropertyAll(TextStyle(fontSize: 13)),
               backgroundColor: WidgetStatePropertyAll(
                   widget.panel.hasUnsavedChanges() ? Colors.blue : Colors.grey.withValues(alpha: 0.25)),
@@ -270,9 +271,9 @@ class _PanelScreenState extends State<PanelScreen> {
           widget.panel.store.archive(widget.panel.item.id);
         });
       },
-      style: const ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(Colors.grey),
-        textStyle: WidgetStatePropertyAll(TextStyle(fontSize: 13)),
+      style: greyButtonStyle.copyWith(
+        backgroundColor: const WidgetStatePropertyAll(Colors.grey),
+        textStyle: const WidgetStatePropertyAll(TextStyle(fontSize: 13)),
       ),
       child: Row(
         children: [
@@ -292,7 +293,7 @@ class _PanelScreenState extends State<PanelScreen> {
           widget.panel.store.unarchive(widget.panel.item.id);
         });
       },
-      style: ButtonStyle(
+      style: greyButtonStyle.copyWith(
         textStyle: const WidgetStatePropertyAll(TextStyle(fontSize: 13)),
         backgroundColor: WidgetStatePropertyAll(Colors.teal),
       ),

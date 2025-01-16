@@ -1,3 +1,4 @@
+import 'package:apexo/common_widgets/button_styles.dart';
 import 'package:apexo/common_widgets/dialogs/close_dialog_button.dart';
 import 'package:apexo/common_widgets/dialogs/dialog_styling.dart';
 import 'package:apexo/core/multi_stream_builder.dart';
@@ -101,7 +102,7 @@ class AdminsSettings extends StatelessWidget {
   ContentDialog editDialog(BuildContext context, RecordModel admin) {
     return ContentDialog(
       title: Txt(txt("editAdmin")),
-      style: dialogStyling(false),
+      style: dialogStyling(context, false),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -158,7 +159,7 @@ class AdminsSettings extends StatelessWidget {
         Row(
           children: [
             FilledButton(
-              style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey)),
+              style: greyButtonStyle.copyWith(backgroundColor: const WidgetStatePropertyAll(Colors.grey)),
               onPressed: () {
                 showDialog(
                     context: context,
@@ -183,7 +184,7 @@ class AdminsSettings extends StatelessWidget {
   ContentDialog newDialog(BuildContext context) {
     return ContentDialog(
       title: const Txt("New Admin"),
-      style: dialogStyling(false),
+      style: dialogStyling(context, false),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

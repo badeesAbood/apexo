@@ -234,7 +234,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     return Container(
       padding: widget.compact ? EdgeInsets.zero : const EdgeInsets.symmetric(vertical: 1.5),
       decoration: BoxDecoration(
-        color: isChecked ? Colors.grey.withValues(alpha: 0.08) : null,
+        color: isChecked ? FluentTheme.of(context).selectionColor.withValues(alpha: 0.05) : null,
         border: Border(
           bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.2), width: 0.5),
         ),
@@ -427,7 +427,6 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
 
   Acrylic _buildCommandBar() {
     return Acrylic(
-      tint: Colors.white,
       tintAlpha: 1,
       elevation: 140,
       luminosityAlpha: 0.8,
@@ -607,7 +606,7 @@ class _DataTableSearchFieldState extends State<DataTableSearchField> {
                 begin: AlignmentDirectional.bottomEnd,
                 colors: [
                   Colors.white.withValues(alpha: 0.1),
-                  Colors.white,
+                  Colors.white.withValues(alpha: 0.05),
                 ],
               ))),
     );

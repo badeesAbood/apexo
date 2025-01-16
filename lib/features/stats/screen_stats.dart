@@ -28,7 +28,10 @@ class StatsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(children: [
       _buildHeader(context),
-      ChartsRangeSelector(color: _color, textStyle: _textStyle, icons: _icons),
+      ChartsRangeSelector(
+          color: FluentTheme.of(context).inactiveColor.withValues(alpha: 0.5),
+          textStyle: _textStyle.copyWith(color: FluentTheme.of(context).inactiveColor.withValues(alpha: 0.5)),
+          icons: _icons),
       const Divider(size: 1500),
       Expanded(
         child: ListView(

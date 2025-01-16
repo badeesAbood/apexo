@@ -41,7 +41,7 @@ class _ItemTitleState extends State<ItemTitle> {
   Widget build(BuildContext context) {
     final Color color = widget.predefinedColor ??
         (widget.item.archived == true
-            ? Colors.grey.withValues(alpha: 0.2)
+            ? FluentTheme.of(context).shadowColor.withValues(alpha: 0.2)
             : getDeterministicItem(colorsWithoutYellow, (widget.item.title)));
     return SizedBox(
       width: 200,

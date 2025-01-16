@@ -101,7 +101,6 @@ class _PatientWebPage extends StatelessWidget {
       Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Colors.white,
           border: Border.all(color: Colors.grey),
           borderRadius: BorderRadius.circular(5),
         ),
@@ -158,7 +157,8 @@ class _PatientAppointments extends StatelessWidget {
                               boxShadow: kElevationToShadow[4],
                               border: Border(
                                   top: BorderSide(
-                                color: colorBasedOnPayments(patient.paymentsMade, patient.pricesGiven)
+                                color: (colorBasedOnPayments(patient.paymentsMade, patient.pricesGiven) ??
+                                        FluentTheme.of(context).cardColor)
                                     .withValues(alpha: 0.3),
                                 width: 5,
                               ))),

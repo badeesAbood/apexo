@@ -59,6 +59,8 @@ class _DentalChartState extends State<DentalChart> {
                     ..addAll({openTooth: Colors.warningPrimaryColor}),
               selectedColor: Colors.grey,
               defaultStrokeWidth: 10,
+              tooltipColor: FluentTheme.of(context).menuColor,
+              tooltipTextStyle: TextStyle(color: FluentTheme.of(context).iconTheme.color),
             );
           }),
         ),
@@ -93,7 +95,8 @@ class _DentalChartState extends State<DentalChart> {
           Positioned(
             top: 200,
             left: 120,
-            child: Icon(FluentIcons.triangle_solid_down12, size: 90, color: Colors.white.withAlpha(250), shadows: [
+            child:
+                Icon(FluentIcons.triangle_solid_down12, size: 90, color: FluentTheme.of(context).menuColor, shadows: [
               Shadow(
                 color: Colors.grey.withAlpha(20),
                 offset: const Offset(0, 10),
@@ -105,7 +108,7 @@ class _DentalChartState extends State<DentalChart> {
           Positioned(
             bottom: 200,
             left: 120,
-            child: Icon(FluentIcons.triangle_solid_up12, size: 90, color: Colors.white.withAlpha(250), shadows: [
+            child: Icon(FluentIcons.triangle_solid_up12, size: 90, color: FluentTheme.of(context).menuColor, shadows: [
               Shadow(
                 color: Colors.grey.withAlpha(20),
                 offset: const Offset(0, -10),

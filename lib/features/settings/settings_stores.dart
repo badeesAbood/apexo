@@ -109,6 +109,8 @@ class LocalSettings extends ObservablePersistingObject {
   String locale = "en";
   String dateFormat = "dd/MM/yyyy";
 
+  final theme = ObservableState(0);
+
   init() {
     observe((_) {
       final selectedLocaleIndex = i18.locale.list.indexWhere((l) => l.$code == locale);
@@ -120,11 +122,16 @@ class LocalSettings extends ObservablePersistingObject {
   fromJson(Map<String, dynamic> json) {
     locale = json["locale"] ?? locale;
     dateFormat = json["dateFormat"] ?? dateFormat;
+    theme(json["theme"] ?? 0);
   }
 
   @override
   Map<String, dynamic> toJson() {
-    return {"locale": locale, "dateFormat": dateFormat};
+    return {
+      "locale": locale,
+      "dateFormat": dateFormat,
+      "theme": theme(),
+    };
   }
 }
 

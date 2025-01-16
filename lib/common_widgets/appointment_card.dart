@@ -29,7 +29,7 @@ class AppointmentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = appointment.archived == true
-        ? Colors.grey
+        ? (FluentTheme.of(context).iconTheme.color ?? Colors.grey)
         : (appointment.isMissed)
             ? Colors.red
             : getDeterministicItem(colorsWithoutYellow, appointment.id).light;
@@ -158,7 +158,7 @@ class AppointmentCard extends StatelessWidget {
                           ..._betweenSections,
                           _buildSection(
                             "${txt("pay")}\n${globalSettings.get("currency_______").value}",
-                            _paymentPills(),
+                            _paymentPills(context),
                             FluentIcons.money,
                             color,
                           ),
@@ -214,7 +214,7 @@ class AppointmentCard extends StatelessWidget {
     ));
   }
 
-  Column _paymentPills() {
+  Column _paymentPills(BuildContext context) {
     final color = colorBasedOnPayments(appointment.paid, appointment.price);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -223,9 +223,9 @@ class AppointmentCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _paymentPill(txt("price"), appointment.price.toString(), null, color),
+            _paymentPill(txt("price"), appointment.price.toString(), context, null, color),
             _horizontalSpacing(),
-            _paymentPill(txt("paid"), appointment.paid.toString(), null, color),
+            _paymentPill(txt("paid"), appointment.paid.toString(), context, null, color),
           ],
         ),
         _verticalSpacing(),
@@ -233,14 +233,16 @@ class AppointmentCard extends StatelessWidget {
           _paymentPill(
             appointment.overPaid ? txt("overpaid") : txt("underpaid"),
             appointment.paymentDifference.toString(),
+            context,
             colorBasedOnPayments(appointment.paid, appointment.price),
           )
       ],
     );
   }
 
-  PaymentPill _paymentPill(String title, String amount, [Color? color, Color? textColor]) {
-    final Color finalTextColor = textColor ?? (color == null ? Colors.grey : Colors.white);
+  PaymentPill _paymentPill(String title, String amount, BuildContext context, [Color? color, Color? textColor]) {
+    final Color finalTextColor =
+        textColor ?? (color == null ? (FluentTheme.of(context).iconTheme.color ?? Colors.grey) : Colors.white);
     return PaymentPill(finalTextColor: finalTextColor, amount: amount, title: title, color: color);
   }
 
@@ -291,7 +293,6 @@ class AppointmentCard extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     fontSize: 12,
-                    color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontStyle: FontStyle.italic,
                   ),

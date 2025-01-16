@@ -11,7 +11,7 @@ void showLoadingBlockingDialog(BuildContext context, String text) {
         return ContentDialog(
           title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Txt(text)]),
           content: const Row(mainAxisAlignment: MainAxisAlignment.center, children: [ProgressRing()]),
-          style: dialogStyling(false),
+          style: dialogStyling(context, false),
         );
       });
 }

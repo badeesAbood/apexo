@@ -103,7 +103,7 @@ class TagInputWidgetState extends State<TagInputWidget> {
       decoration: BoxDecoration(
         border: _tags.isEmpty ? null : Border.all(color: const Color.fromARGB(255, 221, 221, 221)),
         borderRadius: _tags.isEmpty ? null : BorderRadius.circular(4),
-        color: _tags.isEmpty ? null : Colors.white,
+        color: _tags.isEmpty ? null : FluentTheme.of(context).menuColor,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

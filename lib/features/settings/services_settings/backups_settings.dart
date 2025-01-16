@@ -181,7 +181,7 @@ class BackupsSettings extends StatelessWidget {
         builder: (BuildContext context) {
           return ContentDialog(
             title: Txt(txt("restoreBackup")),
-            style: dialogStyling(true),
+            style: dialogStyling(context, true),
             content: Txt(
                 "${txt("restoreBackupWarning1")} (${DateFormat().format(element.date)}) ${txt("restoreBackupWarning2")}"),
             actions: [
@@ -221,7 +221,7 @@ class BackupsSettings extends StatelessWidget {
         builder: (BuildContext context) {
           return ContentDialog(
             title: Txt(txt("delete")),
-            style: dialogStyling(true),
+            style: dialogStyling(context, true),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,7 +270,7 @@ class BackupsSettings extends StatelessWidget {
         builder: (BuildContext context) {
           return ContentDialog(
             title: Txt(txt("download")),
-            style: dialogStyling(false),
+            style: dialogStyling(context, false),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,

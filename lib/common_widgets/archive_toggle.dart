@@ -1,6 +1,7 @@
 import 'package:apexo/services/archived.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/material.dart' show Theme;
 
 class ArchiveToggle extends StatelessWidget {
   final void Function()? notifier;
@@ -15,10 +16,10 @@ class ArchiveToggle extends StatelessWidget {
             stream: showArchived.stream,
             builder: (context, _) {
               return Checkbox(
-                style: const CheckboxThemeData(
-                  uncheckedIconColor: WidgetStatePropertyAll(Colors.grey),
+                style: CheckboxThemeData(
+                  uncheckedIconColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.onSurface),
                   icon: FluentIcons.archive,
-                  margin: EdgeInsets.symmetric(horizontal: 3),
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
                 ),
                 checked: showArchived(),
                 onChanged: (checked) {

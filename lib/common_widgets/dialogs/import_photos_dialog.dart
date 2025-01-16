@@ -26,7 +26,7 @@ class ImportDialog extends StatelessWidget {
         builder: (context, _) {
           return ContentDialog(
             title: const SizedBox(),
-            style: dialogStyling(false),
+            style: dialogStyling(context, false),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

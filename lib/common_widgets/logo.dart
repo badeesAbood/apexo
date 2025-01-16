@@ -30,6 +30,8 @@ class _AppLogoState extends State<AppLogo> {
 
   @override
   Widget build(BuildContext context) {
+    final textStyle =
+        TextStyle(color: (FluentTheme.of(context).iconTheme.color ?? Colors.grey).withValues(alpha: 0.4), fontSize: 12);
     return Center(
       key: WK.appLogo,
       child: Padding(
@@ -37,14 +39,13 @@ class _AppLogoState extends State<AppLogo> {
         child: Row(
           children: [
             Image.asset(
-              "assets/images/logo.png",
-              height: 25,
+              "assets/app_icon.png",
+              height: 50,
             ),
             const SizedBox(width: 5),
-            Text(
-              version,
-              style: TextStyle(color: Colors.grey.withValues(alpha: 0.4), fontSize: 12),
-            )
+            Text("Apexo", style: textStyle),
+            const SizedBox(width: 5),
+            Text(version, style: textStyle)
           ],
         ),
       ),

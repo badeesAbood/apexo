@@ -104,7 +104,7 @@ class _ExportPatientsDialogState extends State<ExportPatientsDialog> {
                 )
               ],
             ),
-      style: dialogStyling(false),
+      style: dialogStyling(context, false),
       actions: const [CloseButtonInDialog(buttonText: "close")],
     );
   }

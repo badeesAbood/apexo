@@ -1,3 +1,4 @@
+import 'package:apexo/common_widgets/button_styles.dart';
 import 'package:apexo/common_widgets/dialogs/close_dialog_button.dart';
 import 'package:apexo/core/store.dart';
 import 'package:apexo/services/localization/locale.dart';
@@ -21,7 +22,7 @@ DataTableAction archiveSelected(Store store) {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   FilledButton(
-                    style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.warningPrimaryColor)),
+                    style: filledButtonStyle(Colors.warningPrimaryColor),
                     onPressed: () {
                       Flyout.of(context).close();
                       for (var id in ids) {

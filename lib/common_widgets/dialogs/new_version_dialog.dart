@@ -25,7 +25,7 @@ class NewVersionDialog extends StatelessWidget {
           const QRLink(link: "https://apexo.app/#getting-started"),
         ],
       ),
-      style: dialogStyling(false),
+      style: dialogStyling(context, false),
       actions: const [CloseButtonInDialog(buttonText: "close")],
     );
   }

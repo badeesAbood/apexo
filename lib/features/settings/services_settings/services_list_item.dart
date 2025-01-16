@@ -22,7 +22,7 @@ class ServicesListItem extends StatelessWidget {
       child: Acrylic(
         elevation: 3,
         child: Container(
-          color: Colors.white,
+          color: FluentTheme.of(context).menuColor,
           child: ListTile(
             title: ItemTitle(
               item: Model.fromJson({"title": title}),
