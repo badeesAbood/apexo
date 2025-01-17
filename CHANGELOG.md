@@ -1,3 +1,12 @@
+### ____0.4.2____
+
+-   Implemented sentry for crash and error reporting.
+-   Labworks can now be locked to a specific user.
+-   Expenses can now be locked to a specific user.
+-   Fixed: Synchronization of appointments, labworks, and expenses must be preceded by a successful synchronization patients and doctors.
+-   Fixed: creating patient on the fly if its unusually not found.
+-   Fixed: Substring safety in item title.
+
 ### ____0.4.1____
 
 -   Fixed: Swiping in calendar when there's no appointment is not responsive.
