@@ -18,12 +18,17 @@ class Appointment extends Model {
   String get title {
     if (patient == null) {
       return "  ";
+    } else if (patient!.title.isEmpty) {
+      return "  ";
     } else {
       return patient!.title;
     }
   }
 
   Patient? get patient {
+    if (patientID != null && patientID!.isNotEmpty && patients.get(patientID!) == null && patientID!.length == 15) {
+      patients.set(Patient.fromJson({"id": patientID}));
+    }
     return patients.get(patientID ?? "return null when null");
   }
 
