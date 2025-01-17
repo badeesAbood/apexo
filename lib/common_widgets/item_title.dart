@@ -72,7 +72,7 @@ class _ItemTitleState extends State<ItemTitle> {
                       ? Icon(FluentIcons.archive, size: widget.radius)
                       : snapshot.data == null
                           ? widget.icon == null
-                              ? Txt(widget.item.title.substring(0, 1))
+                              ? Txt(("${widget.item.title} ").substring(0, 1))
                               : Icon(widget.icon, size: widget.radius)
                           : null,
                 );
