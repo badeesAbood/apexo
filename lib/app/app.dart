@@ -43,7 +43,7 @@ class ApexoApp extends StatelessWidget {
             home: CupertinoTheme(
               data: localSettings.selectedTheme == ThemeMode.dark
                   ? const CupertinoThemeData(brightness: Brightness.dark)
-                  : const CupertinoThemeData(),
+                  : const CupertinoThemeData(brightness: Brightness.light),
               child: FluentTheme(
                 data: localSettings.selectedTheme == ThemeMode.dark ? FluentThemeData.dark() : FluentThemeData(),
                 child: MStreamBuilder(
