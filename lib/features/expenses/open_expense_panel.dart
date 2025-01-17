@@ -1,4 +1,5 @@
 import 'package:apexo/app/routes.dart';
+import 'package:apexo/common_widgets/operators_picker.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:apexo/common_widgets/call_button.dart';
 import 'package:apexo/common_widgets/date_time_picker.dart';
@@ -60,6 +61,14 @@ class _ReceiptEditingState extends State<_ReceiptEditing> {
             onChange: (d) => widget.expense.date = d,
             buttonText: txt("changeDate"),
           ),
+        ),
+        InfoLabel(
+          label: "${txt("specificForDoctors")}:",
+          child: OperatorsPicker(
+              value: widget.expense.operatorsIDs,
+              onChanged: (ids) {
+                widget.expense.operatorsIDs = ids;
+              }),
         ),
         InfoLabel(
           label: "${txt("receiptItems")}:",

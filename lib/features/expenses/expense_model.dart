@@ -1,8 +1,29 @@
 import 'package:apexo/core/model.dart';
+import 'package:apexo/features/doctors/doctor_model.dart';
+import 'package:apexo/features/doctors/doctors_store.dart';
 import 'package:apexo/services/localization/locale.dart';
+import 'package:apexo/services/login.dart';
 import 'package:intl/intl.dart';
 
 class Expense extends Model {
+  List<Doctor> get operators {
+    List<Doctor> foundOperators = [];
+    for (var id in operatorsIDs) {
+      var found = doctors.get(id);
+      if (found != null) {
+        foundOperators.add(found);
+      }
+    }
+    return foundOperators;
+  }
+
+  @override
+  bool get locked {
+    if (operators.isEmpty) return false;
+    if (login.isAdmin) return false;
+    return operators.every((element) => element.locked);
+  }
+
   @override
   get labels {
     Map<String, String> buildingLabels = {
@@ -32,6 +53,7 @@ class Expense extends Model {
   /* 6 */ String phoneNumber = "";
   /* 7 */ List<String> items = [];
   /* 8 */ List<String> tags = [];
+  /* 9 */ List<String> operatorsIDs = [];
 
   Expense.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
     /* 1 */ note = json['note'] ?? note;
@@ -42,6 +64,7 @@ class Expense extends Model {
     /* 6 */ phoneNumber = json['phoneNumber'] ?? phoneNumber;
     /* 7 */ items = List<String>.from(json["items"] ?? items);
     /* 8 */ tags = List<String>.from(json['tags'] ?? tags);
+    /* 9 */ operatorsIDs = List<String>.from(json["operatorsIDs"] ?? operatorsIDs);
   }
 
   @override
@@ -56,6 +79,7 @@ class Expense extends Model {
     /* 6 */ if (phoneNumber != d.phoneNumber) json['phoneNumber'] = phoneNumber;
     /* 7 */ if (items.isNotEmpty) json['items'] = items;
     /* 8 */ if (tags.isNotEmpty) json['tags'] = tags;
+    /* 9 */ if (operatorsIDs.isNotEmpty) json['operatorsIDs'] = operatorsIDs;
 
     return json;
   }

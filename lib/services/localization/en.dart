@@ -231,6 +231,7 @@ class En {
     "newReceipt": "New receipt",
     "receiptTags": "Receipt tags",
     "receiptItems": "Receipt items",
+    "specificForDoctors": "Specific for the following doctors",
 
     // stats
     "pickRange": "Pick range",

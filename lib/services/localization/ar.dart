@@ -229,6 +229,7 @@ class Ar implements En {
     "newReceipt": "وصل جديد",
     "receiptTags": "العلامات المرتبطة بالوصل",
     "receiptItems": "عناصر الوصل",
+    "specificForDoctors": "خاص للأطباء التاليين",
 
     // stats
     "pickRange": "اختيار النطاق",
