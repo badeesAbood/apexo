@@ -141,8 +141,10 @@ class _Routes {
           icon: FluentIcons.medical,
           screen: DoctorsScreen.new,
           accessible: permissions.list[0] || login.isAdmin,
-          onSelect: () {
-            doctors.synchronize();
+          onSelect: () async {
+            await doctors.synchronize();
+            await patients.synchronize();
+            appointments.synchronize();
           },
         ),
         Route(
@@ -152,8 +154,10 @@ class _Routes {
           icon: FluentIcons.medication_admin,
           screen: PatientsScreen.new,
           accessible: permissions.list[1] || login.isAdmin,
-          onSelect: () {
-            patients.synchronize();
+          onSelect: () async {
+            await doctors.synchronize();
+            await patients.synchronize();
+            appointments.synchronize();
           },
         ),
         Route(
@@ -164,6 +168,7 @@ class _Routes {
           screen: CalendarScreen.new,
           accessible: permissions.list[2] || login.isAdmin,
           onSelect: () async {
+            await doctors.synchronize();
             await patients.synchronize();
             appointments.synchronize();
           },
@@ -175,7 +180,9 @@ class _Routes {
           icon: FluentIcons.manufacturing,
           screen: LabworksScreen.new,
           accessible: permissions.list[3] || login.isAdmin,
-          onSelect: () {
+          onSelect: () async {
+            await doctors.synchronize();
+            await patients.synchronize();
             labworks.synchronize();
           },
         ),
@@ -186,7 +193,9 @@ class _Routes {
           icon: FluentIcons.receipt_processing,
           screen: ExpensesScreen.new,
           accessible: permissions.list[4] || login.isAdmin,
-          onSelect: () {
+          onSelect: () async {
+            await doctors.synchronize();
+            await patients.synchronize();
             expenses.synchronize();
           },
         ),
@@ -196,9 +205,10 @@ class _Routes {
           icon: FluentIcons.chart,
           screen: StatsScreen.new,
           accessible: permissions.list[5] || login.isAdmin,
-          onSelect: () {
+          onSelect: () async {
             chartsCtrl.resetSelected();
-            patients.synchronize();
+            await doctors.synchronize();
+            await patients.synchronize();
             appointments.synchronize();
           },
         ),
