@@ -163,7 +163,8 @@ class _Routes {
           icon: FluentIcons.calendar,
           screen: CalendarScreen.new,
           accessible: permissions.list[2] || login.isAdmin,
-          onSelect: () {
+          onSelect: () async {
+            await patients.synchronize();
             appointments.synchronize();
           },
         ),
