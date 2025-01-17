@@ -13,6 +13,7 @@ stest.dart
 apexo-files/
 test/secret.dart
 test.jpg
+lib/sentry_dsn.dart
 # IntelliJ related
 *.iml
 *.ipr
