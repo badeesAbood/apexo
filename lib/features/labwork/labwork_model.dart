@@ -4,9 +4,17 @@ import 'package:apexo/features/patients/patient_model.dart';
 import 'package:apexo/features/patients/patients_store.dart';
 import 'package:apexo/features/doctors/doctor_model.dart';
 import 'package:apexo/features/doctors/doctors_store.dart';
+import 'package:apexo/services/login.dart';
 import 'package:intl/intl.dart';
 
 class Labwork extends Model {
+  @override
+  bool get locked {
+    if (operators.isEmpty) return false;
+    if (login.isAdmin) return false;
+    return operators.every((element) => element.locked);
+  }
+
   @override
   get labels {
     return {
