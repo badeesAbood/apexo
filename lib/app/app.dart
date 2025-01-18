@@ -120,6 +120,11 @@ class ApexoApp extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 _buildPositionedMainScreen(constraints, hideSidePanel),
+                if (routes.panels().isNotEmpty && routes.minimizePanels() == false && constraints.maxWidth < 710)
+                  ModalBarrier(
+                    color: FluentTheme.of(context).menuColor.withValues(alpha: 0.4),
+                    onDismiss: () => routes.minimizePanels(true),
+                  ),
                 _buildPositionedPanel(constraints, hideSidePanel),
               ],
             ),
