@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:apexo/app/routes.dart';
 import 'package:apexo/common_widgets/swipe_detector.dart';
 import 'package:apexo/services/localization/locale.dart';
 import 'package:apexo/features/appointments/appointment_model.dart';
@@ -396,15 +397,23 @@ class AppointmentCalendarTile<Item extends Appointment> extends StatelessWidget 
         title: ItemTitle(item: item),
         subtitle: item.subtitleLine1.isNotEmpty ? Txt(item.subtitleLine1, overflow: TextOverflow.ellipsis) : null,
         leading: Row(children: [
-          Transform.scale(
-            scale: 1.25,
-            child: Checkbox(
-                checked: item.isDone,
-                onChanged: (checked) {
-                  item.isDone = checked == true;
-                  appointments.set(item as Appointment);
-                }),
-          ),
+          routes.panels().where((p) => p.item.id == item.id).isNotEmpty
+              ? IconButton(
+                  icon: const Icon(FluentIcons.open_in_new_tab),
+                  onPressed: () {
+                    final index = routes.panels().indexWhere((p) => p.item.id == item.id);
+                    if (index == -1) return;
+                    routes.bringPanelToFront(index);
+                  })
+              : Transform.scale(
+                  scale: 1.25,
+                  child: Checkbox(
+                      checked: item.isDone,
+                      onChanged: (checked) {
+                        item.isDone = checked == true;
+                        appointments.set(item as Appointment);
+                      }),
+                ),
           const SizedBox(width: 8),
           const Divider(direction: Axis.vertical, size: 40),
         ]),
@@ -418,6 +427,8 @@ class AppointmentCalendarTile<Item extends Appointment> extends StatelessWidget 
               children: [
                 IconButton(
                   onPressed: () async {
+                    final index = routes.panels().indexWhere((p) => p.item.id == item.id);
+                    if (index > -1) return routes.bringPanelToFront(index);
                     TimeOfDay? res = await showTimePicker(
                         context: context, initialTime: TimeOfDay(hour: item.date.hour, minute: item.date.minute));
                     if (res != null) {
@@ -427,7 +438,9 @@ class AppointmentCalendarTile<Item extends Appointment> extends StatelessWidget 
                   },
                   icon: Row(
                     children: [
-                      const Icon(FluentIcons.clock),
+                      routes.panels().where((p) => p.item.id == item.id).isEmpty
+                          ? const Icon(FluentIcons.clock)
+                          : const Icon(FluentIcons.open_in_new_tab),
                       const SizedBox(width: 5),
                       Txt(intl.DateFormat('hh:mm a', locale.s.$code).format(item.date)),
                     ],
