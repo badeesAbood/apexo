@@ -329,10 +329,13 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
   }
 
   _buildCheckBox(bool isChecked, Item item) {
-    return Checkbox(
-      key: Key("dt_cb_${item.id}"),
-      checked: isChecked,
-      onChanged: (checked) => itemSelectToggle(item, checked),
+    return Transform.scale(
+      scale: 1.25,
+      child: Checkbox(
+        key: Key("dt_cb_${item.id}"),
+        checked: isChecked,
+        onChanged: (checked) => itemSelectToggle(item, checked),
+      ),
     );
   }
 
