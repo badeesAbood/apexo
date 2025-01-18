@@ -176,14 +176,14 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
       children: [
         _buildCommandBar(),
         _buildListController(),
-        _buildItemsList(),
+        _buildItemsList(context),
       ],
     );
   }
 
   final contextMenuControllers = <String, FlyoutController>{};
 
-  Expanded _buildItemsList() {
+  Expanded _buildItemsList(BuildContext context) {
     final sorted = [...sortedItems]; // caching those two for easier computation
     final filtered = [...filteredItems];
 
@@ -202,7 +202,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
                 key: WK.dataTableListView,
                 itemCount: filtered.length > sorted.length ? sorted.length + 1 : sorted.length,
                 itemBuilder: (context, index) => filtered.length > sorted.length && index == sorted.length
-                    ? _buildShowMore()
+                    ? _buildShowMore(context)
                     : _buildSingleItem(sorted[index], checkedIds.contains(sorted[index].id)),
               ),
             ),
@@ -212,7 +212,7 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
     );
   }
 
-  Center _buildShowMore() {
+  Center _buildShowMore(BuildContext context) {
     return Center(
       child: Container(
         padding: const EdgeInsets.all(10),
@@ -221,7 +221,8 @@ class DataTableState<Item extends Model> extends State<DataTable<Item>> {
         child: FilledButton(
           style: ButtonStyle(
               elevation: const WidgetStatePropertyAll(10),
-              backgroundColor: const WidgetStatePropertyAll(Colors.grey),
+              backgroundColor: WidgetStatePropertyAll(FluentTheme.of(context).accentColor),
+              foregroundColor: const WidgetStatePropertyAll(Colors.white),
               shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(200)))),
           onPressed: showMore,
           child: const Icon(FluentIcons.double_chevron_down),
