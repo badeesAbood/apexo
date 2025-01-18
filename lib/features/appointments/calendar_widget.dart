@@ -396,15 +396,14 @@ class AppointmentCalendarTile<Item extends Appointment> extends StatelessWidget 
         title: ItemTitle(item: item),
         subtitle: item.subtitleLine1.isNotEmpty ? Txt(item.subtitleLine1, overflow: TextOverflow.ellipsis) : null,
         leading: Row(children: [
-          Column(
-            children: [
-              Checkbox(
-                  checked: item.isDone,
-                  onChanged: (checked) {
-                    item.isDone = checked == true;
-                    appointments.set(item as Appointment);
-                  }),
-            ],
+          Transform.scale(
+            scale: 1.25,
+            child: Checkbox(
+                checked: item.isDone,
+                onChanged: (checked) {
+                  item.isDone = checked == true;
+                  appointments.set(item as Appointment);
+                }),
           ),
           const SizedBox(width: 8),
           const Divider(direction: Axis.vertical, size: 40),
