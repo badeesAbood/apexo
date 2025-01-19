@@ -6,13 +6,13 @@ import 'package:apexo/utils/safe_hive_init.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'model.dart';
 
-/// This file introduces 5 types of observable objects
+/// This file introduces 4 types of observable objects
 /// all of which will notify their observers and automatically updates ObservableWidgets
 /// when their properties change
 /// - ObservableBase: would rarely be useful
 /// - ObservableState: would be useful for storing standalone observable state (not part of a class)
 /// - ObservablePersistingObject: same as above but with persistence
-/// - ObservableList: Typically used by stores
+/// - ObservableDict: Typically used by stores
 
 typedef Observer<S> = void Function(S event);
 
