@@ -1,5 +1,4 @@
 import 'package:apexo/app/app.dart';
-import 'package:apexo/sentry_dsn.dart';
 import 'package:apexo/utils/init_stores.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
@@ -25,7 +24,7 @@ void main() async {
   } else {
     await SentryFlutter.init(
       (options) {
-        options.dsn = sentryDSN;
+        // options.dsn =  ;
         // options.tracesSampleRate = 1.0;
         // options.profilesSampleRate = 1.0;
       },

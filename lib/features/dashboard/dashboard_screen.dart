@@ -20,7 +20,8 @@ class DashboardScreen extends StatelessWidget {
 
   String get currentName {
     if (login.currentMember == null) return "";
-    if (login.currentMember!.title.length > 20) return "${login.currentMember!.title.substring(0, 17)}...";
+    if (login.currentMember!.title.length > 20)
+      return "${login.currentMember!.title.substring(0, 17)}...";
     return login.currentMember?.title ?? "";
   }
 
@@ -33,9 +34,12 @@ class DashboardScreen extends StatelessWidget {
   }
 
   String get dashboardMessage {
-    final onceStable = network.isOnline() ? "" : " ${txt("onceConnectionIsStable")}.";
+    final onceStable =
+        network.isOnline() ? "" : " ${txt("onceConnectionIsStable")}.";
 
-    final restriction = (login.isAdmin && network.isOnline()) ? txt("unRestrictedAccess") : txt("restrictedAccess");
+    final restriction = (login.isAdmin && network.isOnline())
+        ? txt("unRestrictedAccess")
+        : txt("restrictedAccess");
 
     return "${txt("youAreCurrentlyIn")} $mode ${txt("mode")}. ${txt("youHave")} $restriction.$onceStable";
   }
@@ -65,7 +69,8 @@ class DashboardScreen extends StatelessWidget {
                           style: const TextStyle(fontSize: 20),
                         ),
                         Txt(
-                          DateFormat("MMMM d yyyy, hh:mm:a", locale.s.$code).format(DateTime.now()),
+                          DateFormat("MMMM d yyyy, hh:mm:a", locale.s.$code)
+                              .format(DateTime.now()),
                           style: const TextStyle(fontSize: 14),
                         ),
                       ],
@@ -76,7 +81,9 @@ class DashboardScreen extends StatelessWidget {
                   Tooltip(
                     message: dashboardMessage,
                     child: PaymentPill(
-                      finalTextColor: login.isAdmin ? Colors.blue : Colors.warningPrimaryColor,
+                      finalTextColor: login.isAdmin
+                          ? Colors.blue
+                          : Colors.warningPrimaryColor,
                       title: txt("mode"),
                       amount: mode,
                     ),
@@ -88,7 +95,8 @@ class DashboardScreen extends StatelessWidget {
           if (permissions.list[5] || login.isAdmin) ...[
             buildTopSquares(),
             buildDashboardCharts()
-          ] else if (permissions.list[2] && dashboardCtrl.todayAppointments.isNotEmpty) ...[
+          ] else if (permissions.list[2] &&
+              dashboardCtrl.todayAppointments.isNotEmpty) ...[
             const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
@@ -99,7 +107,9 @@ class DashboardScreen extends StatelessWidget {
               height: 50,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                children: dashboardCtrl.todayAppointments.map((e) => ItemTitle(item: e)).toList(),
+                children: dashboardCtrl.todayAppointments
+                    .map((e) => ItemTitle(item: e))
+                    .toList(),
               ),
             )
           ]
@@ -121,9 +131,14 @@ class DashboardScreen extends StatelessWidget {
                 header: const SizedBox(width: 5),
                 footer: IconButton(
                   icon: Row(
-                    children: [const Icon(FluentIcons.chart), const SizedBox(width: 5), Txt(txt("fullStats"))],
+                    children: [
+                      const Icon(FluentIcons.chart),
+                      const SizedBox(width: 5),
+                      Txt(txt("fullStats"))
+                    ],
                   ),
-                  onPressed: () => routes.navigate(routes.getByIdentifier("statistics")!),
+                  onPressed: () =>
+                      routes.navigate(routes.getByIdentifier("statistics")!),
                 ),
                 onChanged: (i) => dashboardCtrl.currentOpenTab(i),
                 tabs: [
@@ -131,11 +146,13 @@ class DashboardScreen extends StatelessWidget {
                     text: Txt(txt("appointments")),
                     icon: const Icon(FluentIcons.calendar),
                     closeIcon: null,
-                    outlineColor: Colors.grey.withValues(alpha: 0.1),
+                    outlineColor: WidgetStatePropertyAll(
+                        Colors.grey.withValues(alpha: 0.1)),
                     body: Container(
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.4),
-                        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+                        border: Border.all(
+                            color: Colors.grey.withValues(alpha: 0.1)),
                         borderRadius: BorderRadius.circular(3),
                       ),
                       child: Padding(
@@ -143,8 +160,11 @@ class DashboardScreen extends StatelessWidget {
                         child: Column(children: [
                           Expanded(
                               child: StyledBarChart(
-                            labels: chartsCtrl.periods.map((p) => p.label).toList(),
-                            yAxis: chartsCtrl.groupedAppointments.map((g) => g.length.toDouble()).toList(),
+                            labels:
+                                chartsCtrl.periods.map((p) => p.label).toList(),
+                            yAxis: chartsCtrl.groupedAppointments
+                                .map((g) => g.length.toDouble())
+                                .toList(),
                           ))
                         ]),
                       ),
@@ -154,21 +174,26 @@ class DashboardScreen extends StatelessWidget {
                     text: Txt(txt("payments")),
                     icon: const Icon(FluentIcons.money),
                     closeIcon: null,
-                    outlineColor: Colors.grey.withValues(alpha: 0.1),
+                    outlineColor: WidgetStatePropertyAll(Colors.grey.withValues(alpha: 0.1)),
                     body: Container(
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.4),
-                        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+                        border: Border.all(
+                            color: Colors.grey.withValues(alpha: 0.1)),
                         borderRadius: BorderRadius.circular(3),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 30),
                         child: Column(children: [
                           Expanded(
                               child: StyledLineChart(
-                            labels: chartsCtrl.periods.map((p) => p.label).toList(),
+                            labels:
+                                chartsCtrl.periods.map((p) => p.label).toList(),
                             datasets: [chartsCtrl.groupedPayments.toList()],
-                            datasetLabels: ["Payments in ${globalSettings.get("currency_______").value}"],
+                            datasetLabels: [
+                              "Payments in ${globalSettings.get("currency_______").value}"
+                            ],
                           ))
                         ]),
                       ),
@@ -212,7 +237,8 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Padding dashboardSquare(AccentColor color, IconData icon, String title, String subtitle) {
+  Padding dashboardSquare(
+      AccentColor color, IconData icon, String title, String subtitle) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Acrylic(
@@ -244,12 +270,18 @@ class DashboardScreen extends StatelessWidget {
                       children: [
                         Txt(
                           title,
-                          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: color.dark),
+                          style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: color.dark),
                         ),
                         Txt(
                           subtitle,
                           style: TextStyle(
-                              fontSize: 13, color: color.light, fontStyle: FontStyle.italic, letterSpacing: 0.6),
+                              fontSize: 13,
+                              color: color.light,
+                              fontStyle: FontStyle.italic,
+                              letterSpacing: 0.6),
                         ),
                         const SizedBox(height: 10),
                       ],
