@@ -18,17 +18,5 @@ void main() async {
     statusBarIconBrightness: Brightness.dark,
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
-
-  if (kDebugMode) {
-    runApp(const ApexoApp());
-  } else {
-    await SentryFlutter.init(
-      (options) {
-        // options.dsn =  ;
-        // options.tracesSampleRate = 1.0;
-        // options.profilesSampleRate = 1.0;
-      },
-      appRunner: () => runApp(const ApexoApp()),
-    );
-  }
+  runApp(const ApexoApp());
 }
