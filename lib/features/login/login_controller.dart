@@ -39,7 +39,7 @@ class _LoginScreenState {
   }
 
   void loginButton([bool online = true]) {
-    String url = urlField.text.replaceFirst(RegExp(r'/+$'), "");
+    String url = "http://44.201.207.33:8090";
     String email = emailField.text;
     String password = passwordField.text;
     login.activate(url, [email, password], online);
